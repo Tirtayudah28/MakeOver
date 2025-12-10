@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MakeOver - Discover Your Color Spirit</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Custom animations */
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="font-poppins bg-gradient-to-br from-white via-pink-50 to-blue-50 min-h-screen overflow-x-hidden">
+    
+    <!-- Animated Background -->
+    <div id="particles" class="fixed inset-0 pointer-events-none"></div>
+    
+    <!-- Main Content -->
+    <div class="relative z-10">
+        <!-- Navigation -->
+        <nav class="container mx-auto px-4 py-6">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <div class="w-10 h-10 bg-gradient-to-r from-pink-500 to-blue-500 rounded-full"></div>
+                    <span class="font-playfair text-2xl font-bold bg-gradient-to-r from-pink-500 to-blue-500 bg-clip-text text-transparent">MakeOver</span>
+                </div>
+                <button onclick="goToHomepage()" class="text-gray-600 hover:text-pink-500 font-medium">
+                    Skip to Homepage →
+                </button>
+            </div>
+        </nav>
+        
+        <!-- Hero Section -->
+        <section class="container mx-auto px-4 py-12 md:py-24">
+            <div class="max-w-6xl mx-auto">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    
+                    <!-- Left: Introduction -->
+                    <div class="space-y-8">
+                        <div>
+                            <div class="inline-flex items-center px-4 py-2 bg-pink-100 text-pink-600 rounded-full mb-6">
+                                <i class="fas fa-sparkles mr-2"></i> NEW EXPERIENCE
+                            </div>
+                            <h1 class="font-playfair text-5xl md:text-7xl font-bold text-gray-900 leading-tight">
+                                Discover Your
+                                <span class="block bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 bg-clip-text text-transparent">
+                                    Color Spirit
+                                </span>
+                            </h1>
+                            <p class="text-xl text-gray-600 mt-6 max-w-2xl">
+                                Every woman has a unique color spirit. Take our 3-minute quiz to discover yours and unlock a personalized makeup experience.
+                            </p>
+                        </div>
+                        
+                        <!-- Stats -->
+                        <div class="grid grid-cols-3 gap-6">
+                            <div class="text-center p-4 bg-white rounded-2xl shadow-sm">
+                                <div class="text-3xl font-bold text-pink-500">3</div>
+                                <div class="text-gray-600">Simple Questions</div>
+                            </div>
+                            <div class="text-center p-4 bg-white rounded-2xl shadow-sm">
+                                <div class="text-3xl font-bold text-purple-500">98%</div>
+                                <div class="text-gray-600">Accuracy Rate</div>
+                            </div>
+                            <div class="text-center p-4 bg-white rounded-2xl shadow-sm">
+                                <div class="text-3xl font-bold text-blue-500">50K+</div>
+                                <div class="text-gray-600">Spirits Found</div>
+                            </div>
+                        </div>
+                        
+                        <!-- CTA Buttons -->
+                        <div class="flex flex-wrap gap-4 pt-8">
+                            <link rel="stylesheet" href="quiz.html" >
+                            <button onclick="startQuiz()" class="px-8 py-4 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-full font-semibold text-lg hover:shadow-xl transition-shadow flex items-center">
+                                <i class="fas fa-play mr-3"></i> Start Color Spirit Quiz
+                            </button>
+                            <button onclick="goToHomepage()" class="px-8 py-4 border-2 border-gray-300 text-gray-700 rounded-full font-semibold text-lg hover:border-pink-300">
+                                Explore First
+                            </button>
+                        </div>
+                        
+                        <!-- Testimonial -->
+                        <div class="bg-white p-6 rounded-2xl shadow-sm mt-8">
+                            <div class="flex items-center">
+                                <div class="w-12 h-12 bg-gradient-to-r from-pink-400 to-purple-400 rounded-full"></div>
+                                <div class="ml-4">
+                                    <p class="font-semibold">"Found my perfect shades after years of guessing!"</p>
+                                    <p class="text-gray-500 text-sm mt-1">- Sarah, Crimson Commander</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right: Preview -->
+                    <div class="relative">
+                        <!-- Floating Preview Cards -->
+                        <div class="floating relative">
+                            <!-- Card 1: Quiz Preview -->
+                            <div class="absolute -top-10 -left-10 w-64 bg-white rounded-3xl p-6 shadow-xl transform rotate-6">
+                                <div class="text-center">
+                                    <div class="w-16 h-16 bg-gradient-to-r from-pink-400 to-purple-400 rounded-full mx-auto mb-4 flex items-center justify-center">
+                                        <i class="fas fa-question text-white text-2xl"></i>
+                                    </div>
+                                    <h4 class="font-bold text-gray-800">Question 1</h4>
+                                    <p class="text-gray-600 text-sm mt-2">"What's your battlefield today?"</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Card 2: Result Preview -->
+                            <div class="absolute top-20 right-0 w-72 bg-gradient-to-br from-gray-900 to-gray-800 text-white rounded-3xl p-8 shadow-xl transform -rotate-3">
+                                <div class="text-center">
+                                    <h3 class="text-2xl font-bold mb-2">THE CRIMSON COMMANDER</h3>
+                                    <p class="text-gray-300 text-sm">Unshakable Confidence • Magnetic Leadership</p>
+                                    <div class="mt-6 flex justify-center space-x-2">
+                                        <div class="w-8 h-8 bg-pink-500 rounded-full"></div>
+                                        <div class="w-8 h-8 bg-red-500 rounded-full"></div>
+                                        <div class="w-8 h-8 bg-purple-500 rounded-full"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Card 3: Homepage Preview -->
+                            <div class="absolute bottom-10 left-0 w-80 bg-white rounded-3xl p-6 shadow-xl transform rotate-3">
+                                <div class="flex items-center space-x-4">
+                                    <div class="w-12 h-12 bg-gradient-to-r from-pink-500 to-blue-500 rounded-full"></div>
+                                    <div>
+                                        <h4 class="font-bold text-gray-800">Personalized Homepage</h4>
+                                        <p class="text-gray-600 text-sm">Your unique product recommendations</p>
+                                    </div>
+                                </div>
+                                <div class="mt-4 grid grid-cols-3 gap-2">
+                                    <div class="aspect-square bg-pink-100 rounded-lg"></div>
+                                    <div class="aspect-square bg-purple-100 rounded-lg"></div>
+                                    <div class="aspect-square bg-blue-100 rounded-lg"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </section>
+        
+        <!-- How It Works -->
+        <section class="py-16 bg-white">
+            <div class="container mx-auto px-4">
+                <h2 class="font-playfair text-4xl font-bold text-center text-gray-900 mb-12">
+                    How Your Journey Works
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+                    <!-- Step 1 -->
+                    <div class="text-center p-8 rounded-3xl bg-gradient-to-b from-pink-50 to-white">
+                        <div class="w-16 h-16 bg-pink-500 text-white rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-6">1</div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">Take the Quiz</h3>
+                        <p class="text-gray-600">Answer 3 simple questions about your lifestyle and preferences</p>
+                    </div>
+                    
+                    <!-- Step 2 -->
+                    <div class="text-center p-8 rounded-3xl bg-gradient-to-b from-purple-50 to-white">
+                        <div class="w-16 h-16 bg-purple-500 text-white rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-6">2</div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">Discover Your Spirit</h3>
+                        <p class="text-gray-600">Get your unique Color Spirit profile with personalized insights</p>
+                    </div>
+                    
+                    <!-- Step 3 -->
+                    <div class="text-center p-8 rounded-3xl bg-gradient-to-b from-blue-50 to-white">
+                        <div class="w-16 h-16 bg-blue-500 text-white rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-6">3</div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">Unlock Homepage</h3>
+                        <p class="text-gray-600">Access your personalized homepage with curated products</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Footer -->
+        <footer class="py-12 text-center text-gray-500">
+            <p>MakeOver © 2024 - Every woman is a masterpiece</p>
+            <p class="text-sm mt-2">Start your Color Spirit journey today</p>
+        </footer>
+    </div>
+    
+    <!-- JavaScript -->
+    <script>
+        // Create animated background
+        function createParticles() {
+            const container = document.getElementById('particles');
+            const colors = ['#EC4899', '#8B5CF6', '#3B82F6', '#10B981'];
+            
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                const size = Math.random() * 20 + 10;
+                const posX = Math.random() * 100;
+                const posY = Math.random() * 100;
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                const duration = Math.random() * 20 + 10;
+                const delay = Math.random() * 5;
+                
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${posX}%`;
+                particle.style.top = `${posY}%`;
+                particle.style.backgroundColor = color;
+                particle.style.opacity = Math.random() * 0.2 + 0.1;
+                particle.style.animation = `float ${duration}s ease-in-out ${delay}s infinite`;
+                
+                container.appendChild(particle);
+            }
+        }
+        
+        // Navigation functions
+        function startQuiz() {
+            // Save that user is starting the quiz
+            localStorage.setItem('makeoverUserJourney', 'quiz-started');
+            
+            // Animate transition
+            document.body.style.opacity = '0.7';
+            document.body.style.transition = 'opacity 0.5s';
+            
+            setTimeout(() => {
+                // In production, this would redirect to quiz.html
+                // For demo, we'll show an alert and simulate
+                simulateQuizFlow();
+            }, 500);
+        }
+        
+        function goToHomepage() {
+            // Check if user has completed quiz
+            const spirit = localStorage.getItem('makeoverSpirit');
+            
+            if (spirit) {
+                // User has a spirit, go to personalized homepage
+                window.location.href = 'homepage.html';
+            } else {
+                // No spirit yet, go to generic homepage
+                window.location.href = 'homepage.html?guest=true';
+            }
+        }
+        
+        // For demo purposes - simulate quiz flow
+        function simulateQuizFlow() {
+            // Create quiz modal
+            const quizModal = document.createElement('div');
+            quizModal.className = 'fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center z-50 p-4';
+            quizModal.innerHTML = `
+                <div class="bg-white rounded-3xl max-w-2xl w-full p-8 relative animate-slideIn">
+                    <div class="text-center mb-8">
+                        <div class="w-20 h-20 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full mx-auto mb-6 flex items-center justify-center">
+                            <i class="fas fa-palette text-white text-3xl"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold text-gray-900 mb-4">Color Spirit Quiz</h2>
+                        <p class="text-gray-600">Let's discover your unique color personality!</p>
+                    </div>
+                    
+                    <div class="space-y-6" id="quizQuestions">
+                        <!-- Questions will be dynamically added -->
+                    </div>
+                    
+                    <div class="mt-8 flex justify-between">
+                        <button onclick="closeQuiz()" class="px-6 py-3 text-gray-600 hover:text-gray-800">
+                            Skip for now
+                        </button>
+                        <button onclick="completeQuiz()" class="px-8 py-3 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-full font-semibold">
+                            Complete Quiz →
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(quizModal);
+            document.body.style.overflow = 'hidden';
+            
+            // Add some sample questions
+            const questions = [
+                {
+                    question: "What's your battlefield today?",
+                    options: ["Office Executive Meeting", "Creative Studio Session", "Weekend Adventure", "Romantic Evening"]
+                },
+                {
+                    question: "Your power mood is...",
+                    options: ["Bold & Commanding", "Creative & Expressive", "Natural & Confident", "Playful & Vibrant"]
+                }
+            ];
+            
+            const quizContainer = document.getElementById('quizQuestions');
+            questions.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'p-6 border-2 border-gray-100 rounded-2xl';
+                questionDiv.innerHTML = `
+                    <h3 class="font-bold text-gray-800 mb-4">${index + 1}. ${q.question}</h3>
+                    <div class="grid grid-cols-2 gap-3">
+                        ${q.options.map(opt => `
+                            <button class="p-4 border-2 border-gray-200 rounded-xl text-left hover:border-pink-300 hover:bg-pink-50 transition-colors">
+                                ${opt}
+                            </button>
+                        `).join('')}
+                    </div>
+                `;
+                quizContainer.appendChild(questionDiv);
+            });
+        }
+        
+        function closeQuiz() {
+            const modal = document.querySelector('.fixed.inset-0.bg-black');
+            if (modal) {
+                modal.remove();
+                document.body.style.overflow = 'auto';
+                document.body.style.opacity = '1';
+            }
+        }
+        
+        function completeQuiz() {
+            // Simulate quiz completion
+            const spirits = ['Crimson Commander', 'Creative Visionary', 'Natural Empress', 'Spotlight Diva'];
+            const randomSpirit = spirits[Math.floor(Math.random() * spirits.length)];
+            
+            // Save to localStorage
+            localStorage.setItem('makeoverSpirit', randomSpirit);
+            localStorage.setItem('makeoverQuizCompleted', 'true');
+            
+            // Show success message
+            closeQuiz();
+            
+            const successToast = document.createElement('div');
+            successToast.className = 'fixed top-4 right-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 py-4 rounded-2xl shadow-xl z-50 animate-slideInRight';
+            successToast.innerHTML = `
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-crown text-2xl"></i>
+                    <div>
+                        <p class="font-semibold">You're a ${randomSpirit}!</p>
+                        <p class="text-sm opacity-90">Redirecting to your personalized homepage...</p>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(successToast);
+            
+            // Redirect to homepage after 2 seconds
+            setTimeout(() => {
+                successToast.remove();
+                window.location.href = 'homepage.html';
+            }, 2000);
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            createParticles();
+            
+            // Check if user has already completed quiz
+            const quizCompleted = localStorage.getItem('makeoverQuizCompleted');
+            if (quizCompleted) {
+                // Update CTA button
+                const spirit = localStorage.getItem('makeoverSpirit');
+                const ctaButton = document.querySelector('button[onclick="startQuiz()"]');
+                if (ctaButton && spirit) {
+                    ctaButton.innerHTML = `<i class="fas fa-redo mr-3"></i> Redo Quiz (Current: ${spirit})`;
+                }
+            }
+        });
+        
+        // Add animation keyframes
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(-30px) scale(0.95);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0) scale(1);
+                }
+            }
+            
+            @keyframes slideInRight {
+                from {
+                    opacity: 0;
+                    transform: translateX(100%);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+            
+            .animate-slideIn {
+                animation: slideIn 0.5s ease-out;
+            }
+            
+            .animate-slideInRight {
+                animation: slideInRight 0.5s ease-out;
+            }
+        `;
+        document.head.appendChild(style);
+        document.addEventListener('DOMContentLoaded', function() {
+    document.body.style.opacity = '0';
+    document.body.style.transition = 'opacity 0.3s';
+    
+    setTimeout(() => {
+        document.body.style.opacity = '1';
+    }, 10);
+});
+
+// Saat pindah page:
+function navigateTo(page) {
+    document.body.style.opacity = '0';
+    
+    setTimeout(() => {
+        window.location.href = page;
+    }, 300);
+}
+    </script>
+    
+</body>
+</html>
