@@ -1,0 +1,1326 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MakeOver - Discover Your Color Spirit</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'makeover-pink': '#E83A7D',
+                        'makeover-blue': '#2D5BFF',
+                        'makeover-yellow': '#FFD166',
+                        'makeover-green': '#06D6A0',
+                        'makeover-dark': '#1A1A2E',
+                        'makeover-light': '#F8F9FA',
+                    },
+                    fontFamily: {
+                        'poppins': ['Poppins', 'sans-serif'],
+                        'playfair': ['Playfair Display', 'serif'],
+                    },
+                    animation: {
+                        'float': 'float 3s ease-in-out infinite',
+                        'pulse-slow': 'pulse 2s ease-in-out infinite',
+                        'bounce-slow': 'bounce 2s infinite',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Animations */
+        .page-transition {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .gradient-text {
+            background: linear-gradient(90deg, #E83A7D 0%, #2D5BFF 50%, #FFD166 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .avatar-glow {
+            box-shadow: 0 0 30px rgba(232, 58, 125, 0.5);
+            animation: glow-pulse 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow-pulse {
+            0% { box-shadow: 0 0 20px rgba(232, 58, 125, 0.3); }
+            100% { box-shadow: 0 0 40px rgba(232, 58, 125, 0.7); }
+        }
+        
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .homepage-cta {
+            background: linear-gradient(90deg, #E83A7D 0%, #2D5BFF 100%);
+            box-shadow: 0 10px 30px rgba(232, 58, 125, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .homepage-cta:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(232, 58, 125, 0.6);
+        }
+        
+        .homepage-cta::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to right,
+                transparent 20%,
+                rgba(255, 255, 255, 0.2) 50%,
+                transparent 80%
+            );
+            transform: rotate(30deg);
+            animation: shine 3s infinite;
+        }
+        
+        @keyframes shine {
+            0% { transform: translateX(-100%) rotate(30deg); }
+            100% { transform: translateX(100%) rotate(30deg); }
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(to bottom, #E83A7D, #2D5BFF);
+            border-radius: 10px;
+        }
+        
+        .color-wheel {
+            animation: spin 20s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .focus-effect:focus {
+            box-shadow: 0 0 0 3px rgba(232, 58, 125, 0.1);
+            transform: translateY(-2px);
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body class="font-poppins bg-gradient-to-br from-makeover-light via-white to-pink-50 min-h-screen overflow-x-hidden">
+    
+    <!-- Particle Background -->
+    <div id="particles-container" class="fixed inset-0 pointer-events-none z-0"></div>
+    
+    <!-- Main Container -->
+    <div class="relative z-10 min-h-screen flex flex-col">
+        
+        <!-- ============================= -->
+        <!-- SCREEN 1: WELCOME PAGE -->
+        <!-- ============================= -->
+        <div id="screen1" class="page-transition min-h-screen flex flex-col items-center justify-center px-4 py-8">
+            <div class="max-w-2xl w-full text-center space-y-8">
+                
+                <!-- Logo/Title -->
+                <div class="space-y-4">
+                    <h1 class="font-playfair text-5xl md:text-7xl font-bold gradient-text">
+                        MakeOver
+                    </h1>
+                    <p class="text-xl md:text-2xl text-gray-600 font-light">
+                        Ekspresikan warnamu, bebaskan dirimu ✨
+                    </p>
+                </div>
+                
+                <!-- Animated Color Particles Preview -->
+                <div class="relative h-48 flex items-center justify-center">
+                    <div class="absolute w-32 h-32 rounded-full bg-gradient-to-r from-makeover-pink/20 to-makeover-blue/20 animate-pulse"></div>
+                    <div class="flex space-x-4">
+                        <div class="w-12 h-12 rounded-full bg-makeover-pink animate-bounce-slow"></div>
+                        <div class="w-12 h-12 rounded-full bg-makeover-blue animate-bounce-slow animation-delay-200"></div>
+                        <div class="w-12 h-12 rounded-full bg-makeover-yellow animate-bounce-slow animation-delay-400"></div>
+                    </div>
+                </div>
+                
+                <!-- Start Button -->
+                <button onclick="startQuiz()" class="group relative px-12 py-4 bg-gradient-to-r from-makeover-pink to-makeover-blue text-white rounded-full font-semibold text-lg transform transition-all duration-300 hover:scale-105 hover:shadow-2xl active:scale-95">
+                    <span class="relative z-10">Mulai Petualangan Warna</span>
+                    <div class="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 rounded-full transition-opacity duration-300"></div>
+                    <div class="absolute -inset-1 bg-gradient-to-r from-makeover-pink to-makeover-blue rounded-full blur opacity-30 group-hover:opacity-70 transition-opacity duration-300"></div>
+                </button>
+                
+                <!-- Instruction -->
+                <p class="text-gray-500 text-sm animate-pulse">
+                    👆 Tap untuk memulai perjalanan penemuan diri
+                </p>
+                
+            </div>
+        </div>
+        
+        <!-- ============================= -->
+        <!-- SCREEN 2: QUESTION 1 -->
+        <!-- ============================= -->
+        <div id="screen2" class="page-transition hidden min-h-screen flex flex-col items-center justify-center px-4 py-8">
+            <div class="max-w-4xl w-full space-y-10">
+                
+                <!-- Progress Bar -->
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-gradient-to-r from-makeover-pink to-makeover-yellow h-2 rounded-full w-1/4 transition-all duration-500"></div>
+                </div>
+                
+                <!-- Avatar -->
+                <div class="flex justify-center">
+                    <div class="relative">
+                        <div class="w-40 h-40 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center avatar-glow">
+                            <i class="fas fa-user text-6xl text-gray-400"></i>
+                        </div>
+                        <div class="absolute -bottom-2 -right-2 w-12 h-12 bg-makeover-pink rounded-full flex items-center justify-center">
+                            <span class="text-white font-bold">1</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Question -->
+                <div class="text-center space-y-4">
+                    <h2 class="font-playfair text-3xl md:text-4xl font-bold text-gray-800">
+                        Hari ini kamu mau jadi versi apa nih?
+                    </h2>
+                    <p class="text-gray-600">
+                        Pilih energi yang paling sesuai dengan mood kamu hari ini
+                    </p>
+                </div>
+                
+                <!-- Options Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+                    
+                    <!-- Option 1: Boss Lady -->
+                    <div onclick="selectOption(1)" class="option-card group cursor-pointer">
+                        <div class="bg-gradient-to-br from-makeover-pink/20 to-pink-100 p-6 rounded-2xl border-2 border-transparent group-hover:border-makeover-pink transition-all duration-300">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-12 h-12 bg-makeover-pink rounded-full flex items-center justify-center">
+                                    <i class="fas fa-crown text-white text-xl"></i>
+                                </div>
+                                <div class="text-left">
+                                    <h3 class="font-bold text-xl text-gray-800">Boss Lady Mode</h3>
+                                    <p class="text-gray-600 text-sm">Magnetic, confident, unstoppable</p>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex items-center text-makeover-pink opacity-0 group-hover:opacity-100 transition-opacity">
+                                <span class="text-sm font-semibold">Pilih ini</span>
+                                <i class="fas fa-arrow-right ml-2 animate-pulse"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Option 2: Creative Queen -->
+                    <div onclick="selectOption(2)" class="option-card group cursor-pointer">
+                        <div class="bg-gradient-to-br from-makeover-blue/20 to-blue-100 p-6 rounded-2xl border-2 border-transparent group-hover:border-makeover-blue transition-all duration-300">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-12 h-12 bg-makeover-blue rounded-full flex items-center justify-center">
+                                    <i class="fas fa-palette text-white text-xl"></i>
+                                </div>
+                                <div class="text-left">
+                                    <h3 class="font-bold text-xl text-gray-800">Creative Queen</h3>
+                                    <p class="text-gray-600 text-sm">Expressive, innovative, bold</p>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex items-center text-makeover-blue opacity-0 group-hover:opacity-100 transition-opacity">
+                                <span class="text-sm font-semibold">Pilih ini</span>
+                                <i class="fas fa-arrow-right ml-2 animate-pulse"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Option 3: Chill & Confident -->
+                    <div onclick="selectOption(3)" class="option-card group cursor-pointer">
+                        <div class="bg-gradient-to-br from-makeover-green/20 to-green-100 p-6 rounded-2xl border-2 border-transparent group-hover:border-makeover-green transition-all duration-300">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-12 h-12 bg-makeover-green rounded-full flex items-center justify-center">
+                                    <i class="fas fa-leaf text-white text-xl"></i>
+                                </div>
+                                <div class="text-left">
+                                    <h3 class="font-bold text-xl text-gray-800">Chill & Confident</h3>
+                                    <p class="text-gray-600 text-sm">Natural, balanced, authentic</p>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex items-center text-makeover-green opacity-0 group-hover:opacity-100 transition-opacity">
+                                <span class="text-sm font-semibold">Pilih ini</span>
+                                <i class="fas fa-arrow-right ml-2 animate-pulse"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Option 4: Show Stopper -->
+                    <div onclick="selectOption(4)" class="option-card group cursor-pointer">
+                        <div class="bg-gradient-to-br from-yellow-300/20 to-yellow-100 p-6 rounded-2xl border-2 border-transparent group-hover:border-yellow-400 transition-all duration-300">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-star text-white text-xl"></i>
+                                </div>
+                                <div class="text-left">
+                                    <h3 class="font-bold text-xl text-gray-800">Show Stopper</h3>
+                                    <p class="text-gray-600 text-sm">Dramatic, captivating, memorable</p>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex items-center text-yellow-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <span class="text-sm font-semibold">Pilih ini</span>
+                                <i class="fas fa-arrow-right ml-2 animate-pulse"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+                
+                <!-- Navigation -->
+                <div class="flex justify-between pt-8">
+                    <button onclick="previousScreen()" class="px-6 py-3 border-2 border-gray-300 text-gray-600 rounded-full font-semibold hover:bg-gray-50 transition-colors">
+                        <i class="fas fa-arrow-left mr-2"></i>Kembali
+                    </button>
+                    <button onclick="nextScreen(3)" class="px-6 py-3 bg-gradient-to-r from-makeover-pink to-makeover-blue text-white rounded-full font-semibold hover:opacity-90 transition-opacity">
+                        Lanjut <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+                
+            </div>
+        </div>
+        
+        <!-- ============================= -->
+        <!-- SCREEN 3: COLOR SELECTION -->
+        <!-- ============================= -->
+        <div id="screen3" class="page-transition hidden min-h-screen flex flex-col items-center justify-center px-4 py-8">
+            <div class="max-w-4xl w-full space-y-10">
+                
+                <!-- Progress Bar -->
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-gradient-to-r from-makeover-pink via-makeover-yellow to-makeover-blue h-2 rounded-full w-2/4 transition-all duration-500"></div>
+                </div>
+                
+                <!-- Avatar with Selected Style -->
+                <div class="flex justify-center">
+                    <div class="relative">
+                        <div id="avatar-color" class="w-40 h-40 rounded-full bg-gradient-to-br from-makeover-pink to-makeover-blue flex items-center justify-center avatar-glow">
+                            <i class="fas fa-user text-6xl text-white"></i>
+                        </div>
+                        <div class="absolute -bottom-2 -right-2 w-12 h-12 bg-makeover-yellow rounded-full flex items-center justify-center">
+                            <span class="text-white font-bold">2</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Question -->
+                <div class="text-center space-y-4">
+                    <h2 class="font-playfair text-3xl md:text-4xl font-bold text-gray-800">
+                        Pilih warna jiwa kamu hari ini:
+                    </h2>
+                    <p class="text-gray-600">
+                        Drag dan atur intensitas untuk menemukan warna yang sempurna
+                    </p>
+                </div>
+                
+                <!-- Color Wheel Section -->
+                <div class="flex flex-col lg:flex-row items-center justify-center gap-10 mt-8">
+                    
+                    <!-- Interactive Color Wheel -->
+                    <div class="relative">
+                        <div id="colorWheel" class="color-wheel w-64 h-64 rounded-full bg-conic-gradient from-red via-yellow,green,blue,indigo,violet to-red relative overflow-hidden cursor-pointer">
+                            <!-- Color segments generated by JavaScript -->
+                        </div>
+                        <div id="colorSelector" class="absolute top-1/2 left-1/2 w-8 h-8 -ml-4 -mt-4 bg-white rounded-full border-4 border-gray-800 cursor-pointer shadow-lg"></div>
+                    </div>
+                    
+                    <!-- Controls -->
+                    <div class="space-y-8 w-full max-w-md">
+                        
+                        <!-- Saturation Slider -->
+                        <div>
+                            <label class="block text-gray-700 font-semibold mb-3">Intensitas Warna</label>
+                            <input type="range" id="saturationSlider" min="0" max="100" value="70" class="w-full h-3 bg-gradient-to-r from-gray-300 to-current rounded-lg appearance-none cursor-pointer">
+                            <div class="flex justify-between text-sm text-gray-500 mt-2">
+                                <span>Soft</span>
+                                <span>Medium</span>
+                                <span>Bold</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Selected Color Display -->
+                        <div class="space-y-4">
+                            <label class="block text-gray-700 font-semibold">Warna Pilihan Kamu</label>
+                            <div class="flex items-center space-x-4">
+                                <div id="selectedColorDisplay" class="w-16 h-16 rounded-lg border-4 border-white shadow-lg"></div>
+                                <div>
+                                    <p id="colorName" class="font-bold text-xl">Magenta Power</p>
+                                    <p id="colorCode" class="text-gray-600 text-sm">#E83A7D</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Random Button -->
+                        <button onclick="randomizeColor()" class="w-full py-4 bg-gradient-to-r from-purple-400 to-pink-400 text-white rounded-xl font-semibold hover:opacity-90 transition-opacity transform hover:scale-105 active:scale-95">
+                            <i class="fas fa-random mr-3"></i>Surprise Me! 🎉
+                        </button>
+                        
+                    </div>
+                    
+                </div>
+                
+                <!-- Navigation -->
+                <div class="flex justify-between pt-8">
+                    <button onclick="previousScreen()" class="px-6 py-3 border-2 border-gray-300 text-gray-600 rounded-full font-semibold hover:bg-gray-50 transition-colors">
+                        <i class="fas fa-arrow-left mr-2"></i>Kembali
+                    </button>
+                    <button onclick="nextScreen(4)" class="px-6 py-3 bg-gradient-to-r from-makeover-pink to-makeover-blue text-white rounded-full font-semibold hover:opacity-90 transition-opacity">
+                        Lanjut <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+                
+            </div>
+        </div>
+        
+        <!-- ============================= -->
+        <!-- SCREEN 4: EXPRESSION INPUT -->
+        <!-- ============================= -->
+        <div id="screen4" class="page-transition hidden min-h-screen flex flex-col items-center justify-center px-4 py-8">
+            <div class="max-w-2xl w-full space-y-10">
+                
+                <!-- Progress Bar -->
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-gradient-to-r from-makeover-pink via-makeover-blue to-makeover-green h-2 rounded-full w-3/4 transition-all duration-500"></div>
+                </div>
+                
+                <!-- Avatar Preview -->
+                <div class="flex justify-center">
+                    <div class="relative">
+                        <div id="finalAvatar" class="w-48 h-48 rounded-full bg-gradient-to-br from-makeover-pink to-makeover-blue flex items-center justify-center avatar-glow">
+                            <i class="fas fa-crown text-6xl text-white"></i>
+                        </div>
+                        <div class="absolute -bottom-2 -right-2 w-12 h-12 bg-makeover-green rounded-full flex items-center justify-center">
+                            <span class="text-white font-bold">3</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Question -->
+                <div class="text-center space-y-4">
+                    <h2 class="font-playfair text-3xl md:text-4xl font-bold text-gray-800">
+                        Terakhir, complete this vibe:
+                    </h2>
+                    <p class="text-2xl text-makeover-pink font-semibold">
+                        "Makeup aku hari ini bikin aku merasa..."
+                    </p>
+                    <p class="text-gray-600">
+                        Bebas curhat, kita dengerin kok! ✨
+                    </p>
+                </div>
+                
+                <!-- Input Field -->
+                <div class="space-y-4">
+                    <div class="relative">
+                        <input type="text" id="feelingInput" placeholder="contoh: siap hadapin client paling galak" class="w-full px-6 py-4 text-lg border-2 border-gray-300 rounded-2xl focus-effect focus:border-makeover-pink outline-none transition-all duration-300">
+                        <div class="absolute right-4 top-4 text-makeover-pink animate-pulse">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- Example Suggestions -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div onclick="useExample(0)" class="example-tag cursor-pointer">
+                            ...siap hadapin client paling galak
+                        </div>
+                        <div onclick="useExample(1)" class="example-tag cursor-pointer">
+                            ...bisa presentasi tanpa ragu
+                        </div>
+                        <div onclick="useExample(2)" class="example-tag cursor-pointer">
+                            ...feel like a million bucks
+                        </div>
+                        <div onclick="useExample(3)" class="example-tag cursor-pointer">
+                            ...unapologetically me
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Character Message -->
+                <div class="bg-gradient-to-r from-pink-50 to-blue-50 p-6 rounded-2xl border border-pink-100">
+                    <div class="flex items-start space-x-4">
+                        <div class="w-12 h-12 bg-makeover-pink rounded-full flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-comment-dots text-white text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-gray-700 font-semibold">Tips dari Color Guide:</p>
+                            <p class="text-gray-600 mt-1">Semakin spesifik kamu deskripsikan perasaanmu, semakin personalized rekomendasi kita! Jangan ragu untuk detail ya ✨</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Navigation -->
+                <div class="flex justify-between pt-8">
+                    <button onclick="previousScreen()" class="px-6 py-3 border-2 border-gray-300 text-gray-600 rounded-full font-semibold hover:bg-gray-50 transition-colors">
+                        <i class="fas fa-arrow-left mr-2"></i>Kembali
+                    </button>
+                    <button onclick="revealSpirit()" class="px-8 py-3 bg-gradient-to-r from-makeover-pink to-makeover-blue text-white rounded-full font-semibold hover:opacity-90 transition-opacity transform hover:scale-105">
+                        Temukan Spirit Warna Kamu <i class="fas fa-magic ml-2"></i>
+                    </button>
+                </div>
+                
+            </div>
+        </div>
+        
+        <!-- ============================= -->
+        <!-- SCREEN 5: SPIRIT REVEAL -->
+        <!-- ============================= -->
+        <div id="screen5" class="page-transition hidden min-h-screen flex flex-col items-center justify-center px-4 py-8 bg-gradient-to-br from-makeover-dark to-gray-900 text-white">
+            <div class="max-w-4xl w-full space-y-12">
+                
+                <!-- Reveal Animation Container -->
+                <div id="revealContainer" class="text-center space-y-8">
+                    
+                    <!-- Title Animation -->
+                    <div class="mb-12">
+                        <h1 class="font-playfair text-5xl md:text-7xl font-bold mb-4">
+                            <span id="revealText" class="bg-gradient-to-r from-makeover-pink via-makeover-yellow to-makeover-green bg-clip-text text-transparent">
+                                <!-- Text akan diisi oleh JavaScript -->
+                            </span>
+                        </h1>
+                        <p class="text-xl text-gray-300">You've discovered your Color Spirit!</p>
+                    </div>
+                    
+                    <!-- Avatar Reveal -->
+                    <div class="flex justify-center">
+                        <div id="spiritAvatar" class="w-64 h-64 rounded-full bg-gradient-to-br from-makeover-pink via-makeover-blue to-makeover-yellow flex items-center justify-center relative">
+                            <i class="fas fa-crown text-7xl text-white"></i>
+                            <div class="absolute inset-0 rounded-full animate-ping bg-makeover-pink opacity-20"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Progress to Homepage -->
+                    <div class="mb-8">
+                        <div class="flex items-center justify-center space-x-2 text-sm text-gray-400">
+                            <div class="flex items-center">
+                                <div class="w-6 h-6 bg-makeover-green rounded-full flex items-center justify-center">
+                                    <i class="fas fa-check text-white text-xs"></i>
+                                </div>
+                                <span class="ml-2">Quiz Completed</span>
+                            </div>
+                            
+                            <div class="w-8 h-0.5 bg-gray-600"></div>
+                            
+                            <div class="flex items-center">
+                                <div class="w-6 h-6 bg-makeover-pink rounded-full flex items-center justify-center animate-pulse">
+                                    <span class="text-white text-xs">2</span>
+                                </div>
+                                <span class="ml-2 text-white">Go to Homepage</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Spirit Card -->
+                    <div class="bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-lg rounded-3xl p-8 border border-white/10 max-w-2xl mx-auto">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            
+                            <!-- Left Column -->
+                            <div class="space-y-6">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-12 h-12 bg-makeover-pink/20 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-mask text-makeover-pink text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-gray-400 text-sm">Your Spirit Name</p>
+                                        <p class="text-2xl font-bold" id="spiritName">The Crimson Commander</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-12 h-12 bg-makeover-blue/20 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-bolt text-makeover-blue text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-gray-400 text-sm">Power</p>
+                                        <p class="text-xl font-semibold" id="spiritPower">Unshakable Confidence</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Right Column -->
+                            <div class="space-y-6">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-12 h-12 bg-makeover-yellow/20 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-star text-makeover-yellow text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-gray-400 text-sm">Aura</p>
+                                        <p class="text-xl font-semibold" id="spiritAura">Magnetic Leadership</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-12 h-12 bg-makeover-green/20 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-crosshairs text-makeover-green text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-gray-400 text-sm">Perfect For</p>
+                                        <p class="text-lg" id="spiritPerfectFor">Boardroom battles, investor meetings</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        
+                        <!-- Quote -->
+                        <div class="mt-10 pt-6 border-t border-white/10">
+                            <p class="text-xl italic text-center">
+                                "Warna kamu hari ini ngga cuma makeup—ini <span class="font-bold text-makeover-yellow">armor</span>."
+                            </p>
+                        </div>
+                        
+                        <!-- Your Armor -->
+                        <div class="mt-8">
+                            <p class="text-gray-400 text-center mb-4">🎯 Your Armor</p>
+                            <div class="flex justify-center space-x-4">
+                                <div class="w-16 h-16 bg-gradient-to-br from-red-500 to-pink-500 rounded-xl flex items-center justify-center">
+                                    <i class="fas fa-lipstick text-white text-2xl"></i>
+                                </div>
+                                <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl flex items-center justify-center">
+                                    <i class="fas fa-eye text-white text-2xl"></i>
+                                </div>
+                                <div class="w-16 h-16 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-xl flex items-center justify-center">
+                                    <i class="fas fa-blush text-white text-2xl"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- CTA Buttons -->
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center pt-8">
+                        <!-- Main CTA: Go to Homepage -->
+                        <button onclick="goToHomepage()" class="homepage-cta px-10 py-5 text-white rounded-full font-bold text-lg transition-all duration-300 flex items-center justify-center">
+                            <span class="mr-3">✨ Explore Your Homepage</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                        
+                        <!-- Secondary: Share -->
+                        <button onclick="shareSpirit()" class="px-8 py-5 bg-gradient-to-r from-gray-700 to-gray-900 border border-white/20 text-white rounded-full font-semibold text-lg hover:bg-gray-800 transition-colors">
+                            <i class="fas fa-share-alt mr-3"></i>Share Spirit
+                        </button>
+                    </div>
+                    
+                    <!-- Auto Redirect Countdown -->
+                    <div id="countdownContainer" class="text-center mt-6 hidden">
+                        <p class="text-gray-400 text-sm">
+                            Auto-redirect to homepage in <span id="countdown">10</span> seconds
+                        </p>
+                        <button onclick="cancelAutoRedirect()" class="mt-2 text-sm text-gray-500 hover:text-white">
+                            Click to cancel auto-redirect
+                        </button>
+                    </div>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <footer class="mt-16 py-6 text-center text-gray-500 text-sm">
+            <p>MakeOver © 2024 - Every woman is a masterpiece. Craft your armor. ✨</p>
+        </footer>
+        
+    </div>
+    
+    <!-- Confetti Celebration -->
+    <div id="confetti" class="fixed inset-0 pointer-events-none z-20 hidden"></div>
+    
+    <!-- Success Toast -->
+    <div id="successToast" class="fixed top-4 right-4 bg-gradient-to-r from-makeover-green to-green-500 text-white px-6 py-4 rounded-2xl shadow-xl transform translate-x-full transition-transform duration-500 z-30">
+        <div class="flex items-center space-x-3">
+            <i class="fas fa-check-circle text-2xl"></i>
+            <div>
+                <p class="font-semibold" id="toastTitle">Success!</p>
+                <p class="text-sm opacity-90" id="toastMessage">Action completed</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- JavaScript -->
+    <script>
+        // ============================================
+        // STATE MANAGEMENT
+        // ============================================
+        let currentScreen = 1;
+        let userData = {
+            character: '',
+            color: { hue: 0, saturation: 70, hex: '#E83A7D' },
+            expression: '',
+            spiritName: 'The Crimson Commander'
+        };
+        
+        const examples = [
+            "...siap hadapin client paling galak",
+            "...bisa presentasi tanpa ragu",
+            "...feel like a million bucks",
+            "...unapologetically me"
+        ];
+        
+        // Spirit Profiles
+        const spiritProfiles = {
+            1: {
+                name: "The Crimson Commander",
+                power: "Unshakable Confidence",
+                aura: "Magnetic Leadership",
+                perfectFor: "Boardroom battles, investor meetings",
+                color: "#E83A7D",
+                products: ["Executive Red Lipstick", "24H Foundation", "Power Blush"]
+            },
+            2: {
+                name: "The Creative Visionary",
+                power: "Boundless Innovation",
+                aura: "Artistic Magnetism",
+                perfectFor: "Brainstorming sessions, pitch presentations",
+                color: "#2D5BFF",
+                products: ["Color Play Palette", "Liquid Eyeliner", "Glitter Gel"]
+            },
+            3: {
+                name: "The Natural Empress",
+                power: "Authentic Grace",
+                aura: "Calming Influence",
+                perfectFor: "Team meetings, client consultations",
+                color: "#06D6A0",
+                products: ["Tinted Moisturizer", "Brow Gel", "Lip Balm"]
+            },
+            4: {
+                name: "The Spotlight Diva",
+                power: "Unforgettable Presence",
+                aura: "Captivating Energy",
+                perfectFor: "Networking events, product launches",
+                color: "#FFD166",
+                products: ["Highlighter Palette", "False Lashes", "Bold Lipstick"]
+            }
+        };
+        
+        // Auto-redirect timer
+        let autoRedirectTimer = null;
+        let countdownValue = 10;
+        
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            createParticles();
+            createColorWheel();
+            updateColorDisplay();
+            setupEventListeners();
+            
+            // Check if returning user
+            checkReturningUser();
+        });
+        
+        function checkReturningUser() {
+            const quizCompleted = localStorage.getItem('makeoverQuizCompleted');
+            if (quizCompleted === 'true') {
+                // Optional: Auto-redirect to homepage if already completed
+                // window.location.href = 'homepage.html';
+            }
+        }
+        
+        // ============================================
+        // SCREEN NAVIGATION
+        // ============================================
+        function startQuiz() {
+            nextScreen(2);
+        }
+        
+        function nextScreen(screenNumber) {
+            document.getElementById(`screen${currentScreen}`).classList.add('hidden');
+            document.getElementById(`screen${screenNumber}`).classList.remove('hidden');
+            currentScreen = screenNumber;
+            
+            // Update progress bar
+            updateProgressBar();
+            
+            // Special animations for certain screens
+            if (screenNumber === 5) {
+                setTimeout(() => {
+                    startRevealAnimation();
+                }, 500);
+            }
+        }
+        
+        function previousScreen() {
+            if (currentScreen > 1) {
+                document.getElementById(`screen${currentScreen}`).classList.add('hidden');
+                document.getElementById(`screen${currentScreen - 1}`).classList.remove('hidden');
+                currentScreen--;
+                updateProgressBar();
+            }
+        }
+        
+        function updateProgressBar() {
+            const progressBars = document.querySelectorAll('.bg-gradient-to-r');
+            progressBars.forEach(bar => {
+                if (bar.parentElement.classList.contains('bg-gray-200')) {
+                    let width = '0%';
+                    switch(currentScreen) {
+                        case 2: width = '25%'; break;
+                        case 3: width = '50%'; break;
+                        case 4: width = '75%'; break;
+                        case 5: width = '100%'; break;
+                    }
+                    bar.style.width = width;
+                }
+            });
+        }
+        
+        // ============================================
+        // QUIZ LOGIC
+        // ============================================
+        function selectOption(option) {
+            // Remove selection from all options
+            const options = document.querySelectorAll('.option-card');
+            options.forEach(opt => {
+                opt.classList.remove('selected');
+                opt.querySelector('.border-transparent').classList.remove('border-makeover-pink', 'border-makeover-blue', 'border-makeover-green', 'border-yellow-400');
+            });
+            
+            // Add selection to clicked option
+            event.currentTarget.classList.add('selected');
+            
+            // Add border color based on option
+            const borderColors = ['border-makeover-pink', 'border-makeover-blue', 'border-makeover-green', 'border-yellow-400'];
+            event.currentTarget.querySelector('.border-transparent').classList.add(borderColors[option-1]);
+            
+            // Store selection
+            userData.character = option;
+            userData.spiritName = spiritProfiles[option].name;
+            
+            // Update avatar color
+            const avatar = document.getElementById('avatar-color');
+            const colors = [
+                'from-makeover-pink to-makeover-blue',
+                'from-blue-400 to-purple-400',
+                'from-green-400 to-teal-400',
+                'from-yellow-400 to-orange-400'
+            ];
+            avatar.className = `w-40 h-40 rounded-full bg-gradient-to-br ${colors[option-1]} flex items-center justify-center avatar-glow`;
+            
+            // Show feedback
+            showToast(`Selected: ${spiritProfiles[option].name}`, 'Nice choice!');
+        }
+        
+        function randomizeColor() {
+            userData.color.hue = Math.floor(Math.random() * 360);
+            userData.color.saturation = 30 + Math.floor(Math.random() * 70);
+            
+            updateColorDisplay();
+            updateAvatarColor();
+            
+            // Show confetti
+            showConfetti();
+            showToast('Random color selected!', 'Love the surprise?');
+        }
+        
+        function useExample(index) {
+            document.getElementById('feelingInput').value = examples[index];
+            userData.expression = examples[index];
+            showToast('Example applied!', 'Feel free to modify it');
+        }
+        
+        function revealSpirit() {
+            const input = document.getElementById('feelingInput').value;
+            if (input.trim() === '') {
+                showToast('Please tell us how you feel!', 'We really want to know 💖');
+                document.getElementById('feelingInput').focus();
+                return;
+            }
+            
+            userData.expression = input;
+            
+            // Save temporary data
+            localStorage.setItem('makeoverTempData', JSON.stringify(userData));
+            
+            // Go to reveal screen
+            nextScreen(5);
+        }
+        
+        // ============================================
+        // COLOR WHEEL FUNCTIONALITY
+        // ============================================
+        function createColorWheel() {
+            const wheel = document.getElementById('colorWheel');
+            const colors = [
+                '#FF0000', '#FF3300', '#FF6600', '#FF9900', '#FFCC00',
+                '#FFFF00', '#CCFF00', '#99FF00', '#66FF00', '#33FF00',
+                '#00FF00', '#00FF33', '#00FF66', '#00FF99', '#00FFCC',
+                '#00FFFF', '#00CCFF', '#0099FF', '#0066FF', '#0033FF',
+                '#0000FF', '#3300FF', '#6600FF', '#9900FF', '#CC00FF',
+                '#FF00FF', '#FF00CC', '#FF0099', '#FF0066', '#FF0033'
+            ];
+            
+            colors.forEach((color, i) => {
+                const segment = document.createElement('div');
+                segment.className = 'absolute inset-0';
+                segment.style.clipPath = `polygon(50% 50%, ${getPoint(i, 30, 90)}%, ${getPoint(i+1, 30, 90)}%)`;
+                segment.style.backgroundColor = color;
+                wheel.appendChild(segment);
+            });
+            
+            // Make wheel interactive
+            wheel.addEventListener('click', function(e) {
+                const rect = this.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width/2;
+                const y = e.clientY - rect.top - rect.height/2;
+                const angle = Math.atan2(y, x) * 180 / Math.PI;
+                const hue = ((angle + 180) / 360 * 360) % 360;
+                
+                userData.color.hue = hue;
+                updateColorDisplay();
+                updateAvatarColor();
+            });
+        }
+        
+        function getPoint(i, total, radius) {
+            const angle = (i / total) * 2 * Math.PI;
+            const x = 50 + radius * Math.cos(angle);
+            const y = 50 + radius * Math.sin(angle);
+            return `${x}% ${y}%`;
+        }
+        
+        function updateColorDisplay() {
+            const hue = userData.color.hue;
+            const saturation = userData.color.saturation;
+            const hex = hslToHex(hue, saturation, 50);
+            
+            userData.color.hex = hex;
+            
+            document.getElementById('selectedColorDisplay').style.backgroundColor = hex;
+            document.getElementById('colorCode').textContent = hex;
+            
+            // Update color name based on hue
+            const colorNames = [
+                {range: [0, 15], name: "Passionate Red"},
+                {range: [15, 45], name: "Energetic Orange"},
+                {range: [45, 75], name: "Sunshine Yellow"},
+                {range: [75, 165], name: "Fresh Green"},
+                {range: [165, 195], name: "Calm Teal"},
+                {range: [195, 255], name: "Trust Blue"},
+                {range: [255, 285], name: "Royal Purple"},
+                {range: [285, 315], name: "Magenta Power"},
+                {range: [315, 360], name: "Romantic Pink"}
+            ];
+            
+            const colorName = colorNames.find(c => hue >= c.range[0] && hue < c.range[1]);
+            document.getElementById('colorName').textContent = colorName ? colorName.name : "Vibrant Hue";
+        }
+        
+        function updateAvatarColor() {
+            const hex = userData.color.hex;
+            const avatar = document.getElementById('finalAvatar');
+            if (avatar) {
+                avatar.style.background = `linear-gradient(135deg, ${hex} 0%, ${adjustColor(hex, 30)} 100%)`;
+            }
+        }
+        
+        // ============================================
+        // SPIRIT REVEAL ANIMATION
+        // ============================================
+        function startRevealAnimation() {
+            const revealText = document.getElementById('revealText');
+            const spiritName = userData.spiritName;
+            
+            // Clear text
+            revealText.textContent = '';
+            
+            // Animate text reveal character by character
+            let i = 0;
+            const interval = setInterval(() => {
+                if (i < spiritName.length) {
+                    revealText.textContent += spiritName.charAt(i);
+                    i++;
+                } else {
+                    clearInterval(interval);
+                    
+                    // Update spirit details
+                    const profile = spiritProfiles[userData.character];
+                    document.getElementById('spiritName').textContent = profile.name;
+                    document.getElementById('spiritPower').textContent = profile.power;
+                    document.getElementById('spiritAura').textContent = profile.aura;
+                    document.getElementById('spiritPerfectFor').textContent = profile.perfectFor;
+                    
+                    // Update avatar color
+                    document.getElementById('spiritAvatar').style.background = 
+                        `linear-gradient(135deg, ${profile.color} 0%, ${adjustColor(profile.color, 40)} 100%)`;
+                    
+                    // Big celebration
+                    showConfetti();
+                    
+                    // Start auto-redirect countdown
+                    startAutoRedirectCountdown();
+                }
+            }, 100);
+        }
+        
+        // ============================================
+        // HOMEPAGE REDIRECT
+        // ============================================
+        function goToHomepage() {
+            // Cancel auto-redirect if active
+            if (autoRedirectTimer) {
+                clearInterval(autoRedirectTimer);
+            }
+            
+            // Save user data
+            saveUserData();
+            
+            // Show loading animation
+            showLoadingAnimation();
+            
+            // Redirect after 1.5 seconds
+            setTimeout(() => {
+                window.location.href = 'homepage.html';
+            }, 1500);
+        }
+        
+        function saveUserData() {
+            const userProfile = {
+                spirit: userData.spiritName,
+                character: userData.character,
+                color: userData.color,
+                expression: userData.expression,
+                quizCompleted: true,
+                completedAt: new Date().toISOString(),
+                profile: spiritProfiles[userData.character]
+            };
+            
+            // Save to localStorage
+            localStorage.setItem('makeoverUserProfile', JSON.stringify(userProfile));
+            localStorage.setItem('makeoverSpirit', userData.spiritName);
+            localStorage.setItem('makeoverQuizCompleted', 'true');
+            
+            console.log('User data saved:', userProfile);
+        }
+        
+        function showLoadingAnimation() {
+            const loadingOverlay = document.createElement('div');
+            loadingOverlay.className = 'fixed inset-0 bg-black/80 backdrop-blur-lg flex items-center justify-center z-50';
+            loadingOverlay.innerHTML = `
+                <div class="text-center">
+                    <div class="w-20 h-20 border-4 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-6"></div>
+                    <h3 class="text-2xl font-bold text-white mb-2">Preparing Your Homepage</h3>
+                    <p class="text-white/80">Curating personalized recommendations based on your Color Spirit...</p>
+                    <div class="mt-4 flex justify-center space-x-2">
+                        <div class="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                        <div class="w-2 h-2 bg-white rounded-full animate-pulse animation-delay-200"></div>
+                        <div class="w-2 h-2 bg-white rounded-full animate-pulse animation-delay-400"></div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(loadingOverlay);
+        }
+        
+        // ============================================
+        // AUTO-REDIRECT COUNTDOWN
+        // ============================================
+        function startAutoRedirectCountdown() {
+            const countdownContainer = document.getElementById('countdownContainer');
+            const countdownElement = document.getElementById('countdown');
+            
+            // Show countdown
+            countdownContainer.classList.remove('hidden');
+            countdownValue = 10;
+            countdownElement.textContent = countdownValue;
+            
+            // Start countdown
+            autoRedirectTimer = setInterval(() => {
+                countdownValue--;
+                countdownElement.textContent = countdownValue;
+                
+                if (countdownValue <= 0) {
+                    clearInterval(autoRedirectTimer);
+                    goToHomepage();
+                }
+            }, 1000);
+        }
+        
+        function cancelAutoRedirect() {
+            if (autoRedirectTimer) {
+                clearInterval(autoRedirectTimer);
+                document.getElementById('countdownContainer').classList.add('hidden');
+                showToast('Auto-redirect cancelled', 'Take your time exploring your spirit!');
+            }
+        }
+        
+        // ============================================
+        // SHARE FUNCTIONALITY
+        // ============================================
+        function shareSpirit() {
+            const spirit = userData.spiritName;
+            const text = `Just discovered I'm a ${spirit}! ✨ Find your Color Spirit at MakeOver.com #MyColorSpirit #MakeOverJourney`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'My Color Spirit',
+                    text: text,
+                    url: window.location.href
+                }).then(() => {
+                    showToast('Shared successfully!', 'Thanks for spreading the spirit ✨');
+                }).catch(() => {
+                    copyToClipboard(text);
+                });
+            } else {
+                copyToClipboard(text);
+            }
+        }
+        
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('Copied to clipboard!', 'Share it on social media ✨');
+            }).catch(() => {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showToast('Copied to clipboard!', 'Share it on social media ✨');
+            });
+        }
+        
+        // ============================================
+        // UI EFFECTS
+        // ============================================
+        function createParticles() {
+            const container = document.getElementById('particles-container');
+            const colors = ['#E83A7D', '#2D5BFF', '#FFD166', '#06D6A0'];
+            
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                const size = Math.random() * 4 + 2;
+                const posX = Math.random() * 100;
+                const delay = Math.random() * 5;
+                const duration = Math.random() * 10 + 10;
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${posX}%`;
+                particle.style.top = `${Math.random() * 100}%`;
+                particle.style.backgroundColor = color;
+                particle.style.animation = `particleFloat ${duration}s linear ${delay}s infinite`;
+                particle.style.opacity = Math.random() * 0.3 + 0.1;
+                
+                container.appendChild(particle);
+            }
+        }
+        
+        function showConfetti() {
+            const confetti = document.getElementById('confetti');
+            confetti.classList.remove('hidden');
+            
+            // Create confetti elements
+            for (let i = 0; i < 100; i++) {
+                const piece = document.createElement('div');
+                piece.className = 'particle';
+                piece.style.width = `${Math.random() * 10 + 5}px`;
+                piece.style.height = `${Math.random() * 10 + 5}px`;
+                piece.style.left = `${Math.random() * 100}%`;
+                piece.style.top = `${Math.random() * 100}%`;
+                piece.style.backgroundColor = getRandomColor();
+                piece.style.animation = `particleFloat ${Math.random() * 3 + 2}s linear forwards`;
+                piece.style.opacity = Math.random() * 0.7 + 0.3;
+                confetti.appendChild(piece);
+            }
+            
+            setTimeout(() => {
+                confetti.innerHTML = '';
+                confetti.classList.add('hidden');
+            }, 3000);
+        }
+        
+        function showToast(title, message) {
+            const toast = document.getElementById('successToast');
+            document.getElementById('toastTitle').textContent = title;
+            document.getElementById('toastMessage').textContent = message;
+            
+            toast.classList.remove('translate-x-full');
+            
+            setTimeout(() => {
+                toast.classList.add('translate-x-full');
+            }, 3000);
+        }
+        
+        // ============================================
+        // UTILITY FUNCTIONS
+        // ============================================
+        function hslToHex(h, s, l) {
+            s /= 100;
+            l /= 100;
+            
+            let c = (1 - Math.abs(2 * l - 1)) * s;
+            let x = c * (1 - Math.abs((h / 60) % 2 - 1));
+            let m = l - c / 2;
+            let r = 0, g = 0, b = 0;
+            
+            if (0 <= h && h < 60) { r = c; g = x; b = 0; }
+            else if (60 <= h && h < 120) { r = x; g = c; b = 0; }
+            else if (120 <= h && h < 180) { r = 0; g = c; b = x; }
+            else if (180 <= h && h < 240) { r = 0; g = x; b = c; }
+            else if (240 <= h && h < 300) { r = x; g = 0; b = c; }
+            else if (300 <= h && h < 360) { r = c; g = 0; b = x; }
+            
+            r = Math.round((r + m) * 255);
+            g = Math.round((g + m) * 255);
+            b = Math.round((b + m) * 255);
+            
+            return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+        }
+        
+        function adjustColor(hex, amount) {
+            let r = parseInt(hex.slice(1, 3), 16);
+            let g = parseInt(hex.slice(3, 5), 16);
+            let b = parseInt(hex.slice(5, 7), 16);
+            
+            r = Math.min(255, r + amount);
+            g = Math.min(255, g + amount);
+            b = Math.min(255, b + amount);
+            
+            return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+        }
+        
+        function getRandomColor() {
+            const colors = [
+                '#E83A7D', '#2D5BFF', '#FFD166', '#06D6A0',
+                '#FF6B6B', '#4ECDC4', '#FF9A76', '#A78BFA'
+            ];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+        
+        function setupEventListeners() {
+            // Saturation slider
+            document.getElementById('saturationSlider').addEventListener('input', function(e) {
+                userData.color.saturation = parseInt(e.target.value);
+                updateColorDisplay();
+                updateAvatarColor();
+            });
+            
+            // Feeling input
+            document.getElementById('feelingInput').addEventListener('input', function(e) {
+                userData.expression = e.target.value;
+                
+                // Add typing effect
+                const avatar = document.getElementById('finalAvatar');
+                if (avatar && e.target.value.length > 0) {
+                    avatar.style.transform = 'scale(1.05)';
+                    setTimeout(() => {
+                        avatar.style.transform = 'scale(1)';
+                    }, 300);
+                }
+            });
+            
+            // Keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                // Right arrow to next screen
+                if (e.key === 'ArrowRight' && currentScreen < 5) {
+                    nextScreen(currentScreen + 1);
+                }
+                // Left arrow to previous screen
+                else if (e.key === 'ArrowLeft' && currentScreen > 1) {
+                    previousScreen();
+                }
+                // Enter to reveal spirit on screen 4
+                else if (e.key === 'Enter' && currentScreen === 4) {
+                    revealSpirit();
+                }
+                // Escape to go to homepage from screen 5
+                else if (e.key === 'Escape' && currentScreen === 5) {
+                    goToHomepage();
+                }
+            });
+        }
+        
+    </script>
+    
+    <!-- Additional Styles -->
+    <style>
+        .animation-delay-200 { animation-delay: 200ms; }
+        .animation-delay-400 { animation-delay: 400ms; }
+        
+        .option-card.selected > div {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .example-tag {
+            background: linear-gradient(135deg, #fdf2f8 0%, #f0f9ff 100%);
+            border: 1px solid #fbcfe8;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            color: #6b7280;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .example-tag:hover {
+            background: linear-gradient(135deg, #fce7f3 0%, #e0f2fe 100%);
+            border-color: #f9a8d4;
+            transform: translateY(-2px);
+            color: #374151;
+        }
+        
+        @keyframes particleFloat {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        /* Mobile optimizations */
+        @media (max-width: 640px) {
+            .text-7xl { font-size: 3.5rem; }
+            .text-5xl { font-size: 2.5rem; }
+            .text-4xl { font-size: 2rem; }
+            .text-3xl { font-size: 1.75rem; }
+            
+            .homepage-cta {
+                font-size: 1rem;
+                padding: 12px 24px;
+            }
+        }
+    </style>
+    
+</body>
+</html>
