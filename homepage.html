@@ -63,58 +63,91 @@
         }
 
         /* Auth Modal Animations */
-@keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateY(-30px) scale(0.95);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
 
-@keyframes slideOut {
-    from {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-    to {
-        opacity: 0;
-        transform: translateY(30px) scale(0.95);
-    }
-}
+        @keyframes slideOut {
+            from {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+        }
 
-/* User Dropdown Animation */
-#loggedInState .group:hover .absolute {
-    animation: fadeIn 0.2s ease-out;
-}
+        /* User Dropdown Animation */
+        #loggedInState .group:hover .absolute {
+            animation: fadeIn 0.2s ease-out;
+        }
 
-/* Input Focus Effects */
-input:focus {
-    box-shadow: 0 0 0 3px rgba(232, 58, 125, 0.1);
-}
+        /* Input Focus Effects */
+        input:focus {
+            box-shadow: 0 0 0 3px rgba(232, 58, 125, 0.1);
+        }
 
-/* Loading Spinner */
-.fa-spinner {
-    animation: spin 1s linear infinite;
-}
+        /* Loading Spinner */
+        .fa-spinner {
+            animation: spin 1s linear infinite;
+        }
 
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
 
-/* Responsive Auth */
-@media (max-width: 640px) {
-    #authModal .max-w-md {
-        margin: 1rem;
-    }
-    
-    #userAuthSection .hidden.md\\:block {
-        display: none;
-    }
-}
+        /* Responsive Auth */
+        @media (max-width: 640px) {
+            #authModal .max-w-md {
+                margin: 1rem;
+            }
+            
+            #userAuthSection .hidden.md\\:block {
+                display: none;
+            }
+        }
+        
+        /* Custom Add to Cart Modal Styles */
+        .cart-modal {
+            animation: slideInCart 0.3s ease-out;
+        }
+        
+        @keyframes slideInCart {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .shade-option {
+            transition: all 0.2s ease;
+        }
+        
+        .shade-option.selected {
+            transform: scale(1.1);
+            box-shadow: 0 0 0 3px #E83A7D;
+        }
+        
+        .quantity-btn {
+            transition: all 0.2s ease;
+        }
+        
+        .quantity-btn:hover {
+            background-color: #f8f9fa;
+        }
     </style>
 </head>
 <body class="font-poppins bg-gradient-to-b from-white to-pink-50 min-h-screen">
@@ -146,7 +179,6 @@ input:focus {
                     </nav>
                     
                     <!-- CTA Buttons -->
-                    <!-- GANTI bagian CTA Buttons di header dengan ini: -->
                     <div class="flex items-center space-x-4">
                         <!-- Profile/Login Button -->
                         <div id="userAuthSection">
@@ -208,9 +240,9 @@ input:focus {
                                 </div>
                                 
                                 <!-- Cart Button -->
-                                <button class="relative p-2 text-gray-600 hover:text-makeover-pink">
+                                <button onclick="openCartModal()" class="relative p-2 text-gray-600 hover:text-makeover-pink">
                                     <i class="fas fa-shopping-bag text-xl"></i>
-                                    <span class="absolute -top-1 -right-1 w-5 h-5 bg-makeover-pink text-white text-xs rounded-full flex items-center justify-center">3</span>
+                                    <span id="cartCount" class="absolute -top-1 -right-1 w-5 h-5 bg-makeover-pink text-white text-xs rounded-full flex items-center justify-center">3</span>
                                 </button>
                             </div>
                         </div>
@@ -389,17 +421,16 @@ input:focus {
             </div>
             
             <!-- Product Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8" id="productGrid">
                 
                 <!-- Product 1: Featured -->
                 <div class="product-card p-6 hover-lift col-span-1 md:col-span-2 lg:col-span-2">
                     <div class="flex flex-col lg:flex-row gap-8">
                         <div class="lg:w-1/2">
                             <div class="relative">
-                                  <!-- BAGIAN GAMBAR -->
                                 <img 
-                                    src="https://images.unsplash.com/photo-1586495777744-4413f21062fa?w-800&auto=format&fit=crop"
-                                    alt="MakeOver 24H Foundation Armor"
+                                    src="https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=800&auto=format&fit=crop"
+                                    alt="PowerStay Lip Commander"
                                     class="aspect-square rounded-xl object-cover w-full mb-4 hover:scale-[1.03] transition-transform duration-300"
                                 >
                                 <div class="absolute top-4 left-4">
@@ -438,7 +469,7 @@ input:focus {
                                     <div class="text-2xl font-bold text-gray-900">Rp 249.000</div>
                                     <div class="text-sm text-gray-500">Special Spirit Price</div>
                                 </div>
-                                <button class="px-6 py-3 bg-gradient-to-r from-makeover-pink to-makeover-blue text-white rounded-full font-semibold hover:opacity-90">
+                                <button onclick="openAddToCartModal(1)" class="px-6 py-3 bg-gradient-to-r from-makeover-pink to-makeover-blue text-white rounded-full font-semibold hover:opacity-90">
                                     Add to Battle Bag
                                 </button>
                             </div>
@@ -448,7 +479,7 @@ input:focus {
                 
                 <!-- Product 2 -->
                 <div class="product-card p-6 hover-lift">
-                    <img  src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=800"  class="aspect-square rounded-xl object-cover w-full">
+                    <img src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=800&auto=format&fit=crop" alt="24H Foundation Armor" class="aspect-square rounded-xl object-cover w-full">
                     <div class="space-y-3">
                         <h4 class="font-bold text-lg text-gray-900">24H Foundation Armor</h4>
                         <p class="text-gray-600 text-sm">Meeting-proof with natural finish</p>
@@ -458,7 +489,7 @@ input:focus {
                         </div>
                         <div class="flex justify-between items-center pt-3">
                             <span class="font-bold text-gray-900">Rp 329.000</span>
-                            <button class="w-10 h-10 bg-makeover-pink text-white rounded-full hover:opacity-90">
+                            <button onclick="openAddToCartModal(2)" class="w-10 h-10 bg-makeover-pink text-white rounded-full hover:opacity-90">
                                 <i class="fas fa-plus"></i>
                             </button>
                         </div>
@@ -467,7 +498,7 @@ input:focus {
                 
                 <!-- Product 3 -->
                 <div class="product-card p-6 hover-lift">
-                    <img src="https://images.unsplash.com/photo-1532417342379-0695e61b5b1e?w=800" class="aspect-square rounded-xl object-cover w-full">
+                    <img src="https://images.unsplash.com/photo-1532417342379-0695e61b5b1e?w=800&auto=format&fit=crop" alt="Confidence Blush" class="aspect-square rounded-xl object-cover w-full">
                     <div class="space-y-3">
                         <h4 class="font-bold text-lg text-gray-900">Confidence Blush</h4>
                         <p class="text-gray-600 text-sm">Buildable color for healthy glow</p>
@@ -477,7 +508,7 @@ input:focus {
                         </div>
                         <div class="flex justify-between items-center pt-3">
                             <span class="font-bold text-gray-900">Rp 189.000</span>
-                            <button class="w-10 h-10 bg-makeover-pink text-white rounded-full hover:opacity-90">
+                            <button onclick="openAddToCartModal(3)" class="w-10 h-10 bg-makeover-pink text-white rounded-full hover:opacity-90">
                                 <i class="fas fa-plus"></i>
                             </button>
                         </div>
@@ -486,7 +517,7 @@ input:focus {
                 
                 <!-- Product 4 -->
                 <div class="product-card p-6 hover-lift">
-                    <img  src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=800" class="aspect-square rounded-xl object-cover w-full">
+                    <img src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=800&auto=format&fit=crop" alt="Eyeshadow Palette" class="aspect-square rounded-xl object-cover w-full">
                     <div class="space-y-3">
                         <h4 class="font-bold text-lg text-gray-900">Eyeshadow Palette</h4>
                         <p class="text-gray-600 text-sm">Professional to dramatic looks</p>
@@ -496,7 +527,7 @@ input:focus {
                         </div>
                         <div class="flex justify-between items-center pt-3">
                             <span class="font-bold text-gray-900">Rp 429.000</span>
-                            <button class="w-10 h-10 bg-makeover-pink text-white rounded-full hover:opacity-90">
+                            <button onclick="openAddToCartModal(4)" class="w-10 h-10 bg-makeover-pink text-white rounded-full hover:opacity-90">
                                 <i class="fas fa-plus"></i>
                             </button>
                         </div>
@@ -856,284 +887,786 @@ input:focus {
             </div>
         </div>
     </footer>
+
     <!-- Login/Register Modal -->
-<div id="authModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl max-w-md w-full p-8 relative transform transition-all duration-500 scale-95 opacity-0" id="modalContent">
-        <!-- Close Button -->
-        <button onclick="closeAuthModal()" class="absolute top-6 right-6 text-gray-400 hover:text-gray-600">
-            <i class="fas fa-times text-2xl"></i>
-        </button>
-        
-        <!-- Logo -->
-        <div class="text-center mb-8">
-            <div class="w-16 h-16 bg-gradient-to-r from-makeover-pink to-makeover-blue rounded-full mx-auto flex items-center justify-center mb-4">
-                <i class="fas fa-user-lock text-white text-2xl"></i>
-            </div>
-            <h2 class="font-playfair text-3xl font-bold gradient-text" id="modalTitle">Welcome Back</h2>
-            <p class="text-gray-600 mt-2" id="modalSubtitle">Sign in to access your Color Arsenal</p>
-        </div>
-        
-        <!-- Login Form (Default) -->
-        <form id="loginForm" class="space-y-6">
-            <!-- Email -->
-            <div>
-                <label class="block text-gray-700 font-medium mb-2">Email Address</label>
-                <div class="relative">
-                    <input type="email" id="loginEmail" required 
-                           class="w-full px-4 py-3 pl-12 border-2 border-gray-300 rounded-xl focus:border-makeover-pink focus:ring-2 focus:ring-makeover-pink/20 outline-none transition-all"
-                           placeholder="you@example.com">
-                    <i class="fas fa-envelope absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+    <div id="authModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-8 relative transform transition-all duration-500 scale-95 opacity-0" id="modalContent">
+            <!-- Close Button -->
+            <button onclick="closeAuthModal()" class="absolute top-6 right-6 text-gray-400 hover:text-gray-600">
+                <i class="fas fa-times text-2xl"></i>
+            </button>
+            
+            <!-- Logo -->
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-gradient-to-r from-makeover-pink to-makeover-blue rounded-full mx-auto flex items-center justify-center mb-4">
+                    <i class="fas fa-user-lock text-white text-2xl"></i>
                 </div>
+                <h2 class="font-playfair text-3xl font-bold gradient-text" id="modalTitle">Welcome Back</h2>
+                <p class="text-gray-600 mt-2" id="modalSubtitle">Sign in to access your Color Arsenal</p>
             </div>
             
-            <!-- Password -->
-            <div>
-                <div class="flex justify-between items-center mb-2">
-                    <label class="block text-gray-700 font-medium">Password</label>
-                    <button type="button" onclick="togglePassword('loginPassword')" class="text-sm text-makeover-pink hover:underline">
-                        Show
+            <!-- Login Form (Default) -->
+            <form id="loginForm" class="space-y-6">
+                <!-- Email -->
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Email Address</label>
+                    <div class="relative">
+                        <input type="email" id="loginEmail" required 
+                               class="w-full px-4 py-3 pl-12 border-2 border-gray-300 rounded-xl focus:border-makeover-pink focus:ring-2 focus:ring-makeover-pink/20 outline-none transition-all"
+                               placeholder="you@example.com">
+                        <i class="fas fa-envelope absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    </div>
+                </div>
+                
+                <!-- Password -->
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="block text-gray-700 font-medium">Password</label>
+                        <button type="button" onclick="togglePassword('loginPassword')" class="text-sm text-makeover-pink hover:underline">
+                            Show
+                        </button>
+                    </div>
+                    <div class="relative">
+                        <input type="password" id="loginPassword" required 
+                               class="w-full px-4 py-3 pl-12 border-2 border-gray-300 rounded-xl focus:border-makeover-pink focus:ring-2 focus:ring-makeover-pink/20 outline-none transition-all"
+                               placeholder="Enter your password">
+                        <i class="fas fa-lock absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    </div>
+                </div>
+                
+                <!-- Remember & Forgot -->
+                <div class="flex items-center justify-between">
+                    <label class="flex items-center">
+                        <input type="checkbox" class="w-4 h-4 text-makeover-pink rounded focus:ring-makeover-pink">
+                        <span class="ml-2 text-gray-600">Remember me</span>
+                    </label>
+                    <button type="button" onclick="showForgotPassword()" class="text-sm text-makeover-pink hover:underline">
+                        Forgot password?
                     </button>
                 </div>
-                <div class="relative">
-                    <input type="password" id="loginPassword" required 
-                           class="w-full px-4 py-3 pl-12 border-2 border-gray-300 rounded-xl focus:border-makeover-pink focus:ring-2 focus:ring-makeover-pink/20 outline-none transition-all"
-                           placeholder="Enter your password">
-                    <i class="fas fa-lock absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                </div>
-            </div>
-            
-            <!-- Remember & Forgot -->
-            <div class="flex items-center justify-between">
-                <label class="flex items-center">
-                    <input type="checkbox" class="w-4 h-4 text-makeover-pink rounded focus:ring-makeover-pink">
-                    <span class="ml-2 text-gray-600">Remember me</span>
-                </label>
-                <button type="button" onclick="showForgotPassword()" class="text-sm text-makeover-pink hover:underline">
-                    Forgot password?
+                
+                <!-- Submit Button -->
+                <button type="submit" class="w-full py-4 bg-gradient-to-r from-makeover-pink to-makeover-blue text-white rounded-xl font-semibold text-lg hover:opacity-90 transition-opacity">
+                    Sign In to Your Arsenal
                 </button>
-            </div>
+                
+                <!-- Divider -->
+                <div class="relative flex items-center justify-center">
+                    <div class="flex-grow border-t border-gray-300"></div>
+                    <span class="mx-4 text-gray-500 text-sm">or continue with</span>
+                    <div class="flex-grow border-t border-gray-300"></div>
+                </div>
+                
+                <!-- Social Login -->
+                <div class="grid grid-cols-2 gap-4">
+                    <button type="button" class="py-3 border-2 border-gray-300 rounded-xl hover:border-makeover-pink transition-colors">
+                        <i class="fab fa-google text-gray-600 mr-2"></i> Google
+                    </button>
+                    <button type="button" class="py-3 border-2 border-gray-300 rounded-xl hover:border-makeover-pink transition-colors">
+                        <i class="fab fa-facebook text-blue-600 mr-2"></i> Facebook
+                    </button>
+                </div>
+                
+                <!-- Switch to Register -->
+                <div class="text-center pt-4">
+                    <span class="text-gray-600">Don't have an account? </span>
+                    <button type="button" onclick="showRegisterForm()" class="text-makeover-pink font-semibold hover:underline">
+                        Create your Color Spirit
+                    </button>
+                </div>
+            </form>
             
-            <!-- Submit Button -->
-            <button type="submit" class="w-full py-4 bg-gradient-to-r from-makeover-pink to-makeover-blue text-white rounded-xl font-semibold text-lg hover:opacity-90 transition-opacity">
-                Sign In to Your Arsenal
-            </button>
-            
-            <!-- Divider -->
-            <div class="relative flex items-center justify-center">
-                <div class="flex-grow border-t border-gray-300"></div>
-                <span class="mx-4 text-gray-500 text-sm">or continue with</span>
-                <div class="flex-grow border-t border-gray-300"></div>
-            </div>
-            
-            <!-- Social Login -->
-            <div class="grid grid-cols-2 gap-4">
-                <button type="button" class="py-3 border-2 border-gray-300 rounded-xl hover:border-makeover-pink transition-colors">
-                    <i class="fab fa-google text-gray-600 mr-2"></i> Google
+            <!-- Register Form (Hidden by default) -->
+            <form id="registerForm" class="space-y-6 hidden">
+                <!-- Name -->
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Full Name</label>
+                    <div class="relative">
+                        <input type="text" id="registerName" required 
+                               class="w-full px-4 py-3 pl-12 border-2 border-gray-300 rounded-xl focus:border-makeover-pink focus:ring-2 focus:ring-makeover-pink/20 outline-none transition-all"
+                               placeholder="Your name">
+                        <i class="fas fa-user absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    </div>
+                </div>
+                
+                <!-- Email -->
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Email Address</label>
+                    <div class="relative">
+                        <input type="email" id="registerEmail" required 
+                               class="w-full px-4 py-3 pl-12 border-2 border-gray-300 rounded-xl focus:border-makeover-pink focus:ring-2 focus:ring-makeover-pink/20 outline-none transition-all"
+                               placeholder="you@example.com">
+                        <i class="fas fa-envelope absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    </div>
+                </div>
+                
+                <!-- Password -->
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Create Password</label>
+                    <div class="relative">
+                        <input type="password" id="registerPassword" required 
+                               class="w-full px-4 py-3 pl-12 border-2 border-gray-300 rounded-xl focus:border-makeover-pink focus:ring-2 focus:ring-makeover-pink/20 outline-none transition-all"
+                               placeholder="Minimum 8 characters">
+                        <i class="fas fa-lock absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    </div>
+                    <div class="mt-2 text-sm text-gray-500">
+                        <div class="flex items-center"><i class="fas fa-check-circle text-green-500 mr-2"></i> Minimum 8 characters</div>
+                        <div class="flex items-center"><i class="fas fa-check-circle text-green-500 mr-2"></i> At least 1 number</div>
+                    </div>
+                </div>
+                
+                <!-- Submit Button -->
+                <button type="submit" class="w-full py-4 bg-gradient-to-r from-makeover-pink to-makeover-blue text-white rounded-xl font-semibold text-lg hover:opacity-90 transition-opacity">
+                    Create My Color Spirit
                 </button>
-                <button type="button" class="py-3 border-2 border-gray-300 rounded-xl hover:border-makeover-pink transition-colors">
-                    <i class="fab fa-facebook text-blue-600 mr-2"></i> Facebook
+                
+                <!-- Switch to Login -->
+                <div class="text-center pt-4">
+                    <span class="text-gray-600">Already have an account? </span>
+                    <button type="button" onclick="showLoginForm()" class="text-makeover-pink font-semibold hover:underline">
+                        Sign in here
+                    </button>
+                </div>
+            </form>
+            
+            <!-- Forgot Password Form (Hidden by default) -->
+            <form id="forgotPasswordForm" class="space-y-6 hidden">
+                <div class="text-center">
+                    <i class="fas fa-key text-4xl text-makeover-pink mb-4"></i>
+                    <h3 class="text-2xl font-bold text-gray-800">Reset Password</h3>
+                    <p class="text-gray-600 mt-2">Enter your email to receive reset instructions</p>
+                </div>
+                
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Email Address</label>
+                    <div class="relative">
+                        <input type="email" id="forgotEmail" required 
+                               class="w-full px-4 py-3 pl-12 border-2 border-gray-300 rounded-xl focus:border-makeover-pink focus:ring-2 focus:ring-makeover-pink/20 outline-none transition-all"
+                               placeholder="you@example.com">
+                        <i class="fas fa-envelope absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    </div>
+                </div>
+                
+                <button type="submit" class="w-full py-4 bg-gradient-to-r from-makeover-pink to-makeover-blue text-white rounded-xl font-semibold text-lg hover:opacity-90 transition-opacity">
+                    Send Reset Link
                 </button>
-            </div>
-            
-            <!-- Switch to Register -->
-            <div class="text-center pt-4">
-                <span class="text-gray-600">Don't have an account? </span>
-                <button type="button" onclick="showRegisterForm()" class="text-makeover-pink font-semibold hover:underline">
-                    Create your Color Spirit
+                
+                <button type="button" onclick="showLoginForm()" class="w-full py-3 text-gray-600 hover:text-makeover-pink">
+                    Back to Sign In
                 </button>
-            </div>
-        </form>
-        
-        <!-- Register Form (Hidden by default) -->
-        <form id="registerForm" class="space-y-6 hidden">
-            <!-- Name -->
-            <div>
-                <label class="block text-gray-700 font-medium mb-2">Full Name</label>
-                <div class="relative">
-                    <input type="text" id="registerName" required 
-                           class="w-full px-4 py-3 pl-12 border-2 border-gray-300 rounded-xl focus:border-makeover-pink focus:ring-2 focus:ring-makeover-pink/20 outline-none transition-all"
-                           placeholder="Your name">
-                    <i class="fas fa-user absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                </div>
-            </div>
-            
-            <!-- Email -->
-            <div>
-                <label class="block text-gray-700 font-medium mb-2">Email Address</label>
-                <div class="relative">
-                    <input type="email" id="registerEmail" required 
-                           class="w-full px-4 py-3 pl-12 border-2 border-gray-300 rounded-xl focus:border-makeover-pink focus:ring-2 focus:ring-makeover-pink/20 outline-none transition-all"
-                           placeholder="you@example.com">
-                    <i class="fas fa-envelope absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                </div>
-            </div>
-            
-            <!-- Password -->
-            <div>
-                <label class="block text-gray-700 font-medium mb-2">Create Password</label>
-                <div class="relative">
-                    <input type="password" id="registerPassword" required 
-                           class="w-full px-4 py-3 pl-12 border-2 border-gray-300 rounded-xl focus:border-makeover-pink focus:ring-2 focus:ring-makeover-pink/20 outline-none transition-all"
-                           placeholder="Minimum 8 characters">
-                    <i class="fas fa-lock absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                </div>
-                <div class="mt-2 text-sm text-gray-500">
-                    <div class="flex items-center"><i class="fas fa-check-circle text-green-500 mr-2"></i> Minimum 8 characters</div>
-                    <div class="flex items-center"><i class="fas fa-check-circle text-green-500 mr-2"></i> At least 1 number</div>
-                </div>
-            </div>
-            
-            <!-- Submit Button -->
-            <button type="submit" class="w-full py-4 bg-gradient-to-r from-makeover-pink to-makeover-blue text-white rounded-xl font-semibold text-lg hover:opacity-90 transition-opacity">
-                Create My Color Spirit
-            </button>
-            
-            <!-- Switch to Login -->
-            <div class="text-center pt-4">
-                <span class="text-gray-600">Already have an account? </span>
-                <button type="button" onclick="showLoginForm()" class="text-makeover-pink font-semibold hover:underline">
-                    Sign in here
-                </button>
-            </div>
-        </form>
-        
-        <!-- Forgot Password Form (Hidden by default) -->
-        <form id="forgotPasswordForm" class="space-y-6 hidden">
-            <div class="text-center">
-                <i class="fas fa-key text-4xl text-makeover-pink mb-4"></i>
-                <h3 class="text-2xl font-bold text-gray-800">Reset Password</h3>
-                <p class="text-gray-600 mt-2">Enter your email to receive reset instructions</p>
-            </div>
-            
-            <div>
-                <label class="block text-gray-700 font-medium mb-2">Email Address</label>
-                <div class="relative">
-                    <input type="email" id="forgotEmail" required 
-                           class="w-full px-4 py-3 pl-12 border-2 border-gray-300 rounded-xl focus:border-makeover-pink focus:ring-2 focus:ring-makeover-pink/20 outline-none transition-all"
-                           placeholder="you@example.com">
-                    <i class="fas fa-envelope absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                </div>
-            </div>
-            
-            <button type="submit" class="w-full py-4 bg-gradient-to-r from-makeover-pink to-makeover-blue text-white rounded-xl font-semibold text-lg hover:opacity-90 transition-opacity">
-                Send Reset Link
-            </button>
-            
-            <button type="button" onclick="showLoginForm()" class="w-full py-3 text-gray-600 hover:text-makeover-pink">
-                Back to Sign In
-            </button>
-        </form>
-    </div>
-</div>
-
-<!-- Success Toast -->
-<div id="loginToast" class="fixed top-4 right-4 bg-gradient-to-r from-makeover-green to-green-500 text-white px-6 py-4 rounded-2xl shadow-xl transform translate-x-full transition-transform duration-500 z-60">
-    <div class="flex items-center space-x-3">
-        <i class="fas fa-check-circle text-2xl"></i>
-        <div>
-            <p class="font-semibold" id="toastTitle">Login Successful!</p>
-            <p class="text-sm opacity-90" id="toastMessage">Welcome back to your arsenal</p>
+            </form>
         </div>
     </div>
-</div>
+
+    <!-- Add to Cart Modal -->
+    <div id="addToCartModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-2xl w-full p-8 relative transform transition-all duration-300 scale-95 opacity-0 cart-modal" id="cartModalContent">
+            <!-- Close Button -->
+            <button onclick="closeAddToCartModal()" class="absolute top-6 right-6 text-gray-400 hover:text-gray-600">
+                <i class="fas fa-times text-2xl"></i>
+            </button>
+            
+            <!-- Product Info -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Left: Product Image & Details -->
+                <div>
+                    <div class="relative rounded-2xl overflow-hidden mb-6">
+                        <img id="modalProductImage" src="https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=800&auto=format&fit=crop" 
+                             alt="Product" class="w-full aspect-square object-cover">
+                        <div class="absolute top-4 left-4">
+                            <span id="modalProductBadge" class="px-3 py-1 bg-white/90 backdrop-blur-sm rounded-full text-sm font-semibold">BEST FOR YOU</span>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-3 h-3 bg-makeover-pink rounded-full"></div>
+                            <span id="modalProductCategory" class="text-sm font-semibold text-makeover-pink">EXECUTIVE COLLECTION</span>
+                        </div>
+                        <h3 id="modalProductName" class="text-2xl font-bold text-gray-900">PowerStay Lip Commander</h3>
+                        <p id="modalProductDesc" class="text-gray-600">Matte finish that commands attention without smudging through 8-hour meetings.</p>
+                    </div>
+                    
+                    <!-- Product Features -->
+                    <div class="mt-6 space-y-3">
+                        <div class="flex items-center text-sm">
+                            <i class="fas fa-clock text-makeover-pink mr-2"></i>
+                            <span id="modalProductFeature1" class="text-gray-700">12-hour wear</span>
+                        </div>
+                        <div class="flex items-center text-sm">
+                            <i class="fas fa-check-circle text-makeover-green mr-2"></i>
+                            <span id="modalProductFeature2" class="text-gray-700">Perfect for: Client pitches, Boardroom meetings</span>
+                        </div>
+                        <div class="flex items-center text-sm">
+                            <i class="fas fa-star text-makeover-yellow mr-2"></i>
+                            <span id="modalProductFeature3" class="text-gray-700">98% match with your profile</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Right: Customization & Cart -->
+                <div class="space-y-8">
+                    <!-- Price -->
+                    <div>
+                        <div class="text-3xl font-bold text-gray-900" id="modalProductPrice">Rp 249.000</div>
+                        <div class="text-sm text-gray-500">Special Spirit Price</div>
+                        <div class="text-sm text-green-600 font-medium mt-1">In stock • Free shipping</div>
+                    </div>
+                    
+                    <!-- Shade Selection -->
+                    <div>
+                        <h4 class="font-semibold text-gray-800 mb-4">Select Shade</h4>
+                        <div class="flex flex-wrap gap-3">
+                            <button class="shade-option w-10 h-10 bg-red-500 rounded-full hover:scale-105 transition-transform selected" 
+                                    onclick="selectShade(this, 'Crimson Commander')">
+                                <div class="w-full h-full rounded-full flex items-center justify-center">
+                                    <i class="fas fa-check text-white text-xs opacity-0 selected:opacity-100"></i>
+                                </div>
+                            </button>
+                            <button class="shade-option w-10 h-10 bg-pink-400 rounded-full hover:scale-105 transition-transform" 
+                                    onclick="selectShade(this, 'Power Pink')">
+                                <div class="w-full h-full rounded-full flex items-center justify-center">
+                                    <i class="fas fa-check text-white text-xs opacity-0"></i>
+                                </div>
+                            </button>
+                            <button class="shade-option w-10 h-10 bg-rose-300 rounded-full hover:scale-105 transition-transform" 
+                                    onclick="selectShade(this, 'Executive Nude')">
+                                <div class="w-full h-full rounded-full flex items-center justify-center">
+                                    <i class="fas fa-check text-white text-xs opacity-0"></i>
+                                </div>
+                            </button>
+                            <button class="shade-option w-10 h-10 bg-brick-600 rounded-full hover:scale-105 transition-transform" 
+                                    onclick="selectShade(this, 'Boardroom Brick')">
+                                <div class="w-full h-full rounded-full flex items-center justify-center">
+                                    <i class="fas fa-check text-white text-xs opacity-0"></i>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="mt-2 text-sm text-gray-600" id="selectedShade">Selected: Crimson Commander</div>
+                    </div>
+                    
+                    <!-- Quantity -->
+                    <div>
+                        <h4 class="font-semibold text-gray-800 mb-4">Quantity</h4>
+                        <div class="flex items-center space-x-4">
+                            <button onclick="changeQuantity(-1)" class="quantity-btn w-10 h-10 border-2 border-gray-300 rounded-full flex items-center justify-center hover:border-makeover-pink">
+                                <i class="fas fa-minus text-gray-600"></i>
+                            </button>
+                            <input type="number" id="quantityInput" value="1" min="1" max="10" 
+                                   class="w-20 text-center text-2xl font-bold border-0 outline-none">
+                            <button onclick="changeQuantity(1)" class="quantity-btn w-10 h-10 border-2 border-gray-300 rounded-full flex items-center justify-center hover:border-makeover-pink">
+                                <i class="fas fa-plus text-gray-600"></i>
+                            </button>
+                            <span class="text-gray-500 ml-4">Max 10 per order</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Total -->
+                    <div class="border-t border-gray-200 pt-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <span class="text-gray-600">Subtotal</span>
+                            <span id="cartSubtotal" class="text-2xl font-bold text-gray-900">Rp 249.000</span>
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="grid grid-cols-1 gap-4">
+                            <button onclick="addToCartFinal()" class="w-full py-4 bg-gradient-to-r from-makeover-pink to-makeover-blue text-white rounded-xl font-semibold text-lg hover:opacity-90 transition-opacity flex items-center justify-center">
+                                <i class="fas fa-shopping-bag mr-3"></i> Add to Battle Bag
+                            </button>
+                            <button onclick="addToCartAndCheckout()" class="w-full py-4 border-2 border-makeover-pink text-makeover-pink rounded-xl font-semibold text-lg hover:bg-pink-50 transition-colors flex items-center justify-center">
+                                <i class="fas fa-bolt mr-3"></i> Buy Now
+                            </button>
+                        </div>
+                        
+                        <!-- Additional Options -->
+                        <div class="flex justify-between mt-6">
+                            <button onclick="addToWishlist()" class="flex items-center text-gray-600 hover:text-makeover-pink">
+                                <i class="fas fa-heart mr-2"></i> Save for later
+                            </button>
+                            <button onclick="shareProduct()" class="flex items-center text-gray-600 hover:text-makeover-blue">
+                                <i class="fas fa-share-alt mr-2"></i> Share
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Spirit Match Indicator -->
+            <div class="mt-8 p-4 bg-gradient-to-r from-pink-50 to-blue-50 rounded-2xl">
+                <div class="flex items-center">
+                    <div class="w-12 h-12 rounded-full bg-gradient-to-r from-makeover-pink to-makeover-blue flex items-center justify-center mr-4">
+                        <i class="fas fa-crown text-white"></i>
+                    </div>
+                    <div>
+                        <div class="font-semibold text-gray-800">Perfect Match for Crimson Commander!</div>
+                        <div class="text-sm text-gray-600">This product scores 98% compatibility with your Color Spirit profile</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Items Modal -->
+    <div id="cartModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-8 relative">
+            <!-- Close Button -->
+            <button onclick="closeCartModal()" class="absolute top-6 right-6 text-gray-400 hover:text-gray-600">
+                <i class="fas fa-times text-2xl"></i>
+            </button>
+            
+            <!-- Cart Header -->
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-gradient-to-r from-makeover-pink to-makeover-blue rounded-full mx-auto flex items-center justify-center mb-4">
+                    <i class="fas fa-shopping-bag text-white text-2xl"></i>
+                </div>
+                <h2 class="font-playfair text-3xl font-bold gradient-text">Your Battle Bag</h2>
+                <p class="text-gray-600 mt-2" id="cartItemCount">3 items in your arsenal</p>
+            </div>
+            
+            <!-- Cart Items -->
+            <div id="cartItemsList" class="space-y-4 max-h-96 overflow-y-auto">
+                <!-- Cart items will be dynamically added here -->
+            </div>
+            
+            <!-- Cart Total -->
+            <div class="border-t border-gray-200 pt-6 mt-6">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-gray-600">Total</span>
+                    <span id="cartTotal" class="text-2xl font-bold text-gray-900">Rp 897.000</span>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="grid grid-cols-1 gap-4">
+                    <button onclick="proceedToCheckout()" class="w-full py-4 bg-gradient-to-r from-makeover-pink to-makeover-blue text-white rounded-xl font-semibold hover:opacity-90">
+                        Proceed to Checkout
+                    </button>
+                    <button onclick="closeCartModal()" class="w-full py-4 border-2 border-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-50">
+                        Continue Shopping
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Toast -->
+    <div id="loginToast" class="fixed top-4 right-4 bg-gradient-to-r from-makeover-green to-green-500 text-white px-6 py-4 rounded-2xl shadow-xl transform translate-x-full transition-transform duration-500 z-60">
+        <div class="flex items-center space-x-3">
+            <i class="fas fa-check-circle text-2xl"></i>
+            <div>
+                <p class="font-semibold" id="toastTitle">Login Successful!</p>
+                <p class="text-sm opacity-90" id="toastMessage">Welcome back to your arsenal</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add to Cart Success Toast -->
+    <div id="cartToast" class="fixed top-4 right-4 bg-gradient-to-r from-makeover-pink to-makeover-blue text-white px-6 py-4 rounded-2xl shadow-xl transform translate-x-full transition-transform duration-500 z-60">
+        <div class="flex items-center space-x-3">
+            <i class="fas fa-check-circle text-2xl"></i>
+            <div>
+                <p class="font-semibold" id="cartToastTitle">Added to Battle Bag!</p>
+                <p class="text-sm opacity-90" id="cartToastMessage">Your armor grows stronger</p>
+            </div>
+        </div>
+    </div>
 
     <!-- JavaScript -->
     <script>
-        // Initialize user data from localStorage or default
-        const userData = JSON.parse(localStorage.getItem('makeoverUser')) || {
-            spirit: 'Crimson Commander',
-            name: 'Commander',
-            confidenceScore: 98,
-            colorMatches: 12
-        };
-        
-        // Update UI with user data
-        document.addEventListener('DOMContentLoaded', function() {
-            updateUserProfile();
-            setupInteractions();
-        });
-        
-        function updateUserProfile() {
-            document.getElementById('userSpirit').textContent = userData.spirit;
-            document.getElementById('userName').textContent = userData.name;
-            
-            // Update confidence score
-            const confidenceElement = document.querySelector('.confidence-score');
-            if (confidenceElement) {
-                confidenceElement.textContent = `${userData.confidenceScore}%`;
+        // Product Data
+        const products = {
+            1: {
+                name: "PowerStay Lip Commander",
+                category: "EXECUTIVE COLLECTION",
+                description: "Matte finish that commands attention without smudging through 8-hour meetings.",
+                price: 249000,
+                image: "https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=800&auto=format&fit=crop",
+                badge: "BEST FOR YOU",
+                feature1: "12-hour wear",
+                feature2: "Perfect for: Client pitches, Boardroom meetings",
+                feature3: "98% match with your profile",
+                shades: ["Crimson Commander", "Power Pink", "Executive Nude", "Boardroom Brick"]
+            },
+            2: {
+                name: "24H Foundation Armor",
+                category: "LONGEVITY COLLECTION",
+                description: "Meeting-proof with natural finish for all-day confidence.",
+                price: 329000,
+                image: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=800&auto=format&fit=crop",
+                badge: "LONG WEAR",
+                feature1: "24-hour wear",
+                feature2: "Perfect for: All-day meetings, Events",
+                feature3: "95% match with your profile",
+                shades: ["Porcelain", "Ivory", "Sand", "Honey"]
+            },
+            3: {
+                name: "Confidence Blush",
+                category: "GLOW COLLECTION",
+                description: "Buildable color for healthy glow that lasts through presentations.",
+                price: 189000,
+                image: "https://images.unsplash.com/photo-1532417342379-0695e61b5b1e?w=800&auto=format&fit=crop",
+                badge: "NATURAL",
+                feature1: "8-hour wear",
+                feature2: "Perfect for: Important meetings, Networking",
+                feature3: "92% match with your profile",
+                shades: ["Rose Bloom", "Peach Glow", "Berry Kiss", "Coral Sunrise"]
+            },
+            4: {
+                name: "Eyeshadow Palette",
+                category: "VERSATILITY COLLECTION",
+                description: "Professional to dramatic looks for any battlefield.",
+                price: 429000,
+                image: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=800&auto=format&fit=crop",
+                badge: "MULTI-USE",
+                feature1: "10-hour wear",
+                feature2: "Perfect for: Creative sessions, Evening events",
+                feature3: "96% match with your profile",
+                shades: ["Executive Neutrals", "Creative Colors", "Bold & Bright", "Smoky Nights"]
             }
-        }
-        
-        function setupInteractions() {
-            // Add to cart buttons
-            document.querySelectorAll('button').forEach(button => {
-                if (button.textContent.includes('Add to Battle Bag')) {
-                    button.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        
-                        // Get product info
-                        const productCard = this.closest('.product-card');
-                        const productName = productCard.querySelector('h3, h4').textContent;
-                        
-                        // Show success feedback
-                        showNotification(`${productName} added to your Battle Bag!`);
-                        
-                        // Update cart count
-                        updateCartCount();
-                        
-                        // Button feedback
-                        const originalText = this.innerHTML;
-                        this.innerHTML = '<i class="fas fa-check mr-2"></i>Added!';
-                        this.classList.remove('from-makeover-pink', 'to-makeover-blue');
-                        this.classList.add('bg-green-500');
-                        
-                        setTimeout(() => {
-                            this.innerHTML = originalText;
-                            this.classList.remove('bg-green-500');
-                            this.classList.add('from-makeover-pink', 'to-makeover-blue');
-                        }, 2000);
+        };
+
+        // Cart State
+        let cart = JSON.parse(localStorage.getItem('makeoverCart')) || [];
+        let currentProductId = null;
+        let selectedShade = "Crimson Commander";
+        let quantity = 1;
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCartUI();
+            setupProductInteractions();
+            
+            // Check quiz status
+            const quizCompleted = localStorage.getItem('makeoverQuizCompleted');
+            const quizReminder = document.getElementById('quizReminder');
+            
+            if (!quizCompleted && quizReminder) {
+                quizReminder.classList.remove('hidden');
+            } else {
+                quizReminder.classList.add('hidden');
+            }
+            
+            // Update welcome message based on spirit
+            const spirit = localStorage.getItem('makeoverSpirit');
+            if (spirit) {
+                const welcomeMsg = document.getElementById('welcomeMessage');
+                if (welcomeMsg) {
+                    welcomeMsg.innerHTML = `Welcome, <span class="gradient-text">${spirit}</span>! ✨`;
+                }
+            }
+            
+            // Fade in effect
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.3s';
+            
+            setTimeout(() => {
+                document.body.style.opacity = '1';
+            }, 10);
+        });
+
+        // Setup product button interactions
+        function setupProductInteractions() {
+            // Add event listeners to all product buttons
+            document.querySelectorAll('button[onclick^="openAddToCartModal"]').forEach(button => {
+                const match = button.getAttribute('onclick').match(/openAddToCartModal\((\d+)\)/);
+                if (match) {
+                    button.addEventListener('click', function() {
+                        openAddToCartModal(parseInt(match[1]));
                     });
                 }
             });
-            
-            // AR Try-On button
-            const arButtons = document.querySelectorAll('button[onclick="startARTryOn()"]');
-            arButtons.forEach(button => {
-                button.addEventListener('click', startARTryOn);
-            });
         }
-        
-        function startARTryOn() {
-            showNotification('Opening Virtual Try-On experience...');
-            // In production, this would open the AR camera interface
+
+        // Open Add to Cart Modal
+        function openAddToCartModal(productId) {
+            currentProductId = productId;
+            const product = products[productId];
+            
+            if (!product) return;
+            
+            // Update modal content
+            document.getElementById('modalProductImage').src = product.image;
+            document.getElementById('modalProductBadge').textContent = product.badge;
+            document.getElementById('modalProductCategory').textContent = product.category;
+            document.getElementById('modalProductName').textContent = product.name;
+            document.getElementById('modalProductDesc').textContent = product.description;
+            document.getElementById('modalProductFeature1').textContent = product.feature1;
+            document.getElementById('modalProductFeature2').textContent = product.feature2;
+            document.getElementById('modalProductFeature3').textContent = product.feature3;
+            document.getElementById('modalProductPrice').textContent = formatPrice(product.price);
+            
+            // Reset quantity and shade
+            quantity = 1;
+            selectedShade = product.shades[0];
+            document.getElementById('quantityInput').value = quantity;
+            document.getElementById('selectedShade').textContent = `Selected: ${selectedShade}`;
+            updateSubtotal();
+            
+            // Reset shade selection
+            document.querySelectorAll('.shade-option').forEach((btn, index) => {
+                btn.classList.remove('selected');
+                const checkIcon = btn.querySelector('i');
+                checkIcon.classList.remove('opacity-100');
+                checkIcon.classList.add('opacity-0');
+                
+                // Set first shade as selected
+                if (index === 0) {
+                    btn.classList.add('selected');
+                    checkIcon.classList.remove('opacity-0');
+                    checkIcon.classList.add('opacity-100');
+                }
+            });
+            
+            // Show modal
+            const modal = document.getElementById('addToCartModal');
+            const modalContent = document.getElementById('cartModalContent');
+            modal.classList.remove('hidden');
+            
             setTimeout(() => {
-                window.location.href = '#try-on-section';
+                modalContent.classList.remove('scale-95', 'opacity-0');
+                modalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        // Close Add to Cart Modal
+        function closeAddToCartModal() {
+            const modal = document.getElementById('addToCartModal');
+            const modalContent = document.getElementById('cartModalContent');
+            
+            modalContent.classList.remove('scale-100', 'opacity-100');
+            modalContent.classList.add('scale-95', 'opacity-0');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        // Select Shade
+        function selectShade(element, shadeName) {
+            // Remove selected class from all shades
+            document.querySelectorAll('.shade-option').forEach(btn => {
+                btn.classList.remove('selected');
+                const checkIcon = btn.querySelector('i');
+                checkIcon.classList.remove('opacity-100');
+                checkIcon.classList.add('opacity-0');
+            });
+            
+            // Add selected class to clicked shade
+            element.classList.add('selected');
+            const checkIcon = element.querySelector('i');
+            checkIcon.classList.remove('opacity-0');
+            checkIcon.classList.add('opacity-100');
+            
+            selectedShade = shadeName;
+            document.getElementById('selectedShade').textContent = `Selected: ${selectedShade}`;
+        }
+
+        // Change Quantity
+        function changeQuantity(change) {
+            quantity = parseInt(document.getElementById('quantityInput').value) + change;
+            quantity = Math.max(1, Math.min(10, quantity));
+            document.getElementById('quantityInput').value = quantity;
+            updateSubtotal();
+        }
+
+        // Update Subtotal
+        function updateSubtotal() {
+            if (!currentProductId) return;
+            const product = products[currentProductId];
+            const subtotal = product.price * quantity;
+            document.getElementById('cartSubtotal').textContent = formatPrice(subtotal);
+        }
+
+        // Format Price
+        function formatPrice(price) {
+            return 'Rp ' + price.toLocaleString('id-ID');
+        }
+
+        // Add to Cart (Final)
+        function addToCartFinal() {
+            if (!currentProductId) return;
+            
+            const product = products[currentProductId];
+            const cartItem = {
+                id: currentProductId,
+                name: product.name,
+                shade: selectedShade,
+                quantity: quantity,
+                price: product.price,
+                image: product.image,
+                addedAt: new Date().toISOString()
+            };
+            
+            // Check if item already exists in cart
+            const existingIndex = cart.findIndex(item => 
+                item.id === cartItem.id && item.shade === cartItem.shade
+            );
+            
+            if (existingIndex > -1) {
+                // Update quantity if item exists
+                cart[existingIndex].quantity += cartItem.quantity;
+            } else {
+                // Add new item to cart
+                cart.push(cartItem);
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('makeoverCart', JSON.stringify(cart));
+            
+            // Update cart UI
+            updateCartUI();
+            
+            // Show success toast
+            showCartToast('Added to Battle Bag!', `${product.name} (${selectedShade}) added to your arsenal`);
+            
+            // Close modal
+            closeAddToCartModal();
+        }
+
+        // Add to Cart and Checkout
+        function addToCartAndCheckout() {
+            addToCartFinal();
+            // In a real app, this would redirect to checkout
+            setTimeout(() => {
+                openCartModal();
             }, 500);
         }
-        
+
+        // Add to Wishlist
+        function addToWishlist() {
+            if (!currentProductId) return;
+            showCartToast('Saved for later!', 'Product added to your wishlist');
+            closeAddToCartModal();
+        }
+
+        // Share Product
+        function shareProduct() {
+            if (!currentProductId) return;
+            const product = products[currentProductId];
+            
+            // In a real app, this would use the Web Share API
+            if (navigator.share) {
+                navigator.share({
+                    title: product.name,
+                    text: `Check out ${product.name} on MakeOver!`,
+                    url: window.location.href
+                });
+            } else {
+                showCartToast('Link copied!', 'Product link copied to clipboard');
+                // Fallback: Copy to clipboard
+                navigator.clipboard.writeText(window.location.href);
+            }
+        }
+
+        // Open Cart Modal
+        function openCartModal() {
+            const modal = document.getElementById('cartModal');
+            modal.classList.remove('hidden');
+            updateCartModalContent();
+        }
+
+        // Close Cart Modal
+        function closeCartModal() {
+            document.getElementById('cartModal').classList.add('hidden');
+        }
+
+        // Update Cart Modal Content
+        function updateCartModalContent() {
+            const cartItemsList = document.getElementById('cartItemsList');
+            const cartItemCount = document.getElementById('cartItemCount');
+            const cartTotal = document.getElementById('cartTotal');
+            
+            // Clear existing items
+            cartItemsList.innerHTML = '';
+            
+            let total = 0;
+            let itemCount = 0;
+            
+            cart.forEach((item, index) => {
+                itemCount += item.quantity;
+                total += item.price * item.quantity;
+                
+                const itemElement = document.createElement('div');
+                itemElement.className = 'flex items-center p-4 border border-gray-200 rounded-xl';
+                itemElement.innerHTML = `
+                    <img src="${item.image}" alt="${item.name}" class="w-16 h-16 rounded-lg object-cover mr-4">
+                    <div class="flex-grow">
+                        <div class="font-semibold text-gray-800">${item.name}</div>
+                        <div class="text-sm text-gray-500">${item.shade} • Qty: ${item.quantity}</div>
+                        <div class="text-makeover-pink font-semibold">${formatPrice(item.price)}</div>
+                    </div>
+                    <button onclick="removeFromCart(${index})" class="text-gray-400 hover:text-red-500 ml-4">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                cartItemsList.appendChild(itemElement);
+            });
+            
+            // Update counts
+            cartItemCount.textContent = `${itemCount} ${itemCount === 1 ? 'item' : 'items'} in your arsenal`;
+            cartTotal.textContent = formatPrice(total);
+            
+            // Update cart count in header
+            updateCartUI();
+        }
+
+        // Remove from Cart
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            localStorage.setItem('makeoverCart', JSON.stringify(cart));
+            updateCartModalContent();
+            updateCartUI();
+        }
+
+        // Update Cart UI (Header)
+        function updateCartUI() {
+            const cartCount = document.getElementById('cartCount');
+            let totalCount = 0;
+            
+            cart.forEach(item => {
+                totalCount += item.quantity;
+            });
+            
+            cartCount.textContent = totalCount;
+        }
+
+        // Show Cart Toast
+        function showCartToast(title, message) {
+            const toast = document.getElementById('cartToast');
+            document.getElementById('cartToastTitle').textContent = title;
+            document.getElementById('cartToastMessage').textContent = message;
+            
+            toast.classList.remove('translate-x-full');
+            
+            setTimeout(() => {
+                toast.classList.add('translate-x-full');
+            }, 3000);
+        }
+
+        // Proceed to Checkout
+        function proceedToCheckout() {
+            closeCartModal();
+            showCartToast('Ready for Battle!', 'Proceeding to checkout...');
+            // In a real app, this would redirect to checkout page
+        }
+
+        // Existing functions from original code
+        function startARTryOn() {
+            showNotification('Opening Virtual Try-On experience...');
+            setTimeout(() => {
+                document.querySelector('#try-on-section').scrollIntoView({
+                    behavior: 'smooth'
+                });
+            }, 500);
+        }
+
         function exploreProducts() {
             showNotification('Taking you to personalized recommendations...');
-            document.querySelector('#product-grid').scrollIntoView({
+            document.querySelector('#productGrid').scrollIntoView({
                 behavior: 'smooth'
             });
         }
-        
-        function updateCartCount() {
-            const cartCount = document.querySelector('.cart-count');
-            if (cartCount) {
-                let count = parseInt(cartCount.textContent) || 0;
-                cartCount.textContent = count + 1;
-                
-                // Animation
-                cartCount.classList.add('animate-ping');
-                setTimeout(() => {
-                    cartCount.classList.remove('animate-ping');
-                }, 600);
-            }
-        }
-        
+
         function showNotification(message) {
-            // Create notification element
             const notification = document.createElement('div');
             notification.className = 'fixed top-4 right-4 bg-gradient-to-r from-makeover-green to-green-500 text-white px-6 py-4 rounded-2xl shadow-xl transform translate-x-full transition-transform duration-500 z-50';
             notification.innerHTML = `
@@ -1148,12 +1681,10 @@ input:focus {
             
             document.body.appendChild(notification);
             
-            // Animate in
             setTimeout(() => {
                 notification.classList.remove('translate-x-full');
             }, 10);
             
-            // Remove after 3 seconds
             setTimeout(() => {
                 notification.classList.add('translate-x-full');
                 setTimeout(() => {
@@ -1161,26 +1692,12 @@ input:focus {
                 }, 500);
             }, 3000);
         }
-        
-        // Typewriter effect for welcome message
-        function typeWriter(element, text, speed = 50) {
-            let i = 0;
-            element.textContent = '';
-            
-            function type() {
-                if (i < text.length) {
-                    element.textContent += text.charAt(i);
-                    i++;
-                    setTimeout(type, speed);
-                }
-            }
-            
-            type();
-        }
-    </script>
 
-    <!-- Tailwind Configuration -->
-    <script>
+        function startQuizFromHomepage() {
+            window.location.href = 'index.html#quiz';
+        }
+
+        // Tailwind Configuration
         tailwind.config = {
             theme: {
                 extend: {
@@ -1202,321 +1719,255 @@ input:focus {
             }
         }
 
-        // Authentication System
-let currentUser = JSON.parse(localStorage.getItem('makeoverUser')) || null;
+        // Authentication System (from original code)
+        let currentUser = JSON.parse(localStorage.getItem('makeoverUser')) || null;
+        const authModal = document.getElementById('authModal');
+        const modalContent = document.getElementById('modalContent');
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const forgotPasswordForm = document.getElementById('forgotPasswordForm');
+        const guestState = document.getElementById('guestState');
+        const loggedInState = document.getElementById('loggedInState');
 
-// DOM Elements
-const authModal = document.getElementById('authModal');
-const modalContent = document.getElementById('modalContent');
-const loginForm = document.getElementById('loginForm');
-const registerForm = document.getElementById('registerForm');
-const forgotPasswordForm = document.getElementById('forgotPasswordForm');
-const guestState = document.getElementById('guestState');
-const loggedInState = document.getElementById('loggedInState');
-
-// Open Auth Modal
-function openAuthModal(formType = 'login') {
-    authModal.classList.remove('hidden');
-    setTimeout(() => {
-        modalContent.classList.remove('scale-95', 'opacity-0');
-        modalContent.classList.add('scale-100', 'opacity-100');
-    }, 10);
-    
-    switch(formType) {
-        case 'register':
-            showRegisterForm();
-            break;
-        case 'forgot':
-            showForgotPassword();
-            break;
-        default:
-            showLoginForm();
-    }
-}
-
-// Close Auth Modal
-function closeAuthModal() {
-    modalContent.classList.remove('scale-100', 'opacity-100');
-    modalContent.classList.add('scale-95', 'opacity-0');
-    setTimeout(() => {
-        authModal.classList.add('hidden');
-    }, 300);
-}
-
-// Switch to Login Form
-function showLoginForm() {
-    document.getElementById('modalTitle').textContent = 'Welcome Back';
-    document.getElementById('modalSubtitle').textContent = 'Sign in to access your Color Arsenal';
-    
-    loginForm.classList.remove('hidden');
-    registerForm.classList.add('hidden');
-    forgotPasswordForm.classList.add('hidden');
-}
-
-// Switch to Register Form
-function showRegisterForm() {
-    document.getElementById('modalTitle').textContent = 'Create Your Spirit';
-    document.getElementById('modalSubtitle').textContent = 'Join the MakeOver community';
-    
-    loginForm.classList.add('hidden');
-    registerForm.classList.remove('hidden');
-    forgotPasswordForm.classList.add('hidden');
-}
-
-// Switch to Forgot Password
-function showForgotPassword() {
-    document.getElementById('modalTitle').textContent = 'Reset Password';
-    document.getElementById('modalSubtitle').textContent = '';
-    
-    loginForm.classList.add('hidden');
-    registerForm.classList.add('hidden');
-    forgotPasswordForm.classList.remove('hidden');
-}
-
-// Toggle Password Visibility
-function togglePassword(passwordId) {
-    const passwordField = document.getElementById(passwordId);
-    const toggleButton = event.target;
-    
-    if (passwordField.type === 'password') {
-        passwordField.type = 'text';
-        toggleButton.textContent = 'Hide';
-    } else {
-        passwordField.type = 'password';
-        toggleButton.textContent = 'Show';
-    }
-}
-
-// Handle Login
-loginForm.addEventListener('submit', async function(e) {
-    e.preventDefault();
-    
-    const email = document.getElementById('loginEmail').value;
-    const password = document.getElementById('loginPassword').value;
-    
-    // Simulate API call
-    showLoading(true);
-    
-    setTimeout(() => {
-        // Mock successful login
-        currentUser = {
-            id: 1,
-            name: 'Alexandra Chen',
-            email: email,
-            spirit: 'Crimson Commander',
-            avatarColor: 'from-makeover-pink to-makeover-blue',
-            joinDate: new Date().toISOString(),
-            confidenceScore: 98
-        };
-        
-        localStorage.setItem('makeoverUser', JSON.stringify(currentUser));
-        updateUIAfterLogin();
-        closeAuthModal();
-        showToast('Login Successful!', `Welcome back, ${currentUser.spirit}!`);
-        showLoading(false);
-    }, 1500);
-});
-
-// Handle Registration
-registerForm.addEventListener('submit', async function(e) {
-    e.preventDefault();
-    
-    const name = document.getElementById('registerName').value;
-    const email = document.getElementById('registerEmail').value;
-    const password = document.getElementById('registerPassword').value;
-    
-    // Simulate API call
-    showLoading(true);
-    
-    setTimeout(() => {
-        // Mock successful registration
-        currentUser = {
-            id: Date.now(),
-            name: name,
-            email: email,
-            spirit: determineSpirit(name),
-            avatarColor: getRandomGradient(),
-            joinDate: new Date().toISOString(),
-            confidenceScore: 85
-        };
-        
-        localStorage.setItem('makeoverUser', JSON.stringify(currentUser));
-        updateUIAfterLogin();
-        closeAuthModal();
-        showToast('Welcome to MakeOver!', 'Your Color Spirit journey begins!');
-        showLoading(false);
-        
-        // Auto-start Color Spirit Quiz for new users
-        setTimeout(() => {
-            if (confirm('Would you like to discover your Color Spirit now?')) {
-                // Redirect to quiz page or open quiz modal
-                window.location.href = '#quiz';
+        function openAuthModal(formType = 'login') {
+            authModal.classList.remove('hidden');
+            setTimeout(() => {
+                modalContent.classList.remove('scale-95', 'opacity-0');
+                modalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+            
+            switch(formType) {
+                case 'register':
+                    showRegisterForm();
+                    break;
+                case 'forgot':
+                    showForgotPassword();
+                    break;
+                default:
+                    showLoginForm();
             }
-        }, 1000);
-    }, 2000);
-});
-
-// Handle Forgot Password
-forgotPasswordForm.addEventListener('submit', async function(e) {
-    e.preventDefault();
-    
-    const email = document.getElementById('forgotEmail').value;
-    
-    showLoading(true);
-    
-    setTimeout(() => {
-        showLoading(false);
-        closeAuthModal();
-        showToast('Check your email!', 'Password reset instructions sent');
-    }, 1500);
-});
-
-// Update UI after login
-function updateUIAfterLogin() {
-    if (currentUser) {
-        // Switch to logged in state
-        guestState.classList.add('hidden');
-        loggedInState.classList.remove('hidden');
-        
-        // Update user info
-        document.getElementById('userName').textContent = currentUser.name.split(' ')[0];
-        document.getElementById('userInitial').textContent = currentUser.name.charAt(0).toUpperCase();
-        document.getElementById('dropdownName').textContent = currentUser.name;
-        document.getElementById('dropdownEmail').textContent = currentUser.email;
-        
-        // Update avatar color
-        const avatar = document.querySelector('#loggedInState .rounded-full');
-        if (avatar) {
-            avatar.className = `w-10 h-10 rounded-full ${currentUser.avatarColor} flex items-center justify-center`;
         }
-    }
-}
 
-// Logout
-function logout() {
-    currentUser = null;
-    localStorage.removeItem('makeoverUser');
-    
-    // Switch to guest state
-    guestState.classList.remove('hidden');
-    loggedInState.classList.add('hidden');
-    
-    showToast('Signed out', 'Come back to your arsenal soon!');
-}
+        function closeAuthModal() {
+            modalContent.classList.remove('scale-100', 'opacity-100');
+            modalContent.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                authModal.classList.add('hidden');
+            }, 300);
+        }
 
-// Show loading state
-function showLoading(show) {
-    const buttons = document.querySelectorAll('#authModal button[type="submit"]');
-    buttons.forEach(button => {
-        if (show) {
-            button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Processing...';
-            button.disabled = true;
-        } else {
-            // Reset button text based on form
-            if (button.closest('#loginForm')) {
-                button.textContent = 'Sign In to Your Arsenal';
-            } else if (button.closest('#registerForm')) {
-                button.textContent = 'Create My Color Spirit';
-            } else if (button.closest('#forgotPasswordForm')) {
-                button.textContent = 'Send Reset Link';
+        function showLoginForm() {
+            document.getElementById('modalTitle').textContent = 'Welcome Back';
+            document.getElementById('modalSubtitle').textContent = 'Sign in to access your Color Arsenal';
+            
+            loginForm.classList.remove('hidden');
+            registerForm.classList.add('hidden');
+            forgotPasswordForm.classList.add('hidden');
+        }
+
+        function showRegisterForm() {
+            document.getElementById('modalTitle').textContent = 'Create Your Spirit';
+            document.getElementById('modalSubtitle').textContent = 'Join the MakeOver community';
+            
+            loginForm.classList.add('hidden');
+            registerForm.classList.remove('hidden');
+            forgotPasswordForm.classList.add('hidden');
+        }
+
+        function showForgotPassword() {
+            document.getElementById('modalTitle').textContent = 'Reset Password';
+            document.getElementById('modalSubtitle').textContent = '';
+            
+            loginForm.classList.add('hidden');
+            registerForm.classList.add('hidden');
+            forgotPasswordForm.classList.remove('hidden');
+        }
+
+        function togglePassword(passwordId) {
+            const passwordField = document.getElementById(passwordId);
+            const toggleButton = event.target;
+            
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                toggleButton.textContent = 'Hide';
+            } else {
+                passwordField.type = 'password';
+                toggleButton.textContent = 'Show';
             }
-            button.disabled = false;
         }
-    });
-}
 
-// Show toast notification
-function showToast(title, message) {
-    const toast = document.getElementById('loginToast');
-    document.getElementById('toastTitle').textContent = title;
-    document.getElementById('toastMessage').textContent = message;
-    
-    toast.classList.remove('translate-x-full');
-    
-    setTimeout(() => {
-        toast.classList.add('translate-x-full');
-    }, 3000);
-}
+        loginForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            showLoading(true);
+            
+            setTimeout(() => {
+                currentUser = {
+                    id: 1,
+                    name: 'Alexandra Chen',
+                    email: email,
+                    spirit: 'Crimson Commander',
+                    avatarColor: 'from-makeover-pink to-makeover-blue',
+                    joinDate: new Date().toISOString(),
+                    confidenceScore: 98
+                };
+                
+                localStorage.setItem('makeoverUser', JSON.stringify(currentUser));
+                updateUIAfterLogin();
+                closeAuthModal();
+                showToast('Login Successful!', `Welcome back, ${currentUser.spirit}!`);
+                showLoading(false);
+            }, 1500);
+        });
 
-// Helper functions
-function determineSpirit(name) {
-    const spirits = [
-        'Crimson Commander',
-        'Creative Visionary',
-        'Natural Empress',
-        'Spotlight Diva'
-    ];
-    return spirits[name.length % spirits.length];
-}
+        registerForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('registerName').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            
+            showLoading(true);
+            
+            setTimeout(() => {
+                currentUser = {
+                    id: Date.now(),
+                    name: name,
+                    email: email,
+                    spirit: determineSpirit(name),
+                    avatarColor: getRandomGradient(),
+                    joinDate: new Date().toISOString(),
+                    confidenceScore: 85
+                };
+                
+                localStorage.setItem('makeoverUser', JSON.stringify(currentUser));
+                updateUIAfterLogin();
+                closeAuthModal();
+                showToast('Welcome to MakeOver!', 'Your Color Spirit journey begins!');
+                showLoading(false);
+                
+                setTimeout(() => {
+                    if (confirm('Would you like to discover your Color Spirit now?')) {
+                        window.location.href = '#quiz';
+                    }
+                }, 1000);
+            }, 2000);
+        });
 
-function getRandomGradient() {
-    const gradients = [
-        'from-makeover-pink to-makeover-blue',
-        'from-purple-500 to-pink-500',
-        'from-blue-400 to-green-400',
-        'from-yellow-400 to-orange-400'
-    ];
-    return gradients[Math.floor(Math.random() * gradients.length)];
-}
+        forgotPasswordForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('forgotEmail').value;
+            
+            showLoading(true);
+            
+            setTimeout(() => {
+                showLoading(false);
+                closeAuthModal();
+                showToast('Check your email!', 'Password reset instructions sent');
+            }, 1500);
+        });
 
-// Initialize on page load
-document.addEventListener('DOMContentLoaded', function() {
-    if (currentUser) {
-        updateUIAfterLogin();
-    }
-    
-    // Close modal on outside click
-    authModal.addEventListener('click', function(e) {
-        if (e.target === authModal) {
-            closeAuthModal();
+        function updateUIAfterLogin() {
+            if (currentUser) {
+                guestState.classList.add('hidden');
+                loggedInState.classList.remove('hidden');
+                
+                document.getElementById('userName').textContent = currentUser.name.split(' ')[0];
+                document.getElementById('userInitial').textContent = currentUser.name.charAt(0).toUpperCase();
+                document.getElementById('dropdownName').textContent = currentUser.name;
+                document.getElementById('dropdownEmail').textContent = currentUser.email;
+                
+                const avatar = document.querySelector('#loggedInState .rounded-full');
+                if (avatar) {
+                    avatar.className = `w-10 h-10 rounded-full ${currentUser.avatarColor} flex items-center justify-center`;
+                }
+            }
         }
-    });
-});
+
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('makeoverUser');
+            
+            guestState.classList.remove('hidden');
+            loggedInState.classList.add('hidden');
+            
+            showToast('Signed out', 'Come back to your arsenal soon!');
+        }
+
+        function showLoading(show) {
+            const buttons = document.querySelectorAll('#authModal button[type="submit"]');
+            buttons.forEach(button => {
+                if (show) {
+                    button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Processing...';
+                    button.disabled = true;
+                } else {
+                    if (button.closest('#loginForm')) {
+                        button.textContent = 'Sign In to Your Arsenal';
+                    } else if (button.closest('#registerForm')) {
+                        button.textContent = 'Create My Color Spirit';
+                    } else if (button.closest('#forgotPasswordForm')) {
+                        button.textContent = 'Send Reset Link';
+                    }
+                    button.disabled = false;
+                }
+            });
+        }
+
+        function showToast(title, message) {
+            const toast = document.getElementById('loginToast');
+            document.getElementById('toastTitle').textContent = title;
+            document.getElementById('toastMessage').textContent = message;
+            
+            toast.classList.remove('translate-x-full');
+            
+            setTimeout(() => {
+                toast.classList.add('translate-x-full');
+            }, 3000);
+        }
+
+        function determineSpirit(name) {
+            const spirits = [
+                'Crimson Commander',
+                'Creative Visionary',
+                'Natural Empress',
+                'Spotlight Diva'
+            ];
+            return spirits[name.length % spirits.length];
+        }
+
+        function getRandomGradient() {
+            const gradients = [
+                'from-makeover-pink to-makeover-blue',
+                'from-purple-500 to-pink-500',
+                'from-blue-400 to-green-400',
+                'from-yellow-400 to-orange-400'
+            ];
+            return gradients[Math.floor(Math.random() * gradients.length)];
+        }
+
+        // Initialize auth on page load
+        if (currentUser) {
+            updateUIAfterLogin();
+        }
+        
+        authModal.addEventListener('click', function(e) {
+            if (e.target === authModal) {
+                closeAuthModal();
+            }
+        });
+
+        // Close modals on escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeAuthModal();
+                closeAddToCartModal();
+                closeCartModal();
+            }
+        });
     </script>
-    <!-- JavaScript untuk homepage -->
-<script>
-// Check quiz status on homepage load
-document.addEventListener('DOMContentLoaded', function() {
-    const quizCompleted = localStorage.getItem('makeoverQuizCompleted');
-    const quizReminder = document.getElementById('quizReminder');
-    
-    if (!quizCompleted && quizReminder) {
-        quizReminder.classList.remove('hidden');
-    } else {
-        quizReminder.classList.add('hidden');
-    }
-    
-    // Update welcome message based on spirit
-    const spirit = localStorage.getItem('makeoverSpirit');
-    if (spirit) {
-        const welcomeMsg = document.getElementById('welcomeMessage');
-        if (welcomeMsg) {
-            welcomeMsg.innerHTML = `Welcome, <span class="gradient-text">${spirit}</span>! ✨`;
-        }
-    }
-});
-
-function startQuizFromHomepage() {
-    // Redirect to landing page with quiz
-    window.location.href = 'index.html#quiz';
-}
-document.addEventListener('DOMContentLoaded', function() {
-    document.body.style.opacity = '0';
-    document.body.style.transition = 'opacity 0.3s';
-    
-    setTimeout(() => {
-        document.body.style.opacity = '1';
-    }, 10);
-});
-
-// Saat pindah page:
-function navigateTo(page) {
-    document.body.style.opacity = '0';
-    
-    setTimeout(() => {
-        window.location.href = page;
-    }, 300);
-}
-</script>
 </body>
 </html>
