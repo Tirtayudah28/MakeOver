@@ -2,448 +2,1212 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MakeOver - Desain Modal Add to Cart</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Laporan & Growth Score</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Custom styles untuk modal */
+        :root {
+            --primary-navy: #0B2340;
+            --primary-green: #29B25D;
+            --secondary-green: #7EDC90;
+            --secondary-yellow: #FFC857;
+            --neutral-white: #FFFFFF;
+            --neutral-light: #F4F5F7;
+            --neutral-text: #4A4A4A;
+            --neutral-gray: #8C8C8C;
+            --shadow-sm: 0 2px 8px rgba(11, 35, 64, 0.05);
+            --shadow-md: 0 4px 12px rgba(11, 35, 64, 0.08);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --transition: all 0.25s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
         body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background-color: var(--neutral-light);
+            color: var(--neutral-text);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            line-height: 1.5;
+            max-width: 393px;
+            margin: 0 auto;
             min-height: 100vh;
+            padding: 0;
+        }
+        
+        /* Header Mobile */
+        .mobile-header {
+            background: linear-gradient(135deg, var(--primary-navy) 0%, #1a3a5e 100%);
+            color: var(--neutral-white);
+            padding: 20px 16px 16px;
+            border-radius: 0 0 20px 20px;
+            box-shadow: var(--shadow-md);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-top {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
-            padding: 20px;
+            margin-bottom: 16px;
         }
         
-        .gradient-text {
-            background: linear-gradient(90deg, #E83A7D 0%, #2D5BFF 50%, #FFD166 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+        .page-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
         }
         
-        .modal-overlay {
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(10px);
-            animation: fadeIn 0.3s ease-out;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        .modal-content {
-            animation: slideIn 0.3s ease-out;
-        }
-        
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px) scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-        
-        .product-card {
-            background: linear-gradient(145deg, #ffffff, #f5f5f5);
-            border-radius: 20px;
-            box-shadow: 20px 20px 60px #d9d9d9, -20px -20px 60px #ffffff;
-        }
-        
-        .shade-option {
-            transition: all 0.2s ease;
-        }
-        
-        .shade-option.selected {
-            transform: scale(1.1);
-            box-shadow: 0 0 0 3px #E83A7D;
-        }
-        
-        .quantity-btn {
-            transition: all 0.2s ease;
-        }
-        
-        .quantity-btn:hover {
-            background-color: #f8f9fa;
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #E83A7D 0%, #2D5BFF 100%);
-        }
-        
-        .btn-primary:hover {
+        .mobile-time {
+            font-size: 14px;
+            font-weight: 500;
             opacity: 0.9;
         }
         
-        .btn-secondary {
-            border-color: #E83A7D;
-            color: #E83A7D;
+        /* Mobile Navigation Tabs */
+        .mobile-tabs {
+            display: flex;
+            gap: 4px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            -webkit-overflow-scrolling: touch;
         }
         
-        .btn-secondary:hover {
-            background-color: rgba(232, 58, 125, 0.05);
+        .mobile-tabs::-webkit-scrollbar {
+            display: none;
         }
         
-        .spirit-match {
-            background: linear-gradient(135deg, rgba(232, 58, 125, 0.05), rgba(45, 91, 255, 0.05));
-            border: 1px solid rgba(232, 58, 125, 0.1);
+        .mobile-tab {
+            padding: 10px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-sm);
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: var(--transition);
         }
         
-        .spirit-icon {
-            background: linear-gradient(135deg, #E83A7D, #2D5BFF);
+        .mobile-tab.active {
+            background: var(--neutral-white);
+            color: var(--primary-navy);
+            font-weight: 600;
+        }
+        
+        /* Main Content Mobile */
+        .mobile-content {
+            padding: 16px;
+            padding-bottom: 80px;
+        }
+        
+        /* Cards Mobile */
+        .mobile-card {
+            background: var(--neutral-white);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(11, 35, 64, 0.05);
+        }
+        
+        .card-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--primary-navy);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        
+        /* Growth Score Mobile */
+        .score-circle-mobile {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 10px auto 20px;
+            background: conic-gradient(
+                #EF4444 0% 20%,
+                #F59E0B 20% 50%,
+                #29B25D 50% 100%
+            );
+            position: relative;
+            box-shadow: 0 8px 20px rgba(41, 178, 93, 0.15);
+        }
+        
+        .score-circle-inner-mobile {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            background: var(--neutral-white);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .score-value-mobile {
+            font-family: 'Poppins', sans-serif;
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--primary-navy);
+            line-height: 1;
+        }
+        
+        .score-label-mobile {
+            font-size: 12px;
+            color: var(--neutral-gray);
+            margin-top: 4px;
+        }
+        
+        .score-description-mobile {
+            font-size: 13px;
+            color: var(--neutral-text);
+            text-align: center;
+            margin: 16px 0 24px;
+            line-height: 1.5;
+            padding: 0 10px;
+        }
+        
+        /* Indicators Mobile */
+        .indicators-mobile {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin: 20px 0;
+        }
+        
+        .indicator-mobile {
+            text-align: center;
+            padding: 12px 6px;
+            background: var(--neutral-light);
+            border-radius: var(--radius-sm);
+        }
+        
+        .indicator-value-mobile {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 18px;
+            color: var(--primary-navy);
+            margin-bottom: 4px;
+        }
+        
+        .indicator-label-mobile {
+            font-size: 11px;
+            color: var(--neutral-text);
+            line-height: 1.3;
+        }
+        
+        /* Buttons Mobile */
+        .btn-mobile {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--primary-green);
+            color: var(--neutral-white);
+            border: none;
+            border-radius: var(--radius-sm);
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 2px 8px rgba(41, 178, 93, 0.2);
+            margin-top: 16px;
+        }
+        
+        /* Financial Tabs Mobile */
+        .finance-tabs-mobile {
+            display: flex;
+            background: var(--neutral-light);
+            border-radius: var(--radius-sm);
+            padding: 4px;
+            margin: 20px 0;
+        }
+        
+        .finance-tab-mobile {
+            flex: 1;
+            text-align: center;
+            padding: 10px 6px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 13px;
+            font-weight: 500;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        
+        .finance-tab-mobile.active {
+            background: var(--neutral-white);
+            color: var(--primary-green);
+            font-weight: 600;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        /* CHART YANG LEBIH RAPI */
+        .chart-container-mobile {
+            position: relative;
+            margin: 20px 0 30px;
+            padding-left: 35px;
+            height: 180px;
+        }
+        
+        /* Grid lines untuk chart */
+        .chart-grid {
+            position: absolute;
+            top: 0;
+            left: 35px;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        .grid-line {
+            border-top: 1px solid rgba(11, 35, 64, 0.08);
+            width: 100%;
+        }
+        
+        /* Y-axis dengan background */
+        .y-axis-container {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 30px;
+            width: 35px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding-right: 8px;
+        }
+        
+        .y-axis-label {
+            font-size: 10px;
+            color: var(--neutral-gray);
+            font-weight: 500;
+            transform: translateY(50%);
+        }
+        
+        /* Bar chart yang lebih rapi */
+        .bar-chart-mobile {
+            display: flex;
+            align-items: flex-end;
+            height: 150px;
+            gap: 10px;
+            padding-bottom: 30px;
+            position: relative;
+        }
+        
+        .bar-wrapper-mobile {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100%;
+            position: relative;
+        }
+        
+        .bar-mobile {
+            width: 75%;
+            background: linear-gradient(to top, var(--primary-navy), #1E3A5E);
+            border-radius: 4px 4px 0 0;
+            position: relative;
+            transition: var(--transition);
+            min-width: 20px;
+        }
+        
+        .bar-mobile:hover {
+            background: linear-gradient(to top, var(--primary-green), var(--secondary-green));
+            transform: scaleY(1.05);
+        }
+        
+        /* Tooltip untuk bar */
+        .bar-tooltip {
+            position: absolute;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary-navy);
+            color: white;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s;
+            z-index: 10;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        
+        .bar-tooltip::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 5px solid var(--primary-navy);
+        }
+        
+        .bar-wrapper-mobile:hover .bar-tooltip {
+            opacity: 1;
+            visibility: visible;
+            top: -35px;
+        }
+        
+        .bar-label-mobile {
+            position: absolute;
+            bottom: -25px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 11px;
+            color: var(--neutral-text);
+            font-weight: 500;
+        }
+        
+        /* X-axis labels */
+        .x-axis-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+            padding: 0 5px 0 40px;
+        }
+        
+        .day-label {
+            font-size: 11px;
+            color: var(--neutral-gray);
+            flex: 1;
+            text-align: center;
+        }
+        
+        /* Financial Summary Mobile */
+        .financial-summary-mobile {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 24px 0;
+        }
+        
+        .summary-item-mobile {
+            text-align: center;
+            padding: 14px 8px;
+            border-radius: var(--radius-sm);
+            background-color: var(--neutral-light);
+            transition: var(--transition);
+        }
+        
+        .summary-item-mobile:hover {
+            background: rgba(126, 220, 144, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .summary-value-mobile {
+            font-family: 'Poppins', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+        
+        .summary-label-mobile {
+            font-size: 12px;
+            color: var(--neutral-text);
+            font-weight: 500;
+        }
+        
+        .income-mobile { color: var(--primary-green); }
+        .expense-mobile { color: #EF4444; }
+        .profit-mobile { color: var(--primary-navy); }
+        
+        /* Status Mobile */
+        .status-container-mobile {
+            margin-top: 24px;
+            background: var(--neutral-light);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+        }
+        
+        .status-item-mobile {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(11, 35, 64, 0.05);
+        }
+        
+        .status-item-mobile:last-child {
+            border-bottom: none;
+        }
+        
+        .status-label-mobile {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--primary-navy);
+        }
+        
+        .status-value-mobile {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--primary-navy);
+        }
+        
+        .status-bar-mobile {
+            height: 6px;
+            background-color: rgba(11, 35, 64, 0.1);
+            border-radius: 3px;
+            margin-top: 6px;
+            overflow: hidden;
+        }
+        
+        .status-fill-mobile {
+            height: 100%;
+            border-radius: 3px;
+        }
+        
+        /* Tips Mobile */
+        .tip-box-mobile {
+            background-color: rgba(41, 178, 93, 0.05);
+            border-left: 4px solid var(--primary-green);
+            padding: 16px;
+            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+            margin-bottom: 16px;
+        }
+        
+        .tip-title-mobile {
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary-navy);
+            font-family: 'Poppins', sans-serif;
+            font-size: 15px;
+        }
+        
+        .tip-title-mobile i {
+            color: var(--primary-green);
+        }
+        
+        .tip-content-mobile {
+            font-size: 13px;
+            color: var(--neutral-text);
+            line-height: 1.6;
+        }
+        
+        /* Improvement Tips (Visible by Default) */
+        .improvement-tips-mobile {
+            background: linear-gradient(135deg, rgba(41, 178, 93, 0.08), rgba(126, 220, 144, 0.08));
+            border-left: 4px solid var(--primary-green);
+            padding: 20px;
+            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+            margin-top: 20px;
+        }
+        
+        .improvement-title-mobile {
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--primary-navy);
+            font-family: 'Poppins', sans-serif;
+            font-size: 16px;
+        }
+        
+        .improvement-content-mobile {
+            font-size: 13px;
+            color: var(--neutral-text);
+            line-height: 1.6;
+        }
+        
+        .improvement-item {
+            margin-bottom: 12px;
+            padding-left: 8px;
+        }
+        
+        /* Footer Mobile */
+        .mobile-footer {
+            text-align: center;
+            padding: 20px 16px;
+            font-size: 12px;
+            color: var(--neutral-gray);
+            background: var(--neutral-white);
+            border-top: 1px solid rgba(11, 35, 64, 0.1);
+            margin-top: 20px;
+        }
+        
+        /* Hidden Class */
+        .hidden {
+            display: none !important;
+        }
+        
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
         }
     </style>
 </head>
 <body>
-    <!-- Demo Modal -->
-    <div class="fixed inset-0 modal-overlay flex items-center justify-center p-4">
-        <!-- Modal Container -->
-        <div class="modal-content bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <!-- Close Button -->
-            <button class="absolute top-6 right-6 z-10 w-10 h-10 rounded-full bg-white border-2 border-gray-200 flex items-center justify-center text-gray-500 hover:text-makeover-pink hover:border-makeover-pink transition-all">
-                <i class="fas fa-times text-xl"></i>
-            </button>
-            
-            <!-- Modal Content -->
-            <div class="p-8">
-                <!-- Product Grid -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <!-- Left: Product Image & Details -->
-                    <div>
-                        <!-- Product Image -->
-                        <div class="relative rounded-2xl overflow-hidden mb-6">
-                            <img src="https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=800&auto=format&fit=crop" 
-                                 alt="PowerStay Lip Commander" 
-                                 class="w-full aspect-square object-cover">
-                            <!-- Product Badge -->
-                            <div class="absolute top-4 left-4">
-                                <span class="px-4 py-2 bg-white/90 backdrop-blur-sm rounded-full text-sm font-semibold text-makeover-pink shadow-lg">
-                                    BEST FOR YOU
-                                </span>
-                            </div>
-                        </div>
-                        
-                        <!-- Product Details -->
-                        <div class="space-y-4">
-                            <!-- Category -->
-                            <div class="flex items-center space-x-2">
-                                <div class="w-3 h-3 rounded-full bg-gradient-to-r from-makeover-pink to-makeover-blue"></div>
-                                <span class="text-sm font-semibold text-makeover-pink uppercase tracking-wide">
-                                    EXECUTIVE COLLECTION
-                                </span>
-                            </div>
-                            
-                            <!-- Product Name -->
-                            <h1 class="font-playfair text-3xl font-bold text-gray-900">
-                                PowerStay Lip Commander
-                            </h1>
-                            
-                            <!-- Description -->
-                            <p class="text-gray-600 leading-relaxed">
-                                Matte finish that commands attention without smudging through 8-hour meetings. 
-                                Formulated with long-wear technology for all-day confidence in the boardroom.
-                            </p>
-                            
-                            <!-- Features -->
-                            <div class="space-y-3 pt-4">
-                                <div class="flex items-center space-x-3">
-                                    <div class="w-10 h-10 rounded-full bg-pink-50 flex items-center justify-center">
-                                        <i class="fas fa-clock text-makeover-pink"></i>
-                                    </div>
-                                    <div>
-                                        <div class="font-semibold text-gray-800">12-Hour Wear</div>
-                                        <div class="text-sm text-gray-500">Lasts through back-to-back meetings</div>
-                                    </div>
-                                </div>
-                                
-                                <div class="flex items-center space-x-3">
-                                    <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center">
-                                        <i class="fas fa-check-circle text-makeover-blue"></i>
-                                    </div>
-                                    <div>
-                                        <div class="font-semibold text-gray-800">Perfect Match</div>
-                                        <div class="text-sm text-gray-500">Optimized for Crimson Commander spirit</div>
-                                    </div>
-                                </div>
-                                
-                                <div class="flex items-center space-x-3">
-                                    <div class="w-10 h-10 rounded-full bg-yellow-50 flex items-center justify-center">
-                                        <i class="fas fa-star text-makeover-yellow"></i>
-                                    </div>
-                                    <div>
-                                        <div class="font-semibold text-gray-800">98% Match Score</div>
-                                        <div class="text-sm text-gray-500">Highest compatibility with your profile</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Right: Customization & Cart -->
-                    <div class="space-y-8">
-                        <!-- Price Section -->
-                        <div class="pb-6 border-b border-gray-200">
-                            <div class="flex items-end space-x-2 mb-2">
-                                <span class="text-4xl font-bold text-gray-900">Rp 249.000</span>
-                                <span class="text-sm text-gray-500 line-through">Rp 299.000</span>
-                            </div>
-                            <div class="flex items-center space-x-4">
-                                <span class="text-sm text-gray-500">Special Spirit Price</span>
-                                <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">
-                                    <i class="fas fa-check-circle mr-1"></i> In Stock
-                                </span>
-                            </div>
-                            <div class="mt-2 text-sm text-green-600 font-medium">
-                                <i class="fas fa-shipping-fast mr-2"></i> Free Shipping • 2-3 Day Delivery
-                            </div>
-                        </div>
-                        
-                        <!-- Shade Selection -->
-                        <div class="pb-6 border-b border-gray-200">
-                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Select Your Shade</h3>
-                            <div class="mb-6">
-                                <div class="flex flex-wrap gap-4 mb-4">
-                                    <!-- Shade Option 1 -->
-                                    <div class="shade-option selected">
-                                        <div class="relative">
-                                            <div class="w-16 h-16 rounded-full bg-gradient-to-r from-red-500 to-red-600 flex items-center justify-center shadow-lg">
-                                                <i class="fas fa-check text-white text-xl"></i>
-                                            </div>
-                                        </div>
-                                        <div class="text-center mt-2">
-                                            <div class="font-medium text-gray-900">Crimson Commander</div>
-                                            <div class="text-xs text-gray-500">Perfect Match</div>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Shade Option 2 -->
-                                    <div class="shade-option">
-                                        <div class="relative">
-                                            <div class="w-16 h-16 rounded-full bg-gradient-to-r from-pink-400 to-pink-500 flex items-center justify-center shadow-lg">
-                                                <i class="fas fa-check text-white text-xl opacity-0"></i>
-                                            </div>
-                                        </div>
-                                        <div class="text-center mt-2">
-                                            <div class="font-medium text-gray-900">Power Pink</div>
-                                            <div class="text-xs text-gray-500">Best Seller</div>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Shade Option 3 -->
-                                    <div class="shade-option">
-                                        <div class="relative">
-                                            <div class="w-16 h-16 rounded-full bg-gradient-to-r from-rose-300 to-rose-400 flex items-center justify-center shadow-lg">
-                                                <i class="fas fa-check text-white text-xl opacity-0"></i>
-                                            </div>
-                                        </div>
-                                        <div class="text-center mt-2">
-                                            <div class="font-medium text-gray-900">Executive Nude</div>
-                                            <div class="text-xs text-gray-500">Professional</div>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Shade Option 4 -->
-                                    <div class="shade-option">
-                                        <div class="relative">
-                                            <div class="w-16 h-16 rounded-full bg-gradient-to-r from-brown-600 to-brown-700 flex items-center justify-center shadow-lg">
-                                                <i class="fas fa-check text-white text-xl opacity-0"></i>
-                                            </div>
-                                        </div>
-                                        <div class="text-center mt-2">
-                                            <div class="font-medium text-gray-900">Boardroom Brick</div>
-                                            <div class="text-xs text-gray-500">Bold Choice</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="text-center text-sm text-gray-600">
-                                    Selected: <span class="font-semibold text-makeover-pink">Crimson Commander</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Quantity -->
-                        <div class="pb-6 border-b border-gray-200">
-                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Quantity</h3>
-                            <div class="flex items-center space-x-6">
-                                <div class="flex items-center space-x-4">
-                                    <button class="quantity-btn w-12 h-12 rounded-full border-2 border-gray-300 flex items-center justify-center hover:border-makeover-pink">
-                                        <i class="fas fa-minus text-gray-600 text-lg"></i>
-                                    </button>
-                                    
-                                    <div class="text-center">
-                                        <div class="text-3xl font-bold text-gray-900">1</div>
-                                        <div class="text-xs text-gray-500 mt-1">Quantity</div>
-                                    </div>
-                                    
-                                    <button class="quantity-btn w-12 h-12 rounded-full border-2 border-gray-300 flex items-center justify-center hover:border-makeover-pink">
-                                        <i class="fas fa-plus text-gray-600 text-lg"></i>
-                                    </button>
-                                </div>
-                                
-                                <div class="text-sm text-gray-500">
-                                    <i class="fas fa-info-circle text-makeover-blue mr-1"></i>
-                                    Max 10 items per order
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Cart Summary -->
-                        <div class="space-y-6">
-                            <!-- Subtotal -->
-                            <div class="flex justify-between items-center py-4 border-b border-gray-200">
-                                <div>
-                                    <div class="font-semibold text-gray-900">Subtotal</div>
-                                    <div class="text-sm text-gray-500">1 item</div>
-                                </div>
-                                <div class="text-3xl font-bold text-gray-900">Rp 249.000</div>
-                            </div>
-                            
-                            <!-- Action Buttons -->
-                            <div class="grid grid-cols-1 gap-4">
-                                <!-- Add to Cart Button -->
-                                <button class="btn-primary w-full py-4 rounded-xl text-white font-semibold text-lg flex items-center justify-center space-x-3 shadow-lg hover:shadow-xl transition-all">
-                                    <i class="fas fa-shopping-bag text-xl"></i>
-                                    <span>Add to Battle Bag</span>
-                                </button>
-                                
-                                <!-- Buy Now Button -->
-                                <button class="btn-secondary w-full py-4 rounded-xl font-semibold text-lg flex items-center justify-center space-x-3 border-2 transition-all">
-                                    <i class="fas fa-bolt text-xl"></i>
-                                    <span>Buy Now</span>
-                                </button>
-                            </div>
-                            
-                            <!-- Additional Options -->
-                            <div class="flex justify-between pt-4">
-                                <button class="flex items-center space-x-2 text-gray-600 hover:text-makeover-pink transition-colors">
-                                    <i class="fas fa-heart"></i>
-                                    <span>Add to Wishlist</span>
-                                </button>
-                                
-                                <button class="flex items-center space-x-2 text-gray-600 hover:text-makeover-blue transition-colors">
-                                    <i class="fas fa-share-alt"></i>
-                                    <span>Share Product</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Spirit Match Indicator -->
-                <div class="mt-8 spirit-match rounded-2xl p-6">
-                    <div class="flex flex-col md:flex-row md:items-center gap-6">
-                        <!-- Icon -->
-                        <div class="spirit-icon w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0">
-                            <i class="fas fa-crown text-white text-2xl"></i>
-                        </div>
-                        
-                        <!-- Text -->
-                        <div class="flex-1">
-                            <div class="flex items-center space-x-3 mb-2">
-                                <h3 class="text-xl font-bold text-gray-900">Perfect Match for Crimson Commander!</h3>
-                                <span class="px-3 py-1 bg-gradient-to-r from-makeover-pink to-makeover-blue text-white rounded-full text-sm font-semibold">
-                                    98% Match
-                                </span>
-                            </div>
-                            <p class="text-gray-600">
-                                This lipstick is specially formulated for your leadership spirit. 
-                                The long-wear formula ensures you stay confident through important meetings, 
-                                while the shade complements your professional aura perfectly.
-                            </p>
-                        </div>
-                        
-                        <!-- Match Score -->
-                        <div class="text-center">
-                            <div class="text-5xl font-bold gradient-text mb-2">98%</div>
-                            <div class="text-sm text-gray-600">Compatibility Score</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Product Benefits -->
-                <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="p-6 bg-gradient-to-br from-pink-50 to-white rounded-2xl border border-pink-100">
-                        <div class="w-12 h-12 rounded-full bg-makeover-pink flex items-center justify-center mb-4">
-                            <i class="fas fa-clock text-white text-xl"></i>
-                        </div>
-                        <h4 class="font-semibold text-gray-900 mb-2">Long-Lasting Wear</h4>
-                        <p class="text-sm text-gray-600">Survives 8+ hour workdays without touch-ups</p>
-                    </div>
-                    
-                    <div class="p-6 bg-gradient-to-br from-blue-50 to-white rounded-2xl border border-blue-100">
-                        <div class="w-12 h-12 rounded-full bg-makeover-blue flex items-center justify-center mb-4">
-                            <i class="fas fa-user-check text-white text-xl"></i>
-                        </div>
-                        <h4 class="font-semibold text-gray-900 mb-2">Leadership Ready</h4>
-                        <p class="text-sm text-gray-600">Professional finish for important meetings</p>
-                    </div>
-                    
-                    <div class="p-6 bg-gradient-to-br from-yellow-50 to-white rounded-2xl border border-yellow-100">
-                        <div class="w-12 h-12 rounded-full bg-makeover-yellow flex items-center justify-center mb-4">
-                            <i class="fas fa-shield-alt text-white text-xl"></i>
-                        </div>
-                        <h4 class="font-semibold text-gray-900 mb-2">Transfer Proof</h4>
-                        <p class="text-sm text-gray-600">No smudging on coffee cups or masks</p>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Modal Footer -->
-            <div class="border-t border-gray-200 px-8 py-6 bg-gray-50 rounded-b-3xl">
-                <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-                    <div class="text-sm text-gray-600">
-                        <i class="fas fa-lock text-green-500 mr-2"></i>
-                        Secure checkout • 30-day return policy
-                    </div>
-                    
-                    <div class="flex items-center space-x-6">
-                        <div class="text-center">
-                            <div class="font-semibold text-gray-900">5,247</div>
-                            <div class="text-xs text-gray-500">Sold this month</div>
-                        </div>
-                        
-                        <div class="text-center">
-                            <div class="flex items-center">
-                                <i class="fas fa-star text-yellow-400 mr-1"></i>
-                                <span class="font-semibold text-gray-900">4.9</span>
-                                <span class="text-xs text-gray-500 ml-1">(1.2k reviews)</span>
-                            </div>
-                            <div class="text-xs text-gray-500">Customer Rating</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <!-- Mobile Header -->
+    <header class="mobile-header">
+        <div class="header-top">
+            <div class="page-title">Laporan & Growth Score</div>
+            <div class="mobile-time" id="currentTime">09:21</div>
         </div>
-    </div>
+        
+        <nav class="mobile-tabs">
+            <div class="mobile-tab active">Tab Laporan</div>
+            <div class="mobile-tab">Analisis</div>
+            <div class="mobile-tab">Rekomendasi</div>
+            <div class="mobile-tab">Pengaturan</div>
+        </nav>
+    </header>
+    
+    <!-- Main Content -->
+    <main class="mobile-content">
+        <!-- Section 1: Growth Score -->
+        <section class="mobile-card fade-in">
+            <div class="card-title">
+                <i class="fas fa-chart-line"></i>
+                <span>Growth Score</span>
+            </div>
+            
+            <div class="score-circle-mobile">
+                <div class="score-circle-inner-mobile">
+                    <div class="score-value-mobile">50</div>
+                    <div class="score-label-mobile">Skor Pertumbuhan</div>
+                </div>
+            </div>
+            
+            <p class="score-description-mobile">
+                Skor ini mengukur kesehatan bisnis Anda berdasarkan konsistensi pencatatan, arus kas, dan kesehatan hutang.
+            </p>
+            
+            <div class="indicators-mobile">
+                <div class="indicator-mobile">
+                    <div class="indicator-value-mobile">65%</div>
+                    <div class="indicator-label-mobile">Konsistensi Pencatatan</div>
+                </div>
+                <div class="indicator-mobile">
+                    <div class="indicator-value-mobile">33%</div>
+                    <div class="indicator-label-mobile">Arus Kas</div>
+                </div>
+                <div class="indicator-mobile">
+                    <div class="indicator-value-mobile">90%</div>
+                    <div class="indicator-label-mobile">Kesehatan Hutang</div>
+                </div>
+            </div>
+            
+            <button class="btn-mobile" id="improveScoreBtn">
+                <i class="fas fa-rocket"></i> Lihat Detail Peningkatan
+            </button>
+        </section>
+        
+        <!-- Section 2: Ringkasan Keuangan -->
+        <section class="mobile-card fade-in">
+            <div class="card-title">
+                <i class="fas fa-chart-pie"></i>
+                <span>Ringkasan Keuangan</span>
+            </div>
+            
+            <div class="finance-tabs-mobile">
+                <div class="finance-tab-mobile active" data-period="daily">Harian</div>
+                <div class="finance-tab-mobile" data-period="weekly">Mingguan</div>
+                <div class="finance-tab-mobile" data-period="monthly">Bulanan</div>
+            </div>
+            
+            <!-- CHART YANG LEBIH RAPI -->
+            <div class="chart-container-mobile">
+                <!-- Y-axis dengan label -->
+                <div class="y-axis-container">
+                    <div class="y-axis-label">150K</div>
+                    <div class="y-axis-label">120K</div>
+                    <div class="y-axis-label">90K</div>
+                    <div class="y-axis-label">60K</div>
+                    <div class="y-axis-label">30K</div>
+                    <div class="y-axis-label">0</div>
+                </div>
+                
+                <!-- Grid lines -->
+                <div class="chart-grid">
+                    <div class="grid-line"></div>
+                    <div class="grid-line"></div>
+                    <div class="grid-line"></div>
+                    <div class="grid-line"></div>
+                    <div class="grid-line"></div>
+                    <div class="grid-line"></div>
+                </div>
+                
+                <!-- Bar chart -->
+                <div class="bar-chart-mobile">
+                    <div class="bar-wrapper-mobile">
+                        <div class="bar-mobile" style="height: 85%;" data-value="130000">
+                            <div class="bar-tooltip">Rp 130.000</div>
+                            <div class="bar-label-mobile">Sen</div>
+                        </div>
+                    </div>
+                    <div class="bar-wrapper-mobile">
+                        <div class="bar-mobile" style="height: 70%;" data-value="110000">
+                            <div class="bar-tooltip">Rp 110.000</div>
+                            <div class="bar-label-mobile">Sel</div>
+                        </div>
+                    </div>
+                    <div class="bar-wrapper-mobile">
+                        <div class="bar-mobile" style="height: 60%;" data-value="95000">
+                            <div class="bar-tooltip">Rp 95.000</div>
+                            <div class="bar-label-mobile">Rab</div>
+                        </div>
+                    </div>
+                    <div class="bar-wrapper-mobile">
+                        <div class="bar-mobile" style="height: 45%;" data-value="70000">
+                            <div class="bar-tooltip">Rp 70.000</div>
+                            <div class="bar-label-mobile">Kam</div>
+                        </div>
+                    </div>
+                    <div class="bar-wrapper-mobile">
+                        <div class="bar-mobile" style="height: 80%;" data-value="125000">
+                            <div class="bar-tooltip">Rp 125.000</div>
+                            <div class="bar-label-mobile">Jum</div>
+                        </div>
+                    </div>
+                    <div class="bar-wrapper-mobile">
+                        <div class="bar-mobile" style="height: 95%;" data-value="150000">
+                            <div class="bar-tooltip">Rp 150.000</div>
+                            <div class="bar-label-mobile">Sab</div>
+                        </div>
+                    </div>
+                    <div class="bar-wrapper-mobile">
+                        <div class="bar-mobile" style="height: 65%;" data-value="100000">
+                            <div class="bar-tooltip">Rp 100.000</div>
+                            <div class="bar-label-mobile">Min</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- X-axis labels -->
+                <div class="x-axis-labels">
+                    <div class="day-label">Sen</div>
+                    <div class="day-label">Sel</div>
+                    <div class="day-label">Rab</div>
+                    <div class="day-label">Kam</div>
+                    <div class="day-label">Jum</div>
+                    <div class="day-label">Sab</div>
+                    <div class="day-label">Min</div>
+                </div>
+            </div>
+            
+            <!-- Info Chart -->
+            <div style="text-align: center; margin: 10px 0; font-size: 11px; color: var(--neutral-gray);">
+                <i class="fas fa-info-circle"></i> Sentuh atau arahkan kursor pada bar untuk melihat nilai
+            </div>
+            
+            <div class="financial-summary-mobile">
+                <div class="summary-item-mobile">
+                    <div class="summary-value-mobile income-mobile">Rp 500K</div>
+                    <div class="summary-label-mobile">Total Masuk</div>
+                </div>
+                <div class="summary-item-mobile">
+                    <div class="summary-value-mobile expense-mobile">Rp 435K</div>
+                    <div class="summary-label-mobile">Total Keluar</div>
+                </div>
+                <div class="summary-item-mobile">
+                    <div class="summary-value-mobile profit-mobile">Rp 65K</div>
+                    <div class="summary-label-mobile">Laba Bersih</div>
+                </div>
+            </div>
+            
+            <div class="status-container-mobile">
+                <div class="status-item-mobile">
+                    <div>
+                        <div class="status-label-mobile">Modal</div>
+                        <div class="status-bar-mobile">
+                            <div class="status-fill-mobile" style="width: 62.5%; background: linear-gradient(90deg, var(--primary-navy), #1E3A5E);"></div>
+                        </div>
+                    </div>
+                    <div class="status-value-mobile">62.5%</div>
+                </div>
+                <div class="status-item-mobile">
+                    <div>
+                        <div class="status-label-mobile">Pengeluaran</div>
+                        <div class="status-bar-mobile">
+                            <div class="status-fill-mobile" style="width: 25%; background: linear-gradient(90deg, var(--secondary-yellow), #FFD580);"></div>
+                        </div>
+                    </div>
+                    <div class="status-value-mobile">25%</div>
+                </div>
+                <div class="status-item-mobile">
+                    <div>
+                        <div class="status-label-mobile">Laba</div>
+                        <div class="status-bar-mobile">
+                            <div class="status-fill-mobile" style="width: 12.5%; background: linear-gradient(90deg, var(--primary-green), var(--secondary-green));"></div>
+                        </div>
+                    </div>
+                    <div class="status-value-mobile">12.5%</div>
+                </div>
+            </div>
+            
+            <button class="btn-mobile" id="downloadPdfBtn" style="background-color: var(--primary-navy); margin-top: 24px;">
+                <i class="fas fa-download"></i> Unduh Laporan PDF
+            </button>
+        </section>
+        
+        <!-- Tips Bagus! Usaha Kamu Untung -->
+        <section class="mobile-card fade-in">
+            <div class="tip-box-mobile">
+                <div class="tip-title-mobile">
+                    <i class="fas fa-check-circle"></i>
+                    Bagus! Usaha Kamu Untung
+                </div>
+                <p class="tip-content-mobile">
+                    Coba sisihkan 20% dari keuntungan untuk modal berkembang. Dengan cara ini, bisnis Anda bisa tumbuh lebih cepat dan lebih stabil dalam jangka panjang. Pertimbangkan juga untuk mengalokasikan 10% untuk dana darurat bisnis.
+                </p>
+            </div>
+        </section>
+        
+        <!-- Improvement Tips (Langsung Tampil) -->
+        <section class="mobile-card fade-in">
+            <div class="improvement-tips-mobile">
+                <div class="improvement-title-mobile">
+                    <i class="fas fa-rocket"></i>
+                    Cara Meningkatkan Growth Score
+                </div>
+                <div class="improvement-content-mobile">
+                    <div class="improvement-item">
+                        <strong>1. Konsistensi Pencatatan (65% → Target 85%)</strong><br>
+                        • Gunakan fitur pencatatan harian<br>
+                        • Setel pengingat setiap hari pukul 18:00<br>
+                        • Manfaatkan template untuk transaksi berulang
+                    </div>
+                    
+                    <div class="improvement-item">
+                        <strong>2. Arus Kas (33% → Target 70%)</strong><br>
+                        • Kurangi waktu penagihan dari 30 hari menjadi 14 hari<br>
+                        • Negosiasi syarat pembayaran dengan supplier<br>
+                        • Pisahkan rekening pribadi dan bisnis
+                    </div>
+                    
+                    <div class="improvement-item">
+                        <strong>3. Kesehatan Hutang (90% → Pertahankan)</strong><br>
+                        • Prioritaskan pelunasan hutang dengan bunga tinggi<br>
+                        • Manfaatkan periode bebas bunga dengan optimal<br>
+                        • Hindari hutang baru untuk kebutuhan non-produktif
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <!-- Footer -->
+    <footer class="mobile-footer">
+        <p>Laporan & Growth Score • Diperbarui: <span id="currentDate">16 Januari 2026</span></p>
+        <p>Sistem Pelacakan Bisnis Mobile • Versi 2.1</p>
+    </footer>
 
-    <!-- Tailwind Config -->
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'makeover-pink': '#E83A7D',
-                        'makeover-blue': '#2D5BFF',
-                        'makeover-yellow': '#FFD166',
-                        'makeover-green': '#06D6A0',
-                        'makeover-purple': '#A855F7',
-                        'makeover-brown': '#92400e',
-                    },
-                    fontFamily: {
-                        'poppins': ['Poppins', 'sans-serif'],
-                        'playfair': ['Playfair Display', 'serif'],
-                    }
-                }
-            }
+        // Update waktu real-time
+        function updateTime() {
+            const now = new Date();
+            let hours = now.getHours();
+            let minutes = now.getMinutes();
+            
+            hours = hours < 10 ? '0' + hours : hours;
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            
+            document.getElementById('currentTime').textContent = `${hours}:${minutes}`;
         }
+        
+        // Update tanggal
+        function updateDate() {
+            const now = new Date();
+            const options = { day: 'numeric', month: 'long', year: 'numeric' };
+            const dateString = now.toLocaleDateString('id-ID', options);
+            document.getElementById('currentDate').textContent = dateString;
+        }
+        
+        updateTime();
+        updateDate();
+        setInterval(updateTime, 60000);
+        
+        // Mobile tabs functionality
+        const mobileTabs = document.querySelectorAll('.mobile-tab');
+        mobileTabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                mobileTabs.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                // In real app, load different content
+                const tabName = this.textContent;
+                if (tabName !== 'Tab Laporan') {
+                    // Simple feedback
+                    showMobileToast(`Membuka tab: ${tabName}`);
+                }
+            });
+        });
+        
+        // Financial tabs functionality
+        const financeTabs = document.querySelectorAll('.finance-tab-mobile');
+        financeTabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                financeTabs.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                const period = this.dataset.period;
+                updateChartData(period);
+                showMobileToast(`Menampilkan data ${period.toLowerCase()}`);
+            });
+        });
+        
+        // Function to update chart data based on period
+        function updateChartData(period) {
+            const bars = document.querySelectorAll('.bar-mobile');
+            const barLabels = document.querySelectorAll('.bar-label-mobile');
+            const dayLabels = document.querySelectorAll('.day-label');
+            const yAxisLabels = document.querySelectorAll('.y-axis-label');
+            
+            if (period === 'daily') {
+                // Data harian (7 hari)
+                const dailyData = [
+                    { value: 130000, label: 'Sen', height: 85 },
+                    { value: 110000, label: 'Sel', height: 70 },
+                    { value: 95000, label: 'Rab', height: 60 },
+                    { value: 70000, label: 'Kam', height: 45 },
+                    { value: 125000, label: 'Jum', height: 80 },
+                    { value: 150000, label: 'Sab', height: 95 },
+                    { value: 100000, label: 'Min', height: 65 }
+                ];
+                
+                bars.forEach((bar, index) => {
+                    bar.style.height = `${dailyData[index].height}%`;
+                    bar.setAttribute('data-value', dailyData[index].value);
+                    bar.querySelector('.bar-tooltip').textContent = `Rp ${(dailyData[index].value/1000).toFixed(0)}.000`;
+                });
+                
+                barLabels.forEach((label, index) => {
+                    label.textContent = dailyData[index].label;
+                });
+                
+                dayLabels.forEach((label, index) => {
+                    label.textContent = dailyData[index].label;
+                });
+                
+                // Update Y-axis
+                yAxisLabels[0].textContent = '150K';
+                yAxisLabels[1].textContent = '120K';
+                yAxisLabels[2].textContent = '90K';
+                yAxisLabels[3].textContent = '60K';
+                yAxisLabels[4].textContent = '30K';
+                yAxisLabels[5].textContent = '0';
+                
+            } else if (period === 'weekly') {
+                // Data mingguan (4 minggu)
+                const weeklyData = [
+                    { value: 300000, label: 'M1', height: 60 },
+                    { value: 400000, label: 'M2', height: 80 },
+                    { value: 200000, label: 'M3', height: 40 },
+                    { value: 500000, label: 'M4', height: 100 }
+                ];
+                
+                bars.forEach((bar, index) => {
+                    if (index < 4) {
+                        bar.style.height = `${weeklyData[index].height}%`;
+                        bar.setAttribute('data-value', weeklyData[index].value);
+                        bar.querySelector('.bar-tooltip').textContent = `Rp ${(weeklyData[index].value/1000).toFixed(0)}K`;
+                        bar.style.opacity = '1';
+                    } else {
+                        bar.style.height = '0%';
+                        bar.style.opacity = '0.3';
+                    }
+                });
+                
+                barLabels.forEach((label, index) => {
+                    if (index < 4) {
+                        label.textContent = weeklyData[index].label;
+                    } else {
+                        label.textContent = '';
+                    }
+                });
+                
+                dayLabels.forEach((label, index) => {
+                    if (index < 4) {
+                        label.textContent = weeklyData[index].label;
+                    } else {
+                        label.style.visibility = 'hidden';
+                    }
+                });
+                
+                // Update Y-axis
+                yAxisLabels[0].textContent = '500K';
+                yAxisLabels[1].textContent = '400K';
+                yAxisLabels[2].textContent = '300K';
+                yAxisLabels[3].textContent = '200K';
+                yAxisLabels[4].textContent = '100K';
+                yAxisLabels[5].textContent = '0';
+                
+            } else if (period === 'monthly') {
+                // Data bulanan (6 bulan)
+                const monthlyData = [
+                    { value: 1000000, label: 'Jul', height: 50 },
+                    { value: 1300000, label: 'Agu', height: 65 },
+                    { value: 1600000, label: 'Sep', height: 80 },
+                    { value: 1800000, label: 'Okt', height: 90 },
+                    { value: 2000000, label: 'Nov', height: 100 },
+                    { value: 1400000, label: 'Des', height: 70 }
+                ];
+                
+                bars.forEach((bar, index) => {
+                    if (index < 6) {
+                        bar.style.height = `${monthlyData[index].height}%`;
+                        bar.setAttribute('data-value', monthlyData[index].value);
+                        bar.querySelector('.bar-tooltip').textContent = `Rp ${(monthlyData[index].value/1000000).toFixed(1)}JT`;
+                        bar.style.opacity = '1';
+                    } else {
+                        bar.style.height = '0%';
+                        bar.style.opacity = '0.3';
+                    }
+                });
+                
+                barLabels.forEach((label, index) => {
+                    if (index < 6) {
+                        label.textContent = monthlyData[index].label;
+                    } else {
+                        label.textContent = '';
+                    }
+                });
+                
+                dayLabels.forEach((label, index) => {
+                    if (index < 6) {
+                        label.textContent = monthlyData[index].label;
+                    } else {
+                        label.style.visibility = 'hidden';
+                    }
+                });
+                
+                // Update Y-axis
+                yAxisLabels[0].textContent = '2JT';
+                yAxisLabels[1].textContent = '1.6JT';
+                yAxisLabels[2].textContent = '1.2JT';
+                yAxisLabels[3].textContent = '0.8JT';
+                yAxisLabels[4].textContent = '0.4JT';
+                yAxisLabels[5].textContent = '0';
+            }
+            
+            // Animate bars
+            animateBars();
+        }
+        
+        // Improve score button - scroll to tips
+        const improveScoreBtn = document.getElementById('improveScoreBtn');
+        const improvementSection = document.querySelector('.improvement-tips-mobile').parentElement;
+        
+        improveScoreBtn.addEventListener('click', function() {
+            // Scroll to improvement section
+            improvementSection.scrollIntoView({ 
+                behavior: 'smooth',
+                block: 'center'
+            });
+            
+            // Highlight animation
+            improvementSection.style.animation = 'none';
+            setTimeout(() => {
+                improvementSection.style.animation = 'fadeIn 0.5s ease';
+                improvementSection.style.boxShadow = '0 0 0 2px var(--primary-green)';
+                
+                setTimeout(() => {
+                    improvementSection.style.boxShadow = '';
+                }, 1000);
+            }, 10);
+        });
+        
+        // Download PDF button
+        const downloadPdfBtn = document.getElementById('downloadPdfBtn');
+        downloadPdfBtn.addEventListener('click', function() {
+            const originalHTML = this.innerHTML;
+            
+            // Show loading
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Membuat Laporan...';
+            this.disabled = true;
+            
+            // Simulate PDF generation
+            setTimeout(() => {
+                // Success
+                this.innerHTML = '<i class="fas fa-check"></i> Berhasil!';
+                this.style.backgroundColor = 'var(--primary-green)';
+                
+                // Show success toast
+                showMobileToast('✅ Laporan PDF siap diunduh! Cek folder download Anda.');
+                
+                // Reset button
+                setTimeout(() => {
+                    this.innerHTML = originalHTML;
+                    this.disabled = false;
+                    this.style.backgroundColor = '';
+                }, 2000);
+            }, 1500);
+        });
+        
+        // Function to animate bars
+        function animateBars() {
+            const bars = document.querySelectorAll('.bar-mobile');
+            bars.forEach((bar, index) => {
+                const targetHeight = bar.style.height;
+                bar.style.height = '0%';
+                
+                setTimeout(() => {
+                    bar.style.transition = 'height 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease';
+                    bar.style.height = targetHeight;
+                    if (bar.style.opacity !== '0.3') {
+                        bar.style.opacity = '1';
+                    }
+                }, index * 80);
+            });
+        }
+        
+        // Toast function for mobile
+        function showMobileToast(message) {
+            // Remove existing toast
+            const existingToast = document.querySelector('.mobile-toast');
+            if (existingToast) {
+                existingToast.remove();
+            }
+            
+            const toast = document.createElement('div');
+            toast.className = 'mobile-toast';
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                left: 16px;
+                right: 16px;
+                background: var(--primary-navy);
+                color: white;
+                padding: 14px;
+                border-radius: 12px;
+                font-size: 14px;
+                font-weight: 500;
+                text-align: center;
+                z-index: 1000;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+                animation: slideUp 0.3s ease;
+            `;
+            toast.textContent = message;
+            
+            document.body.appendChild(toast);
+            
+            // Add animation style
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideUp {
+                    from { transform: translateY(100%); opacity: 0; }
+                    to { transform: translateY(0); opacity: 1; }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                toast.style.animation = 'slideUp 0.3s ease reverse';
+                setTimeout(() => {
+                    if (toast.parentNode) toast.remove();
+                    if (style.parentNode) style.remove();
+                }, 300);
+            }, 3000);
+        }
+        
+        // Animate elements on load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate score circle
+            const scoreCircle = document.querySelector('.score-circle-mobile');
+            scoreCircle.style.opacity = '0';
+            scoreCircle.style.transform = 'scale(0.8)';
+            
+            setTimeout(() => {
+                scoreCircle.style.transition = 'opacity 0.6s ease, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
+                scoreCircle.style.opacity = '1';
+                scoreCircle.style.transform = 'scale(1)';
+            }, 300);
+            
+            // Animate bars on load
+            setTimeout(() => {
+                animateBars();
+            }, 500);
+            
+            // Add touch interaction for bars on mobile
+            const bars = document.querySelectorAll('.bar-mobile');
+            bars.forEach(bar => {
+                bar.addEventListener('touchstart', function() {
+                    this.style.transform = 'scaleY(1.1)';
+                    this.style.opacity = '0.9';
+                    
+                    // Show tooltip immediately on touch
+                    const tooltip = this.querySelector('.bar-tooltip');
+                    tooltip.style.opacity = '1';
+                    tooltip.style.visibility = 'visible';
+                    tooltip.style.top = '-35px';
+                });
+                
+                bar.addEventListener('touchend', function() {
+                    this.style.transform = 'scaleY(1)';
+                    this.style.opacity = '1';
+                    
+                    // Hide tooltip after delay
+                    setTimeout(() => {
+                        const tooltip = this.querySelector('.bar-tooltip');
+                        tooltip.style.opacity = '0';
+                        tooltip.style.visibility = 'hidden';
+                    }, 1500);
+                });
+            });
+            
+            // Add hover effect for desktop
+            bars.forEach(bar => {
+                bar.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scaleY(1.05)';
+                });
+                
+                bar.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scaleY(1)';
+                });
+            });
+            
+            // Add interaction for summary items
+            const summaryItems = document.querySelectorAll('.summary-item-mobile');
+            summaryItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const label = this.querySelector('.summary-label-mobile').textContent;
+                    const value = this.querySelector('.summary-value-mobile').textContent;
+                    
+                    showMobileToast(`${label}: ${value}`);
+                });
+            });
+        });
     </script>
 </body>
 </html>
