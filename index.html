@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Laporan & Growth Score</title>
+    <title>Growth Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -12,6 +12,8 @@
             --primary-green: #29B25D;
             --secondary-green: #7EDC90;
             --secondary-yellow: #FFC857;
+            --accent-blue: #3B82F6;
+            --accent-purple: #8B5CF6;
             --neutral-white: #FFFFFF;
             --neutral-light: #F4F5F7;
             --neutral-text: #4A4A4A;
@@ -61,19 +63,43 @@
             margin-bottom: 16px;
         }
         
-        .page-title {
+        .brand-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .brand-logo {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 18px;
+            color: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .brand-text {
             font-family: 'Poppins', sans-serif;
             font-size: 20px;
             font-weight: 700;
+            letter-spacing: -0.3px;
         }
         
         .mobile-time {
             font-size: 14px;
             font-weight: 500;
             opacity: 0.9;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 6px 10px;
+            border-radius: 20px;
         }
         
-        /* Mobile Navigation Tabs */
+        /* Navigation Tabs */
         .mobile-tabs {
             display: flex;
             gap: 4px;
@@ -87,15 +113,22 @@
         }
         
         .mobile-tab {
-            padding: 10px 16px;
+            flex: 1;
+            min-width: 80px;
+            text-align: center;
+            padding: 10px 8px;
             background: rgba(255, 255, 255, 0.1);
             border-radius: var(--radius-sm);
             font-family: 'Poppins', sans-serif;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
             white-space: nowrap;
             cursor: pointer;
             transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
         }
         
         .mobile-tab.active {
@@ -104,13 +137,28 @@
             font-weight: 600;
         }
         
-        /* Main Content Mobile */
+        /* Main Content */
         .mobile-content {
             padding: 16px;
             padding-bottom: 80px;
         }
         
-        /* Cards Mobile */
+        /* Page Container */
+        .page-container {
+            display: none;
+        }
+        
+        .page-container.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Cards */
         .mobile-card {
             background: var(--neutral-white);
             border-radius: var(--radius-md);
@@ -131,7 +179,7 @@
             margin-bottom: 20px;
         }
         
-        /* Growth Score Mobile */
+        /* ==================== HALAMAN LAPORAN ==================== */
         .score-circle-mobile {
             width: 140px;
             height: 140px;
@@ -169,22 +217,6 @@
             line-height: 1;
         }
         
-        .score-label-mobile {
-            font-size: 12px;
-            color: var(--neutral-gray);
-            margin-top: 4px;
-        }
-        
-        .score-description-mobile {
-            font-size: 13px;
-            color: var(--neutral-text);
-            text-align: center;
-            margin: 16px 0 24px;
-            line-height: 1.5;
-            padding: 0 10px;
-        }
-        
-        /* Indicators Mobile */
         .indicators-mobile {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -199,21 +231,314 @@
             border-radius: var(--radius-sm);
         }
         
-        .indicator-value-mobile {
+        /* Chart */
+        .chart-container-mobile {
+            position: relative;
+            margin: 20px 0 30px;
+            padding-left: 35px;
+            height: 180px;
+        }
+        
+        /* ==================== HALAMAN ANALISIS ==================== */
+        /* Analysis Metrics */
+        .analysis-metrics {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin: 20px 0;
+        }
+        
+        .analysis-card {
+            background: var(--neutral-light);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            text-align: center;
+            transition: var(--transition);
+            border-top: 4px solid transparent;
+        }
+        
+        .analysis-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .analysis-card.revenue { border-color: var(--primary-green); }
+        .analysis-card.expenses { border-color: #EF4444; }
+        .analysis-card.customers { border-color: var(--accent-blue); }
+        .analysis-card.conversion { border-color: var(--accent-purple); }
+        
+        .analysis-value {
+            font-family: 'Poppins', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        
+        .analysis-label {
+            font-size: 12px;
+            color: var(--neutral-text);
+            font-weight: 500;
+        }
+        
+        /* Trend Chart */
+        .trend-chart {
+            height: 120px;
+            position: relative;
+            margin: 20px 0;
+            background: var(--neutral-light);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+        }
+        
+        /* Comparison */
+        .comparison-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid rgba(11, 35, 64, 0.05);
+        }
+        
+        .comparison-item:last-child {
+            border-bottom: none;
+        }
+        
+        .comparison-label {
+            font-size: 14px;
+            color: var(--primary-navy);
+            font-weight: 500;
+        }
+        
+        .comparison-value {
             font-family: 'Poppins', sans-serif;
             font-weight: 600;
-            font-size: 18px;
+            font-size: 16px;
+        }
+        
+        .comparison-trend {
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+        
+        .trend-up { background: rgba(41, 178, 93, 0.1); color: var(--primary-green); }
+        .trend-down { background: rgba(239, 68, 68, 0.1); color: #EF4444; }
+        
+        /* ==================== HALAMAN TIPS ==================== */
+        .tips-category {
+            margin-bottom: 24px;
+        }
+        
+        .category-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--primary-navy);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .tip-item {
+            background: var(--neutral-light);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            margin-bottom: 12px;
+            border-left: 4px solid var(--primary-green);
+            transition: var(--transition);
+        }
+        
+        .tip-item:hover {
+            background: rgba(41, 178, 93, 0.05);
+            transform: translateX(4px);
+        }
+        
+        .tip-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+        
+        .tip-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--primary-green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        
+        .tip-content h4 {
+            font-size: 14px;
+            font-weight: 600;
             color: var(--primary-navy);
             margin-bottom: 4px;
         }
         
-        .indicator-label-mobile {
-            font-size: 11px;
+        .tip-content p {
+            font-size: 13px;
             color: var(--neutral-text);
-            line-height: 1.3;
+            line-height: 1.5;
         }
         
-        /* Buttons Mobile */
+        .tip-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        
+        .tip-action-btn {
+            padding: 6px 12px;
+            background: rgba(41, 178, 93, 0.1);
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            color: var(--primary-green);
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .tip-action-btn:hover {
+            background: var(--primary-green);
+            color: white;
+        }
+        
+        /* ==================== HALAMAN SETTING ==================== */
+        .settings-section {
+            margin-bottom: 24px;
+        }
+        
+        .settings-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--primary-navy);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid rgba(11, 35, 64, 0.05);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .setting-item:hover {
+            background: rgba(11, 35, 64, 0.02);
+            padding-left: 8px;
+            padding-right: 8px;
+            border-radius: var(--radius-sm);
+        }
+        
+        .setting-label {
+            font-size: 14px;
+            color: var(--primary-navy);
+            font-weight: 500;
+        }
+        
+        .setting-value {
+            font-size: 14px;
+            color: var(--neutral-gray);
+        }
+        
+        /* Toggle Switch */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: var(--primary-green);
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+        
+        /* Profile Section */
+        .profile-section {
+            text-align: center;
+            padding: 24px;
+            background: linear-gradient(135deg, rgba(11, 35, 64, 0.05), rgba(41, 178, 93, 0.05));
+            border-radius: var(--radius-md);
+            margin-bottom: 20px;
+        }
+        
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-navy), var(--primary-green));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: white;
+            margin: 0 auto 16px;
+            font-weight: 700;
+        }
+        
+        .profile-name {
+            font-family: 'Poppins', sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary-navy);
+            margin-bottom: 4px;
+        }
+        
+        .profile-role {
+            font-size: 14px;
+            color: var(--neutral-gray);
+            margin-bottom: 16px;
+        }
+        
+        /* Buttons */
         .btn-mobile {
             width: 100%;
             padding: 14px;
@@ -234,322 +559,19 @@
             margin-top: 16px;
         }
         
-        /* Financial Tabs Mobile */
-        .finance-tabs-mobile {
-            display: flex;
-            background: var(--neutral-light);
-            border-radius: var(--radius-sm);
-            padding: 4px;
-            margin: 20px 0;
-        }
-        
-        .finance-tab-mobile {
-            flex: 1;
-            text-align: center;
-            padding: 10px 6px;
-            font-family: 'Poppins', sans-serif;
-            font-size: 13px;
-            font-weight: 500;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-        
-        .finance-tab-mobile.active {
-            background: var(--neutral-white);
-            color: var(--primary-green);
-            font-weight: 600;
-            box-shadow: var(--shadow-sm);
-        }
-        
-        /* CHART YANG LEBIH RAPI */
-        .chart-container-mobile {
-            position: relative;
-            margin: 20px 0 30px;
-            padding-left: 35px;
-            height: 180px;
-        }
-        
-        /* Grid lines untuk chart */
-        .chart-grid {
-            position: absolute;
-            top: 0;
-            left: 35px;
-            right: 0;
-            bottom: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-        
-        .grid-line {
-            border-top: 1px solid rgba(11, 35, 64, 0.08);
-            width: 100%;
-        }
-        
-        /* Y-axis dengan background */
-        .y-axis-container {
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 30px;
-            width: 35px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            align-items: flex-end;
-            padding-right: 8px;
-        }
-        
-        .y-axis-label {
-            font-size: 10px;
-            color: var(--neutral-gray);
-            font-weight: 500;
-            transform: translateY(50%);
-        }
-        
-        /* Bar chart yang lebih rapi */
-        .bar-chart-mobile {
-            display: flex;
-            align-items: flex-end;
-            height: 150px;
-            gap: 10px;
-            padding-bottom: 30px;
-            position: relative;
-        }
-        
-        .bar-wrapper-mobile {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            height: 100%;
-            position: relative;
-        }
-        
-        .bar-mobile {
-            width: 75%;
-            background: linear-gradient(to top, var(--primary-navy), #1E3A5E);
-            border-radius: 4px 4px 0 0;
-            position: relative;
-            transition: var(--transition);
-            min-width: 20px;
-        }
-        
-        .bar-mobile:hover {
-            background: linear-gradient(to top, var(--primary-green), var(--secondary-green));
-            transform: scaleY(1.05);
-        }
-        
-        /* Tooltip untuk bar */
-        .bar-tooltip {
-            position: absolute;
-            top: -40px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--primary-navy);
-            color: white;
-            padding: 6px 10px;
-            border-radius: 6px;
-            font-size: 11px;
-            font-weight: 600;
-            white-space: nowrap;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.2s;
-            z-index: 10;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-        }
-        
-        .bar-tooltip::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 0;
-            border-left: 5px solid transparent;
-            border-right: 5px solid transparent;
-            border-top: 5px solid var(--primary-navy);
-        }
-        
-        .bar-wrapper-mobile:hover .bar-tooltip {
-            opacity: 1;
-            visibility: visible;
-            top: -35px;
-        }
-        
-        .bar-label-mobile {
-            position: absolute;
-            bottom: -25px;
-            left: 0;
-            right: 0;
-            text-align: center;
-            font-size: 11px;
-            color: var(--neutral-text);
-            font-weight: 500;
-        }
-        
-        /* X-axis labels */
-        .x-axis-labels {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 5px;
-            padding: 0 5px 0 40px;
-        }
-        
-        .day-label {
-            font-size: 11px;
-            color: var(--neutral-gray);
-            flex: 1;
-            text-align: center;
-        }
-        
-        /* Financial Summary Mobile */
-        .financial-summary-mobile {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin: 24px 0;
-        }
-        
-        .summary-item-mobile {
-            text-align: center;
-            padding: 14px 8px;
-            border-radius: var(--radius-sm);
-            background-color: var(--neutral-light);
-            transition: var(--transition);
-        }
-        
-        .summary-item-mobile:hover {
-            background: rgba(126, 220, 144, 0.1);
+        .btn-mobile:hover {
+            background-color: #1F9E4D;
             transform: translateY(-2px);
         }
         
-        .summary-value-mobile {
-            font-family: 'Poppins', sans-serif;
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 6px;
-        }
-        
-        .summary-label-mobile {
-            font-size: 12px;
-            color: var(--neutral-text);
-            font-weight: 500;
-        }
-        
-        .income-mobile { color: var(--primary-green); }
-        .expense-mobile { color: #EF4444; }
-        .profit-mobile { color: var(--primary-navy); }
-        
-        /* Status Mobile */
-        .status-container-mobile {
-            margin-top: 24px;
-            background: var(--neutral-light);
-            border-radius: var(--radius-sm);
-            padding: 16px;
-        }
-        
-        .status-item-mobile {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid rgba(11, 35, 64, 0.05);
-        }
-        
-        .status-item-mobile:last-child {
-            border-bottom: none;
-        }
-        
-        .status-label-mobile {
-            font-size: 13px;
-            font-weight: 500;
+        .btn-secondary {
+            background-color: transparent;
+            border: 1px solid var(--primary-navy);
             color: var(--primary-navy);
+            box-shadow: none;
         }
         
-        .status-value-mobile {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--primary-navy);
-        }
-        
-        .status-bar-mobile {
-            height: 6px;
-            background-color: rgba(11, 35, 64, 0.1);
-            border-radius: 3px;
-            margin-top: 6px;
-            overflow: hidden;
-        }
-        
-        .status-fill-mobile {
-            height: 100%;
-            border-radius: 3px;
-        }
-        
-        /* Tips Mobile */
-        .tip-box-mobile {
-            background-color: rgba(41, 178, 93, 0.05);
-            border-left: 4px solid var(--primary-green);
-            padding: 16px;
-            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-            margin-bottom: 16px;
-        }
-        
-        .tip-title-mobile {
-            font-weight: 600;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--primary-navy);
-            font-family: 'Poppins', sans-serif;
-            font-size: 15px;
-        }
-        
-        .tip-title-mobile i {
-            color: var(--primary-green);
-        }
-        
-        .tip-content-mobile {
-            font-size: 13px;
-            color: var(--neutral-text);
-            line-height: 1.6;
-        }
-        
-        /* Improvement Tips (Visible by Default) */
-        .improvement-tips-mobile {
-            background: linear-gradient(135deg, rgba(41, 178, 93, 0.08), rgba(126, 220, 144, 0.08));
-            border-left: 4px solid var(--primary-green);
-            padding: 20px;
-            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-            margin-top: 20px;
-        }
-        
-        .improvement-title-mobile {
-            font-weight: 600;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: var(--primary-navy);
-            font-family: 'Poppins', sans-serif;
-            font-size: 16px;
-        }
-        
-        .improvement-content-mobile {
-            font-size: 13px;
-            color: var(--neutral-text);
-            line-height: 1.6;
-        }
-        
-        .improvement-item {
-            margin-bottom: 12px;
-            padding-left: 8px;
-        }
-        
-        /* Footer Mobile */
+        /* Footer */
         .mobile-footer {
             text-align: center;
             padding: 20px 16px;
@@ -564,558 +586,760 @@
         .hidden {
             display: none !important;
         }
-        
-        /* Animation */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .fade-in {
-            animation: fadeIn 0.5s ease forwards;
-        }
     </style>
 </head>
 <body>
     <!-- Mobile Header -->
     <header class="mobile-header">
         <div class="header-top">
-            <div class="page-title">Laporan & Growth Score</div>
+            <div class="brand-container">
+                <div class="brand-logo">BS</div>
+                <div class="brand-text">Growth Dashboard</div>
+            </div>
             <div class="mobile-time" id="currentTime">09:21</div>
         </div>
         
         <nav class="mobile-tabs">
-            <div class="mobile-tab active">Tab Laporan</div>
-            <div class="mobile-tab">Analisis</div>
-            <div class="mobile-tab">Rekomendasi</div>
-            <div class="mobile-tab">Pengaturan</div>
+            <div class="mobile-tab active" data-page="report">
+                <i class="fas fa-chart-bar"></i> Laporan
+            </div>
+            <div class="mobile-tab" data-page="analysis">
+                <i class="fas fa-analytics"></i> Analisis
+            </div>
+            <div class="mobile-tab" data-page="tips">
+                <i class="fas fa-lightbulb"></i> Tips
+            </div>
+            <div class="mobile-tab" data-page="settings">
+                <i class="fas fa-cog"></i> Setting
+            </div>
         </nav>
     </header>
     
-    <!-- Main Content -->
+    <!-- Main Content - Multiple Pages -->
     <main class="mobile-content">
-        <!-- Section 1: Growth Score -->
-        <section class="mobile-card fade-in">
-            <div class="card-title">
-                <i class="fas fa-chart-line"></i>
-                <span>Growth Score</span>
-            </div>
-            
-            <div class="score-circle-mobile">
-                <div class="score-circle-inner-mobile">
-                    <div class="score-value-mobile">50</div>
-                    <div class="score-label-mobile">Skor Pertumbuhan</div>
-                </div>
-            </div>
-            
-            <p class="score-description-mobile">
-                Skor ini mengukur kesehatan bisnis Anda berdasarkan konsistensi pencatatan, arus kas, dan kesehatan hutang.
-            </p>
-            
-            <div class="indicators-mobile">
-                <div class="indicator-mobile">
-                    <div class="indicator-value-mobile">65%</div>
-                    <div class="indicator-label-mobile">Konsistensi Pencatatan</div>
-                </div>
-                <div class="indicator-mobile">
-                    <div class="indicator-value-mobile">33%</div>
-                    <div class="indicator-label-mobile">Arus Kas</div>
-                </div>
-                <div class="indicator-mobile">
-                    <div class="indicator-value-mobile">90%</div>
-                    <div class="indicator-label-mobile">Kesehatan Hutang</div>
-                </div>
-            </div>
-            
-            <button class="btn-mobile" id="improveScoreBtn">
-                <i class="fas fa-rocket"></i> Lihat Detail Peningkatan
-            </button>
-        </section>
-        
-        <!-- Section 2: Ringkasan Keuangan -->
-        <section class="mobile-card fade-in">
-            <div class="card-title">
-                <i class="fas fa-chart-pie"></i>
-                <span>Ringkasan Keuangan</span>
-            </div>
-            
-            <div class="finance-tabs-mobile">
-                <div class="finance-tab-mobile active" data-period="daily">Harian</div>
-                <div class="finance-tab-mobile" data-period="weekly">Mingguan</div>
-                <div class="finance-tab-mobile" data-period="monthly">Bulanan</div>
-            </div>
-            
-            <!-- CHART YANG LEBIH RAPI -->
-            <div class="chart-container-mobile">
-                <!-- Y-axis dengan label -->
-                <div class="y-axis-container">
-                    <div class="y-axis-label">150K</div>
-                    <div class="y-axis-label">120K</div>
-                    <div class="y-axis-label">90K</div>
-                    <div class="y-axis-label">60K</div>
-                    <div class="y-axis-label">30K</div>
-                    <div class="y-axis-label">0</div>
+        <!-- ==================== HALAMAN LAPORAN ==================== -->
+        <div id="report-page" class="page-container active">
+            <!-- Growth Score Card -->
+            <section class="mobile-card">
+                <div class="card-title">
+                    <i class="fas fa-trophy" style="color: #FFC857;"></i>
+                    <span>Growth Score</span>
                 </div>
                 
-                <!-- Grid lines -->
-                <div class="chart-grid">
-                    <div class="grid-line"></div>
-                    <div class="grid-line"></div>
-                    <div class="grid-line"></div>
-                    <div class="grid-line"></div>
-                    <div class="grid-line"></div>
-                    <div class="grid-line"></div>
-                </div>
-                
-                <!-- Bar chart -->
-                <div class="bar-chart-mobile">
-                    <div class="bar-wrapper-mobile">
-                        <div class="bar-mobile" style="height: 85%;" data-value="130000">
-                            <div class="bar-tooltip">Rp 130.000</div>
-                            <div class="bar-label-mobile">Sen</div>
-                        </div>
-                    </div>
-                    <div class="bar-wrapper-mobile">
-                        <div class="bar-mobile" style="height: 70%;" data-value="110000">
-                            <div class="bar-tooltip">Rp 110.000</div>
-                            <div class="bar-label-mobile">Sel</div>
-                        </div>
-                    </div>
-                    <div class="bar-wrapper-mobile">
-                        <div class="bar-mobile" style="height: 60%;" data-value="95000">
-                            <div class="bar-tooltip">Rp 95.000</div>
-                            <div class="bar-label-mobile">Rab</div>
-                        </div>
-                    </div>
-                    <div class="bar-wrapper-mobile">
-                        <div class="bar-mobile" style="height: 45%;" data-value="70000">
-                            <div class="bar-tooltip">Rp 70.000</div>
-                            <div class="bar-label-mobile">Kam</div>
-                        </div>
-                    </div>
-                    <div class="bar-wrapper-mobile">
-                        <div class="bar-mobile" style="height: 80%;" data-value="125000">
-                            <div class="bar-tooltip">Rp 125.000</div>
-                            <div class="bar-label-mobile">Jum</div>
-                        </div>
-                    </div>
-                    <div class="bar-wrapper-mobile">
-                        <div class="bar-mobile" style="height: 95%;" data-value="150000">
-                            <div class="bar-tooltip">Rp 150.000</div>
-                            <div class="bar-label-mobile">Sab</div>
-                        </div>
-                    </div>
-                    <div class="bar-wrapper-mobile">
-                        <div class="bar-mobile" style="height: 65%;" data-value="100000">
-                            <div class="bar-tooltip">Rp 100.000</div>
-                            <div class="bar-label-mobile">Min</div>
-                        </div>
+                <div class="score-circle-mobile">
+                    <div class="score-circle-inner-mobile">
+                        <div class="score-value-mobile">78</div>
+                        <div style="font-size: 12px; color: var(--neutral-gray);">Skor Bisnis</div>
                     </div>
                 </div>
                 
-                <!-- X-axis labels -->
-                <div class="x-axis-labels">
-                    <div class="day-label">Sen</div>
-                    <div class="day-label">Sel</div>
-                    <div class="day-label">Rab</div>
-                    <div class="day-label">Kam</div>
-                    <div class="day-label">Jum</div>
-                    <div class="day-label">Sab</div>
-                    <div class="day-label">Min</div>
-                </div>
-            </div>
-            
-            <!-- Info Chart -->
-            <div style="text-align: center; margin: 10px 0; font-size: 11px; color: var(--neutral-gray);">
-                <i class="fas fa-info-circle"></i> Sentuh atau arahkan kursor pada bar untuk melihat nilai
-            </div>
-            
-            <div class="financial-summary-mobile">
-                <div class="summary-item-mobile">
-                    <div class="summary-value-mobile income-mobile">Rp 500K</div>
-                    <div class="summary-label-mobile">Total Masuk</div>
-                </div>
-                <div class="summary-item-mobile">
-                    <div class="summary-value-mobile expense-mobile">Rp 435K</div>
-                    <div class="summary-label-mobile">Total Keluar</div>
-                </div>
-                <div class="summary-item-mobile">
-                    <div class="summary-value-mobile profit-mobile">Rp 65K</div>
-                    <div class="summary-label-mobile">Laba Bersih</div>
-                </div>
-            </div>
-            
-            <div class="status-container-mobile">
-                <div class="status-item-mobile">
-                    <div>
-                        <div class="status-label-mobile">Modal</div>
-                        <div class="status-bar-mobile">
-                            <div class="status-fill-mobile" style="width: 62.5%; background: linear-gradient(90deg, var(--primary-navy), #1E3A5E);"></div>
-                        </div>
+                <div class="indicators-mobile">
+                    <div class="indicator-mobile">
+                        <div class="indicator-value-mobile" style="color: #29B25D;">85%</div>
+                        <div class="indicator-label-mobile">Kinerja</div>
                     </div>
-                    <div class="status-value-mobile">62.5%</div>
-                </div>
-                <div class="status-item-mobile">
-                    <div>
-                        <div class="status-label-mobile">Pengeluaran</div>
-                        <div class="status-bar-mobile">
-                            <div class="status-fill-mobile" style="width: 25%; background: linear-gradient(90deg, var(--secondary-yellow), #FFD580);"></div>
-                        </div>
+                    <div class="indicator-mobile">
+                        <div class="indicator-value-mobile" style="color: #FFC857;">72%</div>
+                        <div class="indicator-label-mobile">Pertumbuhan</div>
                     </div>
-                    <div class="status-value-mobile">25%</div>
-                </div>
-                <div class="status-item-mobile">
-                    <div>
-                        <div class="status-label-mobile">Laba</div>
-                        <div class="status-bar-mobile">
-                            <div class="status-fill-mobile" style="width: 12.5%; background: linear-gradient(90deg, var(--primary-green), var(--secondary-green));"></div>
-                        </div>
+                    <div class="indicator-mobile">
+                        <div class="indicator-value-mobile" style="color: #0B2340;">91%</div>
+                        <div class="indicator-label-mobile">Stabilitas</div>
                     </div>
-                    <div class="status-value-mobile">12.5%</div>
                 </div>
-            </div>
+                
+                <button class="btn-mobile">
+                    <i class="fas fa-chart-line"></i> Lihat Detail Analisis
+                </button>
+            </section>
             
-            <button class="btn-mobile" id="downloadPdfBtn" style="background-color: var(--primary-navy); margin-top: 24px;">
-                <i class="fas fa-download"></i> Unduh Laporan PDF
-            </button>
-        </section>
+            <!-- Ringkasan Keuangan -->
+            <section class="mobile-card">
+                <div class="card-title">
+                    <i class="fas fa-wallet" style="color: #0B2340;"></i>
+                    <span>Ringkasan Keuangan</span>
+                </div>
+                
+                <div class="chart-container-mobile">
+                    <!-- Chart akan diisi oleh JavaScript -->
+                    <div style="text-align: center; padding: 40px 0; color: var(--neutral-gray);">
+                        <i class="fas fa-chart-bar" style="font-size: 32px; margin-bottom: 8px; display: block;"></i>
+                        Grafik Mingguan
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin: 10px 0; font-size: 11px; color: var(--neutral-gray);">
+                    <i class="fas fa-info-circle"></i> Data diperbarui real-time
+                </div>
+                
+                <button class="btn-mobile" style="background-color: var(--primary-navy);">
+                    <i class="fas fa-download"></i> Unduh Laporan Lengkap
+                </button>
+            </section>
+        </div>
         
-        <!-- Tips Bagus! Usaha Kamu Untung -->
-        <section class="mobile-card fade-in">
-            <div class="tip-box-mobile">
-                <div class="tip-title-mobile">
-                    <i class="fas fa-check-circle"></i>
-                    Bagus! Usaha Kamu Untung
+        <!-- ==================== HALAMAN ANALISIS ==================== -->
+        <div id="analysis-page" class="page-container">
+            <!-- Analisis Mendalam -->
+            <section class="mobile-card">
+                <div class="card-title">
+                    <i class="fas fa-chart-line" style="color: var(--accent-blue);"></i>
+                    <span>Analisis Mendalam</span>
                 </div>
-                <p class="tip-content-mobile">
-                    Coba sisihkan 20% dari keuntungan untuk modal berkembang. Dengan cara ini, bisnis Anda bisa tumbuh lebih cepat dan lebih stabil dalam jangka panjang. Pertimbangkan juga untuk mengalokasikan 10% untuk dana darurat bisnis.
-                </p>
-            </div>
-        </section>
-        
-        <!-- Improvement Tips (Langsung Tampil) -->
-        <section class="mobile-card fade-in">
-            <div class="improvement-tips-mobile">
-                <div class="improvement-title-mobile">
-                    <i class="fas fa-rocket"></i>
-                    Cara Meningkatkan Growth Score
-                </div>
-                <div class="improvement-content-mobile">
-                    <div class="improvement-item">
-                        <strong>1. Konsistensi Pencatatan (65% → Target 85%)</strong><br>
-                        • Gunakan fitur pencatatan harian<br>
-                        • Setel pengingat setiap hari pukul 18:00<br>
-                        • Manfaatkan template untuk transaksi berulang
+                
+                <div class="analysis-metrics">
+                    <div class="analysis-card revenue">
+                        <div class="analysis-value" style="color: var(--primary-green);">+18.5%</div>
+                        <div class="analysis-label">Pertumbuhan Revenue</div>
+                        <div style="font-size: 11px; color: var(--neutral-gray); margin-top: 4px;">vs bulan lalu</div>
                     </div>
                     
-                    <div class="improvement-item">
-                        <strong>2. Arus Kas (33% → Target 70%)</strong><br>
-                        • Kurangi waktu penagihan dari 30 hari menjadi 14 hari<br>
-                        • Negosiasi syarat pembayaran dengan supplier<br>
-                        • Pisahkan rekening pribadi dan bisnis
+                    <div class="analysis-card expenses">
+                        <div class="analysis-value" style="color: #EF4444;">-8.2%</div>
+                        <div class="analysis-label">Pengeluaran</div>
+                        <div style="font-size: 11px; color: var(--neutral-gray); margin-top: 4px;">lebih efisien</div>
                     </div>
                     
-                    <div class="improvement-item">
-                        <strong>3. Kesehatan Hutang (90% → Pertahankan)</strong><br>
-                        • Prioritaskan pelunasan hutang dengan bunga tinggi<br>
-                        • Manfaatkan periode bebas bunga dengan optimal<br>
-                        • Hindari hutang baru untuk kebutuhan non-produktif
+                    <div class="analysis-card customers">
+                        <div class="analysis-value" style="color: var(--accent-blue);">+24</div>
+                        <div class="analysis-label">Pelanggan Baru</div>
+                        <div style="font-size: 11px; color: var(--neutral-gray); margin-top: 4px;">30 hari terakhir</div>
+                    </div>
+                    
+                    <div class="analysis-card conversion">
+                        <div class="analysis-value" style="color: var(--accent-purple);">3.8%</div>
+                        <div class="analysis-label">Conversion Rate</div>
+                        <div style="font-size: 11px; color: var(--neutral-gray); margin-top: 4px;">optimalisasi</div>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
+            
+            <!-- Perbandingan Bulanan -->
+            <section class="mobile-card">
+                <div class="card-title">
+                    <i class="fas fa-balance-scale" style="color: var(--primary-navy);"></i>
+                    <span>Perbandingan Bulanan</span>
+                </div>
+                
+                <div class="comparison-item">
+                    <div class="comparison-label">Pendapatan</div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="comparison-value" style="color: var(--primary-green);">Rp 8.2JT</div>
+                        <div class="comparison-trend trend-up">+12%</div>
+                    </div>
+                </div>
+                
+                <div class="comparison-item">
+                    <div class="comparison-label">Pengeluaran</div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="comparison-value" style="color: #EF4444;">Rp 4.5JT</div>
+                        <div class="comparison-trend trend-down">-5%</div>
+                    </div>
+                </div>
+                
+                <div class="comparison-item">
+                    <div class="comparison-label">Laba Bersih</div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="comparison-value" style="color: var(--primary-navy);">Rp 3.7JT</div>
+                        <div class="comparison-trend trend-up">+28%</div>
+                    </div>
+                </div>
+                
+                <div class="comparison-item">
+                    <div class="comparison-label">Transaksi</div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="comparison-value" style="color: var(--accent-blue);">312</div>
+                        <div class="comparison-trend trend-up">+15%</div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Tren Jangka Panjang -->
+            <section class="mobile-card">
+                <div class="card-title">
+                    <i class="fas fa-chart-area" style="color: var(--accent-purple);"></i>
+                    <span>Tren 6 Bulan</span>
+                </div>
+                
+                <div class="trend-chart">
+                    <div style="text-align: center; padding: 40px 0; color: var(--neutral-gray);">
+                        <i class="fas fa-chart-line" style="font-size: 32px; margin-bottom: 8px; display: block;"></i>
+                        Grafik Tren Panjang
+                    </div>
+                </div>
+                
+                <div style="font-size: 13px; color: var(--neutral-text); line-height: 1.6; margin-top: 16px;">
+                    <strong>Insight:</strong> Bisnis menunjukkan tren pertumbuhan yang konsisten dengan peningkatan rata-rata 15% per bulan. Fokus pada Q2 menunjukkan hasil optimal.
+                </div>
+            </section>
+        </div>
+        
+        <!-- ==================== HALAMAN TIPS ==================== -->
+        <div id="tips-page" class="page-container">
+            <!-- Tips Berdasarkan Skor -->
+            <section class="mobile-card">
+                <div class="card-title">
+                    <i class="fas fa-bullseye" style="color: var(--primary-green);"></i>
+                    <span>Tips untuk Skor 78</span>
+                </div>
+                
+                <div class="tips-category">
+                    <div class="category-title">
+                        <i class="fas fa-money-bill-wave"></i>
+                        <span>Optimasi Keuangan</span>
+                    </div>
+                    
+                    <div class="tip-item">
+                        <div class="tip-header">
+                            <div class="tip-icon">
+                                <i class="fas fa-piggy-bank"></i>
+                            </div>
+                            <div class="tip-content">
+                                <h4>Dana Darurat Bisnis</h4>
+                                <p>Sisihkan 20% dari laba bersih setiap bulan untuk dana darurat. Target: 3x pengeluaran bulanan.</p>
+                            </div>
+                        </div>
+                        <div class="tip-actions">
+                            <button class="tip-action-btn">Terapkan</button>
+                            <button class="tip-action-btn">Pelajari</button>
+                        </div>
+                    </div>
+                    
+                    <div class="tip-item">
+                        <div class="tip-header">
+                            <div class="tip-icon" style="background: var(--accent-blue);">
+                                <i class="fas fa-chart-pie"></i>
+                            </div>
+                            <div class="tip-content">
+                                <h4>Diversifikasi Pendapatan</h4>
+                                <p>Tambahkan 1 sumber pendapatan baru dalam 60 hari untuk mengurangi risiko ketergantungan.</p>
+                            </div>
+                        </div>
+                        <div class="tip-actions">
+                            <button class="tip-action-btn">Mulai</button>
+                            <button class="tip-action-btn">Contoh</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tips-category">
+                    <div class="category-title">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Pertumbuhan Bisnis</span>
+                    </div>
+                    
+                    <div class="tip-item">
+                        <div class="tip-header">
+                            <div class="tip-icon" style="background: var(--secondary-yellow);">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="tip-content">
+                                <h4>Retensi Pelanggan</h4>
+                                <p>Fokus pada pelanggan tetap. Naikkan retensi 15% untuk meningkatkan pendapatan berulang.</p>
+                            </div>
+                        </div>
+                        <div class="tip-actions">
+                            <button class="tip-action-btn">Strategi</button>
+                            <button class="tip-action-btn">Tools</button>
+                        </div>
+                    </div>
+                    
+                    <div class="tip-item">
+                        <div class="tip-header">
+                            <div class="tip-icon" style="background: var(--accent-purple);">
+                                <i class="fas fa-bolt"></i>
+                            </div>
+                            <div class="tip-content">
+                                <h4>Optimasi Proses</h4>
+                                <p>Identifikasi 3 proses yang bisa diotomatisasi. Hemat waktu 10 jam/minggu untuk fokus growth.</p>
+                            </div>
+                        </div>
+                        <div class="tip-actions">
+                            <button class="tip-action-btn">Audit</button>
+                            <button class="tip-action-btn">Solusi</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Tips Harian -->
+            <section class="mobile-card">
+                <div class="card-title">
+                    <i class="fas fa-calendar-day" style="color: var(--primary-navy);"></i>
+                    <span>Tips Hari Ini</span>
+                </div>
+                
+                <div style="background: linear-gradient(135deg, rgba(41, 178, 93, 0.08), rgba(126, 220, 144, 0.08)); padding: 20px; border-radius: var(--radius-sm);">
+                    <div style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 16px;">
+                        <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary-green); display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; flex-shrink: 0;">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; color: var(--primary-navy); margin-bottom: 8px; font-size: 15px;">
+                                Review Mingguan
+                            </div>
+                            <div style="font-size: 13px; color: var(--neutral-text); line-height: 1.6;">
+                                Luangkan 30 menit hari ini untuk menganalisis performa minggu ini. Identifikasi apa yang bekerja baik dan area perbaikan.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="background: white; padding: 12px; border-radius: var(--radius-sm); border-left: 4px solid var(--primary-green);">
+                        <div style="font-weight: 600; color: var(--primary-navy); margin-bottom: 4px; font-size: 13px;">
+                            <i class="fas fa-check-circle" style="color: var(--primary-green);"></i> Tindakan Cepat:
+                        </div>
+                        <div style="font-size: 12px; color: var(--neutral-text);">
+                            1. Cek arus kas harian<br>
+                            2. Review target vs realisasi<br>
+                            3. Update rencana besok
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+        
+        <!-- ==================== HALAMAN SETTING ==================== -->
+        <div id="settings-page" class="page-container">
+            <!-- Profile Section -->
+            <section class="profile-section">
+                <div class="profile-avatar">BS</div>
+                <div class="profile-name">Bisnis Sukses</div>
+                <div class="profile-role">Premium Member</div>
+                <button class="btn-mobile btn-secondary" style="max-width: 200px; margin: 0 auto;">
+                    <i class="fas fa-edit"></i> Edit Profil
+                </button>
+            </section>
+            
+            <!-- Pengaturan Aplikasi -->
+            <section class="mobile-card">
+                <div class="settings-section">
+                    <div class="settings-title">
+                        <i class="fas fa-sliders-h"></i>
+                        <span>Pengaturan Aplikasi</span>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-label">Notifikasi</div>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-label">Mode Gelap</div>
+                        <label class="switch">
+                            <input type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-label">Auto Refresh</div>
+                        <div class="setting-value">Setiap 1 jam</div>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-label">Format Mata Uang</div>
+                        <div class="setting-value">Rp (IDR)</div>
+                    </div>
+                </div>
+                
+                <div class="settings-section">
+                    <div class="settings-title">
+                        <i class="fas fa-bell"></i>
+                        <span>Notifikasi</span>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-label">Reminder Pencatatan</div>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-label">Laporan Mingguan</div>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-label">Tips Harian</div>
+                        <label class="switch">
+                            <input type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="settings-section">
+                    <div class="settings-title">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Keamanan & Privasi</span>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-label">Verifikasi 2 Langkah</div>
+                        <label class="switch">
+                            <input type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-label">Auto Logout</div>
+                        <div class="setting-value">15 menit</div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Account Actions -->
+            <section class="mobile-card">
+                <div class="settings-section">
+                    <div class="settings-title">
+                        <i class="fas fa-user-cog"></i>
+                        <span>Akun & Data</span>
+                    </div>
+                    
+                    <button class="btn-mobile btn-secondary" style="margin-bottom: 12px;">
+                        <i class="fas fa-download"></i> Backup Data
+                    </button>
+                    
+                    <button class="btn-mobile btn-secondary" style="margin-bottom: 12px;">
+                        <i class="fas fa-sync"></i> Sinkronisasi Cloud
+                    </button>
+                    
+                    <button class="btn-mobile" style="background-color: #EF4444; margin-top: 24px;">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </section>
+        </div>
     </main>
     
     <!-- Footer -->
     <footer class="mobile-footer">
-        <p>Laporan & Growth Score • Diperbarui: <span id="currentDate">16 Januari 2026</span></p>
-        <p>Sistem Pelacakan Bisnis Mobile • Versi 2.1</p>
+        <p>Growth Dashboard • <span id="currentDate">16 Januari 2026</span></p>
+        <p>© 2026 Bisnis Sukses • v2.1</p>
     </footer>
 
     <script>
-        // Update waktu real-time
-        function updateTime() {
+        // ==================== INITIALIZATION ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDateTime();
+            initializeNavigation();
+            initializeSettings();
+            animateElements();
+        });
+        
+        // Update waktu dan tanggal
+        function updateDateTime() {
             const now = new Date();
+            
+            // Update time
             let hours = now.getHours();
             let minutes = now.getMinutes();
-            
             hours = hours < 10 ? '0' + hours : hours;
             minutes = minutes < 10 ? '0' + minutes : minutes;
-            
             document.getElementById('currentTime').textContent = `${hours}:${minutes}`;
-        }
-        
-        // Update tanggal
-        function updateDate() {
-            const now = new Date();
+            
+            // Update date
             const options = { day: 'numeric', month: 'long', year: 'numeric' };
             const dateString = now.toLocaleDateString('id-ID', options);
             document.getElementById('currentDate').textContent = dateString;
         }
         
-        updateTime();
-        updateDate();
-        setInterval(updateTime, 60000);
+        setInterval(updateDateTime, 60000);
         
-        // Mobile tabs functionality
-        const mobileTabs = document.querySelectorAll('.mobile-tab');
-        mobileTabs.forEach(tab => {
-            tab.addEventListener('click', function() {
-                mobileTabs.forEach(t => t.classList.remove('active'));
-                this.classList.add('active');
-                
-                // In real app, load different content
-                const tabName = this.textContent;
-                if (tabName !== 'Tab Laporan') {
-                    // Simple feedback
-                    showMobileToast(`Membuka tab: ${tabName}`);
+        // ==================== NAVIGATION ====================
+        function initializeNavigation() {
+            const tabs = document.querySelectorAll('.mobile-tab');
+            const pages = document.querySelectorAll('.page-container');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const targetPage = this.dataset.page;
+                    
+                    // Update active tab
+                    tabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Show target page
+                    pages.forEach(page => page.classList.remove('active'));
+                    document.getElementById(`${targetPage}-page`).classList.add('active');
+                    
+                    // Update header title
+                    updateHeaderTitle(targetPage);
+                    
+                    // Show toast notification
+                    showToast(`Membuka halaman: ${this.textContent.trim()}`);
+                });
+            });
+        }
+        
+        function updateHeaderTitle(page) {
+            const titles = {
+                'report': 'Growth Dashboard',
+                'analysis': 'Analisis Mendalam',
+                'tips': 'Tips & Strategi',
+                'settings': 'Pengaturan'
+            };
+            document.querySelector('.brand-text').textContent = titles[page];
+        }
+        
+        // ==================== SETTINGS ====================
+        function initializeSettings() {
+            // Toggle switches
+            const switches = document.querySelectorAll('.switch input');
+            switches.forEach(sw => {
+                sw.addEventListener('change', function() {
+                    const label = this.closest('.setting-item').querySelector('.setting-label').textContent;
+                    const status = this.checked ? 'diaktifkan' : 'dinonaktifkan';
+                    showToast(`${label} ${status}`);
+                });
+            });
+            
+            // Setting items click
+            const settingItems = document.querySelectorAll('.setting-item');
+            settingItems.forEach(item => {
+                const valueEl = item.querySelector('.setting-value');
+                if (valueEl) {
+                    item.addEventListener('click', function() {
+                        const label = this.querySelector('.setting-label').textContent;
+                        
+                        if (label === 'Auto Refresh') {
+                            showRefreshOptions(this);
+                        } else if (label === 'Format Mata Uang') {
+                            showCurrencyOptions(this);
+                        } else if (label === 'Auto Logout') {
+                            showLogoutOptions(this);
+                        }
+                    });
                 }
             });
-        });
-        
-        // Financial tabs functionality
-        const financeTabs = document.querySelectorAll('.finance-tab-mobile');
-        financeTabs.forEach(tab => {
-            tab.addEventListener('click', function() {
-                financeTabs.forEach(t => t.classList.remove('active'));
-                this.classList.add('active');
-                
-                const period = this.dataset.period;
-                updateChartData(period);
-                showMobileToast(`Menampilkan data ${period.toLowerCase()}`);
-            });
-        });
-        
-        // Function to update chart data based on period
-        function updateChartData(period) {
-            const bars = document.querySelectorAll('.bar-mobile');
-            const barLabels = document.querySelectorAll('.bar-label-mobile');
-            const dayLabels = document.querySelectorAll('.day-label');
-            const yAxisLabels = document.querySelectorAll('.y-axis-label');
             
-            if (period === 'daily') {
-                // Data harian (7 hari)
-                const dailyData = [
-                    { value: 130000, label: 'Sen', height: 85 },
-                    { value: 110000, label: 'Sel', height: 70 },
-                    { value: 95000, label: 'Rab', height: 60 },
-                    { value: 70000, label: 'Kam', height: 45 },
-                    { value: 125000, label: 'Jum', height: 80 },
-                    { value: 150000, label: 'Sab', height: 95 },
-                    { value: 100000, label: 'Min', height: 65 }
-                ];
-                
-                bars.forEach((bar, index) => {
-                    bar.style.height = `${dailyData[index].height}%`;
-                    bar.setAttribute('data-value', dailyData[index].value);
-                    bar.querySelector('.bar-tooltip').textContent = `Rp ${(dailyData[index].value/1000).toFixed(0)}.000`;
-                });
-                
-                barLabels.forEach((label, index) => {
-                    label.textContent = dailyData[index].label;
-                });
-                
-                dayLabels.forEach((label, index) => {
-                    label.textContent = dailyData[index].label;
-                });
-                
-                // Update Y-axis
-                yAxisLabels[0].textContent = '150K';
-                yAxisLabels[1].textContent = '120K';
-                yAxisLabels[2].textContent = '90K';
-                yAxisLabels[3].textContent = '60K';
-                yAxisLabels[4].textContent = '30K';
-                yAxisLabels[5].textContent = '0';
-                
-            } else if (period === 'weekly') {
-                // Data mingguan (4 minggu)
-                const weeklyData = [
-                    { value: 300000, label: 'M1', height: 60 },
-                    { value: 400000, label: 'M2', height: 80 },
-                    { value: 200000, label: 'M3', height: 40 },
-                    { value: 500000, label: 'M4', height: 100 }
-                ];
-                
-                bars.forEach((bar, index) => {
-                    if (index < 4) {
-                        bar.style.height = `${weeklyData[index].height}%`;
-                        bar.setAttribute('data-value', weeklyData[index].value);
-                        bar.querySelector('.bar-tooltip').textContent = `Rp ${(weeklyData[index].value/1000).toFixed(0)}K`;
-                        bar.style.opacity = '1';
-                    } else {
-                        bar.style.height = '0%';
-                        bar.style.opacity = '0.3';
-                    }
-                });
-                
-                barLabels.forEach((label, index) => {
-                    if (index < 4) {
-                        label.textContent = weeklyData[index].label;
-                    } else {
-                        label.textContent = '';
-                    }
-                });
-                
-                dayLabels.forEach((label, index) => {
-                    if (index < 4) {
-                        label.textContent = weeklyData[index].label;
-                    } else {
-                        label.style.visibility = 'hidden';
-                    }
-                });
-                
-                // Update Y-axis
-                yAxisLabels[0].textContent = '500K';
-                yAxisLabels[1].textContent = '400K';
-                yAxisLabels[2].textContent = '300K';
-                yAxisLabels[3].textContent = '200K';
-                yAxisLabels[4].textContent = '100K';
-                yAxisLabels[5].textContent = '0';
-                
-            } else if (period === 'monthly') {
-                // Data bulanan (6 bulan)
-                const monthlyData = [
-                    { value: 1000000, label: 'Jul', height: 50 },
-                    { value: 1300000, label: 'Agu', height: 65 },
-                    { value: 1600000, label: 'Sep', height: 80 },
-                    { value: 1800000, label: 'Okt', height: 90 },
-                    { value: 2000000, label: 'Nov', height: 100 },
-                    { value: 1400000, label: 'Des', height: 70 }
-                ];
-                
-                bars.forEach((bar, index) => {
-                    if (index < 6) {
-                        bar.style.height = `${monthlyData[index].height}%`;
-                        bar.setAttribute('data-value', monthlyData[index].value);
-                        bar.querySelector('.bar-tooltip').textContent = `Rp ${(monthlyData[index].value/1000000).toFixed(1)}JT`;
-                        bar.style.opacity = '1';
-                    } else {
-                        bar.style.height = '0%';
-                        bar.style.opacity = '0.3';
-                    }
-                });
-                
-                barLabels.forEach((label, index) => {
-                    if (index < 6) {
-                        label.textContent = monthlyData[index].label;
-                    } else {
-                        label.textContent = '';
-                    }
-                });
-                
-                dayLabels.forEach((label, index) => {
-                    if (index < 6) {
-                        label.textContent = monthlyData[index].label;
-                    } else {
-                        label.style.visibility = 'hidden';
-                    }
-                });
-                
-                // Update Y-axis
-                yAxisLabels[0].textContent = '2JT';
-                yAxisLabels[1].textContent = '1.6JT';
-                yAxisLabels[2].textContent = '1.2JT';
-                yAxisLabels[3].textContent = '0.8JT';
-                yAxisLabels[4].textContent = '0.4JT';
-                yAxisLabels[5].textContent = '0';
+            // Action buttons
+            document.querySelector('button[style*="background-color: #EF4444"]').addEventListener('click', function() {
+                if (confirm('Anda yakin ingin logout?')) {
+                    showToast('Berhasil logout. Sampai jumpa!');
+                    setTimeout(() => {
+                        document.querySelector('[data-page="report"]').click();
+                    }, 1000);
+                }
+            });
+        }
+        
+        // ==================== MODAL FUNCTIONS ====================
+        function showRefreshOptions(element) {
+            const options = ['Setiap 30 menit', 'Setiap 1 jam', 'Setiap 3 jam', 'Manual'];
+            const current = element.querySelector('.setting-value').textContent;
+            
+            const modal = createModal('Pilih Interval Refresh', options, current);
+            modal.querySelector('.modal-options').addEventListener('click', function(e) {
+                if (e.target.classList.contains('modal-option')) {
+                    const selected = e.target.textContent;
+                    element.querySelector('.setting-value').textContent = selected;
+                    closeModal();
+                    showToast(`Auto refresh diatur ke: ${selected}`);
+                }
+            });
+        }
+        
+        function showCurrencyOptions(element) {
+            const options = ['Rp (IDR)', '$ (USD)', '€ (EUR)', '¥ (JPY)'];
+            const current = element.querySelector('.setting-value').textContent;
+            
+            const modal = createModal('Pilih Mata Uang', options, current);
+            modal.querySelector('.modal-options').addEventListener('click', function(e) {
+                if (e.target.classList.contains('modal-option')) {
+                    const selected = e.target.textContent;
+                    element.querySelector('.setting-value').textContent = selected;
+                    closeModal();
+                    showToast(`Mata uang diubah ke: ${selected}`);
+                }
+            });
+        }
+        
+        function showLogoutOptions(element) {
+            const options = ['5 menit', '15 menit', '30 menit', '1 jam', 'Tidak pernah'];
+            const current = element.querySelector('.setting-value').textContent;
+            
+            const modal = createModal('Auto Logout', options, current);
+            modal.querySelector('.modal-options').addEventListener('click', function(e) {
+                if (e.target.classList.contains('modal-option')) {
+                    const selected = e.target.textContent;
+                    element.querySelector('.setting-value').textContent = selected;
+                    closeModal();
+                    showToast(`Auto logout diatur: ${selected}`);
+                }
+            });
+        }
+        
+        function createModal(title, options, current) {
+            // Remove existing modal
+            const existingModal = document.querySelector('.modal-overlay');
+            if (existingModal) existingModal.remove();
+            
+            // Create modal overlay
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay';
+            overlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(11, 35, 64, 0.8);
+                z-index: 1000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 20px;
+                animation: fadeIn 0.3s ease;
+            `;
+            
+            // Create modal content
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                background: white;
+                border-radius: var(--radius-lg);
+                padding: 24px;
+                width: 100%;
+                max-width: 320px;
+                box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            `;
+            
+            modal.innerHTML = `
+                <div style="margin-bottom: 20px;">
+                    <div style="font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 600; color: var(--primary-navy); margin-bottom: 8px;">
+                        ${title}
+                    </div>
+                    <div style="font-size: 13px; color: var(--neutral-gray);">
+                        Pilih salah satu opsi di bawah:
+                    </div>
+                </div>
+                <div class="modal-options" style="display: flex; flex-direction: column; gap: 8px;">
+                    ${options.map(opt => `
+                        <button class="modal-option" style="
+                            padding: 14px;
+                            border: 1px solid ${opt === current ? 'var(--primary-green)' : 'rgba(11, 35, 64, 0.1)'};
+                            background: ${opt === current ? 'rgba(41, 178, 93, 0.1)' : 'white'};
+                            border-radius: var(--radius-sm);
+                            font-size: 14px;
+                            color: ${opt === current ? 'var(--primary-green)' : 'var(--neutral-text)'};
+                            font-weight: ${opt === current ? '600' : '500'};
+                            cursor: pointer;
+                            transition: var(--transition);
+                            text-align: left;
+                        ">
+                            ${opt}
+                            ${opt === current ? ' <i class="fas fa-check" style="float: right;"></i>' : ''}
+                        </button>
+                    `).join('')}
+                </div>
+                <button class="modal-close" style="
+                    margin-top: 20px;
+                    width: 100%;
+                    padding: 12px;
+                    background: var(--neutral-light);
+                    border: none;
+                    border-radius: var(--radius-sm);
+                    font-size: 14px;
+                    color: var(--neutral-text);
+                    font-weight: 500;
+                    cursor: pointer;
+                    transition: var(--transition);
+                ">
+                    Batal
+                </button>
+            `;
+            
+            overlay.appendChild(modal);
+            document.body.appendChild(overlay);
+            
+            // Close modal on close button click
+            overlay.querySelector('.modal-close').addEventListener('click', closeModal);
+            
+            // Close modal on overlay click
+            overlay.addEventListener('click', function(e) {
+                if (e.target === overlay) closeModal();
+            });
+            
+            return modal;
+        }
+        
+        function closeModal() {
+            const modal = document.querySelector('.modal-overlay');
+            if (modal) {
+                modal.style.animation = 'fadeIn 0.3s ease reverse';
+                setTimeout(() => modal.remove(), 300);
             }
-            
-            // Animate bars
-            animateBars();
         }
         
-        // Improve score button - scroll to tips
-        const improveScoreBtn = document.getElementById('improveScoreBtn');
-        const improvementSection = document.querySelector('.improvement-tips-mobile').parentElement;
-        
-        improveScoreBtn.addEventListener('click', function() {
-            // Scroll to improvement section
-            improvementSection.scrollIntoView({ 
-                behavior: 'smooth',
-                block: 'center'
-            });
-            
-            // Highlight animation
-            improvementSection.style.animation = 'none';
-            setTimeout(() => {
-                improvementSection.style.animation = 'fadeIn 0.5s ease';
-                improvementSection.style.boxShadow = '0 0 0 2px var(--primary-green)';
-                
-                setTimeout(() => {
-                    improvementSection.style.boxShadow = '';
-                }, 1000);
-            }, 10);
-        });
-        
-        // Download PDF button
-        const downloadPdfBtn = document.getElementById('downloadPdfBtn');
-        downloadPdfBtn.addEventListener('click', function() {
-            const originalHTML = this.innerHTML;
-            
-            // Show loading
-            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Membuat Laporan...';
-            this.disabled = true;
-            
-            // Simulate PDF generation
-            setTimeout(() => {
-                // Success
-                this.innerHTML = '<i class="fas fa-check"></i> Berhasil!';
-                this.style.backgroundColor = 'var(--primary-green)';
-                
-                // Show success toast
-                showMobileToast('✅ Laporan PDF siap diunduh! Cek folder download Anda.');
-                
-                // Reset button
-                setTimeout(() => {
-                    this.innerHTML = originalHTML;
-                    this.disabled = false;
-                    this.style.backgroundColor = '';
-                }, 2000);
-            }, 1500);
-        });
-        
-        // Function to animate bars
-        function animateBars() {
-            const bars = document.querySelectorAll('.bar-mobile');
-            bars.forEach((bar, index) => {
-                const targetHeight = bar.style.height;
-                bar.style.height = '0%';
-                
-                setTimeout(() => {
-                    bar.style.transition = 'height 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease';
-                    bar.style.height = targetHeight;
-                    if (bar.style.opacity !== '0.3') {
-                        bar.style.opacity = '1';
+        // ==================== TIPS INTERACTION ====================
+        function initializeTips() {
+            const tipButtons = document.querySelectorAll('.tip-action-btn');
+            tipButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const action = this.textContent;
+                    const tipTitle = this.closest('.tip-item').querySelector('h4').textContent;
+                    
+                    if (action === 'Terapkan' || action === 'Mulai' || action === 'Strategi' || action === 'Audit') {
+                        showToast(`Menerapkan: ${tipTitle}`);
+                    } else {
+                        showToast(`Mempelajari: ${tipTitle}`);
                     }
-                }, index * 80);
+                });
             });
         }
         
-        // Toast function for mobile
-        function showMobileToast(message) {
+        initializeTips();
+        
+        // ==================== ANIMATIONS ====================
+        function animateElements() {
+            // Animate score circle
+            const scoreCircle = document.querySelector('.score-circle-mobile');
+            if (scoreCircle) {
+                scoreCircle.style.opacity = '0';
+                scoreCircle.style.transform = 'scale(0.8)';
+                
+                setTimeout(() => {
+                    scoreCircle.style.transition = 'opacity 0.6s ease, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
+                    scoreCircle.style.opacity = '1';
+                    scoreCircle.style.transform = 'scale(1)';
+                }, 300);
+            }
+        }
+        
+        // ==================== TOAST NOTIFICATION ====================
+        function showToast(message) {
             // Remove existing toast
-            const existingToast = document.querySelector('.mobile-toast');
-            if (existingToast) {
-                existingToast.remove();
-            }
+            const existingToast = document.querySelector('.toast');
+            if (existingToast) existingToast.remove();
             
             const toast = document.createElement('div');
-            toast.className = 'mobile-toast';
+            toast.className = 'toast';
             toast.style.cssText = `
                 position: fixed;
-                bottom: 20px;
-                left: 16px;
-                right: 16px;
+                bottom: 100px;
+                left: 50%;
+                transform: translateX(-50%);
                 background: var(--primary-navy);
                 color: white;
-                padding: 14px;
-                border-radius: 12px;
+                padding: 12px 20px;
+                border-radius: 8px;
                 font-size: 14px;
                 font-weight: 500;
-                text-align: center;
                 z-index: 1000;
                 box-shadow: 0 4px 12px rgba(0,0,0,0.2);
                 animation: slideUp 0.3s ease;
+                white-space: nowrap;
+                max-width: 300px;
+                text-align: center;
             `;
             toast.textContent = message;
             
@@ -1125,89 +1349,45 @@
             const style = document.createElement('style');
             style.textContent = `
                 @keyframes slideUp {
-                    from { transform: translateY(100%); opacity: 0; }
-                    to { transform: translateY(0); opacity: 1; }
+                    from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+                    to { opacity: 1; transform: translateX(-50%) translateY(0); }
+                }
+                @keyframes slideDown {
+                    from { opacity: 1; transform: translateX(-50%) translateY(0); }
+                    to { opacity: 0; transform: translateX(-50%) translateY(20px); }
                 }
             `;
             document.head.appendChild(style);
             
             // Remove after 3 seconds
             setTimeout(() => {
-                toast.style.animation = 'slideUp 0.3s ease reverse';
+                toast.style.animation = 'slideDown 0.3s ease';
                 setTimeout(() => {
-                    if (toast.parentNode) toast.remove();
-                    if (style.parentNode) style.remove();
+                    toast.remove();
+                    style.remove();
                 }, 300);
             }, 3000);
         }
         
-        // Animate elements on load
-        document.addEventListener('DOMContentLoaded', function() {
-            // Animate score circle
-            const scoreCircle = document.querySelector('.score-circle-mobile');
-            scoreCircle.style.opacity = '0';
-            scoreCircle.style.transform = 'scale(0.8)';
+        // ==================== ADD MODAL STYLES ====================
+        const modalStyles = document.createElement('style');
+        modalStyles.textContent = `
+            .modal-option:hover {
+                background: rgba(41, 178, 93, 0.05) !important;
+                border-color: var(--primary-green) !important;
+                transform: translateX(4px);
+            }
             
-            setTimeout(() => {
-                scoreCircle.style.transition = 'opacity 0.6s ease, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
-                scoreCircle.style.opacity = '1';
-                scoreCircle.style.transform = 'scale(1)';
-            }, 300);
+            .modal-close:hover {
+                background: rgba(11, 35, 64, 0.1) !important;
+            }
             
-            // Animate bars on load
-            setTimeout(() => {
-                animateBars();
-            }, 500);
-            
-            // Add touch interaction for bars on mobile
-            const bars = document.querySelectorAll('.bar-mobile');
-            bars.forEach(bar => {
-                bar.addEventListener('touchstart', function() {
-                    this.style.transform = 'scaleY(1.1)';
-                    this.style.opacity = '0.9';
-                    
-                    // Show tooltip immediately on touch
-                    const tooltip = this.querySelector('.bar-tooltip');
-                    tooltip.style.opacity = '1';
-                    tooltip.style.visibility = 'visible';
-                    tooltip.style.top = '-35px';
-                });
-                
-                bar.addEventListener('touchend', function() {
-                    this.style.transform = 'scaleY(1)';
-                    this.style.opacity = '1';
-                    
-                    // Hide tooltip after delay
-                    setTimeout(() => {
-                        const tooltip = this.querySelector('.bar-tooltip');
-                        tooltip.style.opacity = '0';
-                        tooltip.style.visibility = 'hidden';
-                    }, 1500);
-                });
-            });
-            
-            // Add hover effect for desktop
-            bars.forEach(bar => {
-                bar.addEventListener('mouseenter', function() {
-                    this.style.transform = 'scaleY(1.05)';
-                });
-                
-                bar.addEventListener('mouseleave', function() {
-                    this.style.transform = 'scaleY(1)';
-                });
-            });
-            
-            // Add interaction for summary items
-            const summaryItems = document.querySelectorAll('.summary-item-mobile');
-            summaryItems.forEach(item => {
-                item.addEventListener('click', function() {
-                    const label = this.querySelector('.summary-label-mobile').textContent;
-                    const value = this.querySelector('.summary-value-mobile').textContent;
-                    
-                    showMobileToast(`${label}: ${value}`);
-                });
-            });
-        });
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+        `;
+        document.head.appendChild(modalStyles);
     </script>
 </body>
 </html>
