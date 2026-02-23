@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Catat Transaksi</title>
+    <title>Scan Struk - Catat Transaksi</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -15,7 +15,7 @@
             background-color: #f9fafb;
         }
         
-        /* Custom animations */
+        /* Animations */
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
@@ -46,6 +46,11 @@
             50% { opacity: 0.5; }
         }
         
+        @keyframes scanLine {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+        }
+        
         .animate-fade-in {
             animation: fadeIn 0.3s ease-out forwards;
         }
@@ -70,6 +75,79 @@
             animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         }
         
+        .animate-scan {
+            animation: scanLine 2s linear infinite;
+        }
+        
+        /* Camera corners */
+        .camera-frame {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            background-color: #111827;
+            border-radius: 1rem;
+            overflow: hidden;
+        }
+        
+        .corner {
+            position: absolute;
+            width: 2rem;
+            height: 2rem;
+            border: 2px solid #34d399;
+            z-index: 10;
+        }
+        
+        .corner-tl {
+            top: 1rem;
+            left: 1rem;
+            border-right: 0;
+            border-bottom: 0;
+        }
+        
+        .corner-tr {
+            top: 1rem;
+            right: 1rem;
+            border-left: 0;
+            border-bottom: 0;
+        }
+        
+        .corner-bl {
+            bottom: 1rem;
+            left: 1rem;
+            border-right: 0;
+            border-top: 0;
+        }
+        
+        .corner-br {
+            bottom: 1rem;
+            right: 1rem;
+            border-left: 0;
+            border-top: 0;
+        }
+        
+        /* Scan line effect */
+        .scan-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, #34d399, transparent);
+            filter: blur(2px);
+            opacity: 0.7;
+            z-index: 5;
+        }
+        
+        /* Tap effect */
+        .tap-effect {
+            transition: transform 0.1s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .tap-effect:active {
+            transform: scale(0.95);
+        }
+        
         /* Scrollbar hide */
         .scrollbar-hide::-webkit-scrollbar {
             display: none;
@@ -78,637 +156,335 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
-        
-        /* Tap highlight */
-        .tap-highlight-none {
-            -webkit-tap-highlight-color: transparent;
-        }
-        
-        /* Camera corners */
-        .camera-corner {
-            position: absolute;
-            width: 2rem;
-            height: 2rem;
-            border: 2px solid #34d399;
-        }
-        
-        /* Transitions */
-        .tab-transition {
-            transition: all 0.2s ease;
-        }
-        
-        .scale-transition {
-            transition: transform 0.1s ease;
-        }
-        
-        .scale-transition:active {
-            transform: scale(0.95);
-        }
     </style>
 </head>
 <body class="min-h-screen bg-gray-50">
-    <div id="app" class="max-w-md mx-auto bg-gray-50 min-h-screen relative"></div>
+    <div class="max-w-md mx-auto bg-gray-50 min-h-screen relative">
+        <!-- Header -->
+        <div class="bg-white px-5 pt-12 pb-4 sticky top-0 z-10 shadow-sm">
+            <div class="flex items-center gap-3">
+                <button class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center tap-effect" onclick="goBack()">
+                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                </button>
+                <h1 class="text-gray-900" style="font-size: 22px; font-weight: 700;">Scan Struk</h1>
+            </div>
+        </div>
+
+        <!-- Main Content with Tabs -->
+        <div class="p-4">
+            <!-- Step Indicator -->
+            <div class="flex items-center justify-between mb-6 px-2">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-full bg-emerald-500 text-white flex items-center justify-center text-sm font-bold">1</div>
+                    <span class="text-sm font-medium text-gray-700">Ambil Foto</span>
+                </div>
+                <div class="flex-1 h-0.5 bg-gray-200 mx-2"></div>
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-full bg-gray-200 text-gray-400 flex items-center justify-center text-sm font-bold">2</div>
+                    <span class="text-sm font-medium text-gray-400">Preview</span>
+                </div>
+            </div>
+
+            <!-- Camera Mode -->
+            <div id="cameraMode" class="animate-fade-in">
+                <div class="bg-white rounded-3xl p-6 mb-4 shadow-sm border border-gray-100">
+                    <p class="text-gray-500 text-sm mb-6 text-center">
+                        Arahkan kamera ke struk pembelian atau invoice kamu
+                    </p>
+
+                    <!-- Camera Frame with Animation -->
+                    <div class="camera-frame mb-6">
+                        <!-- Camera icon background -->
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <svg class="w-16 h-16 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                        </div>
+                        
+                        <!-- Corner Markers -->
+                        <div class="corner corner-tl"></div>
+                        <div class="corner corner-tr"></div>
+                        <div class="corner corner-bl"></div>
+                        <div class="corner corner-br"></div>
+                        
+                        <!-- Scanning Line Animation -->
+                        <div class="scan-line animate-scan"></div>
+                        
+                        <!-- Instruction Badge -->
+                        <div class="absolute bottom-4 left-0 right-0 flex justify-center">
+                            <div class="bg-black/30 backdrop-blur-sm text-white text-xs px-4 py-2 rounded-full border border-white/20">
+                                <span class="flex items-center gap-1">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    Posisikan struk di dalam bingkai
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Camera Button -->
+                    <div class="flex flex-col items-center">
+                        <button class="w-20 h-20 bg-emerald-500 rounded-full flex items-center justify-center shadow-lg tap-effect hover:bg-emerald-600 transition-colors" onclick="switchToPreview()">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                        </button>
+                        <p class="text-gray-400 text-xs mt-3">Tekan untuk memfoto</p>
+                    </div>
+                </div>
+
+                <!-- Alternative Option -->
+                <div class="text-center">
+                    <p class="text-gray-500 text-sm">atau</p>
+                    <button class="mt-3 text-emerald-600 text-sm font-semibold flex items-center justify-center gap-2 mx-auto tap-effect">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                        Upload dari galeri
+                    </button>
+                </div>
+
+                <!-- Tips Section -->
+                <div class="mt-6 bg-blue-50 rounded-2xl p-4 border border-blue-100">
+                    <h3 class="text-blue-800 text-sm font-semibold mb-2 flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        Tips memindai struk
+                    </h3>
+                    <ul class="text-blue-700 text-xs space-y-2">
+                        <li class="flex items-start gap-2">
+                            <span class="text-blue-500">•</span>
+                            Pastikan pencahayaan cukup terang
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-blue-500">•</span>
+                            Posisikan struk rata dengan bingkai
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-blue-500">•</span>
+                            Hindari bayangan yang menutupi teks
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-blue-500">•</span>
+                            Pastikan semua teks terbaca jelas
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Preview Mode (Hidden by default) -->
+            <div id="previewMode" class="hidden animate-fade-in">
+                <div class="bg-white rounded-3xl p-5 shadow-sm border border-gray-100 mb-4">
+                    <!-- Success Indicator -->
+                    <div class="flex items-center gap-2 mb-4 pb-3 border-b border-gray-100">
+                        <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                        <p class="text-emerald-600 text-sm font-semibold">Struk berhasil dipindai!</p>
+                    </div>
+
+                    <!-- Preview Image -->
+                    <div class="bg-gray-100 rounded-xl h-40 mb-4 flex items-center justify-center relative overflow-hidden">
+                        <img src="https://placehold.co/600x400/1a1a1a/34d399?text=Struk+Preview" alt="Preview Struk" class="w-full h-full object-cover opacity-80">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                        <div class="absolute bottom-2 left-2 right-2 flex justify-between items-center">
+                            <span class="text-white text-xs bg-black/50 px-2 py-1 rounded-full">Struk ditemukan</span>
+                            <span class="text-white text-xs bg-emerald-500/80 px-2 py-1 rounded-full">✓ 95% akurat</span>
+                        </div>
+                    </div>
+
+                    <!-- Form Preview -->
+                    <div class="space-y-3">
+                        <div>
+                            <label class="text-xs text-gray-500 mb-1 block font-medium">Nama Toko</label>
+                            <div class="relative">
+                                <input type="text" value="Toko Berkah Jaya" class="w-full px-4 py-3 border-2 border-emerald-200 bg-emerald-50/30 rounded-xl outline-none focus:border-emerald-500 text-sm pr-8">
+                                <svg class="w-4 h-4 text-emerald-500 absolute right-3 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-xs text-gray-500 mb-1 block font-medium">Total Belanja</label>
+                            <div class="relative">
+                                <input type="text" value="Rp 185.000" class="w-full px-4 py-3 border-2 border-emerald-200 bg-emerald-50/30 rounded-xl outline-none focus:border-emerald-500 text-sm pr-8">
+                                <svg class="w-4 h-4 text-emerald-500 absolute right-3 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-xs text-gray-500 mb-1 block font-medium">Tanggal</label>
+                            <div class="relative">
+                                <input type="text" value="22 Feb 2026" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl outline-none focus:border-emerald-500 text-sm">
+                                <svg class="w-4 h-4 text-gray-400 absolute right-3 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-xs text-gray-500 mb-1 block font-medium">Kategori</label>
+                            <div class="relative">
+                                <select class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl outline-none focus:border-emerald-500 text-sm bg-white appearance-none">
+                                    <option>Pembelian</option>
+                                    <option selected>Penjualan</option>
+                                    <option>Tagihan</option>
+                                </select>
+                                <svg class="w-4 h-4 text-gray-400 absolute right-3 top-3.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Detected Items Preview -->
+                    <div class="mt-4 pt-3 border-t border-gray-100">
+                        <p class="text-xs text-gray-500 mb-2 font-medium">Item yang terdeteksi:</p>
+                        <div class="space-y-2">
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-gray-700">Kopi Bubuk 200g</span>
+                                <span class="font-medium text-gray-900">Rp 45.000</span>
+                            </div>
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-gray-700">Gula Pasir 1kg</span>
+                                <span class="font-medium text-gray-900">Rp 18.000</span>
+                            </div>
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-gray-700">Susu UHT 1L</span>
+                                <span class="font-medium text-gray-900">Rp 22.000</span>
+                            </div>
+                            <div class="flex justify-between items-center text-sm font-semibold border-t border-gray-100 pt-2 mt-2">
+                                <span class="text-gray-700">Total</span>
+                                <span class="text-emerald-600">Rp 85.000</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex gap-3">
+                    <button class="flex-1 py-4 rounded-2xl border-2 border-gray-200 text-gray-600 font-semibold tap-effect hover:bg-gray-50 transition-colors flex items-center justify-center gap-2" onclick="switchToCamera()">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                        </svg>
+                        Foto Ulang
+                    </button>
+                    <button class="flex-1 py-4 rounded-2xl bg-emerald-500 text-white shadow-md font-bold tap-effect hover:bg-emerald-600 transition-colors flex items-center justify-center gap-2" onclick="showSuccessToast()">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        Simpan
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-full text-sm z-50 hidden items-center gap-2 shadow-lg">
+        <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        <span id="toastMessage">Transaksi berhasil disimpan! 🎉</span>
+    </div>
 
     <script>
-        // Data JSON
-        const appData = {
-            categories: [
-                { id: "penjualan", icon: "trending-up", label: "Penjualan", color: "emerald" },
-                { id: "pembelian", icon: "package", label: "Pembelian", color: "blue" },
-                { id: "makanan", icon: "utensils", label: "Makanan", color: "orange" },
-                { id: "tagihan", icon: "zap", label: "Tagihan", color: "yellow" },
-                { id: "marketing", icon: "users", label: "Marketing", color: "purple" },
-                { id: "lainnya", icon: "shopping-cart", label: "Lainnya", color: "gray" }
-            ],
-            paymentMethods: [
-                { id: "tunai", label: "Tunai", emoji: "💵" },
-                { id: "transfer", label: "Transfer", emoji: "🏦" },
-                { id: "gopay", label: "GoPay", emoji: "💚" },
-                { id: "ovo", label: "OVO", emoji: "💜" },
-                { id: "qris", label: "QRIS", emoji: "📲" }
-            ],
-            historyTx: [
-                { id: 1, label: "Penjualan Kopi", cat: "Penjualan", amount: 850000, type: "income", date: "Hari ini, 09:15", method: "Tunai" },
-                { id: 2, label: "Beli Bahan Baku", cat: "Pembelian", amount: 320000, type: "expense", date: "Hari ini, 07:30", method: "Transfer" },
-                { id: 3, label: "Penjualan Roti", cat: "Penjualan", amount: 120000, type: "income", date: "Kemarin, 15:45", method: "GoPay" },
-                { id: 4, label: "Tagihan Listrik", cat: "Tagihan", amount: 450000, type: "expense", date: "Kemarin, 10:00", method: "Transfer" },
-                { id: 5, label: "Penjualan Camilan", cat: "Penjualan", amount: 95000, type: "income", date: "21 Feb, 13:30", method: "Tunai" }
-            ],
-            syncAccounts: [
-                { id: 1, name: "BCA Mobile", type: "Bank", icon: "🏦", status: "connected", lastSync: "2 menit lalu" },
-                { id: 2, name: "GoPay", type: "E-Wallet", icon: "💚", status: "connected", lastSync: "5 menit lalu" },
-                { id: 3, name: "Mandiri", type: "Bank", icon: "🏛️", status: "not_connected", lastSync: null },
-                { id: 4, name: "OVO", type: "E-Wallet", icon: "💜", status: "not_connected", lastSync: null }
-            ],
-            colorMap: {
-                emerald: { bg: "bg-emerald-100", icon: "text-emerald-600", border: "border-emerald-500", pill: "bg-emerald-500" },
-                blue: { bg: "bg-blue-100", icon: "text-blue-600", border: "border-blue-500", pill: "bg-blue-500" },
-                orange: { bg: "bg-orange-100", icon: "text-orange-600", border: "border-orange-500", pill: "bg-orange-500" },
-                yellow: { bg: "bg-yellow-100", icon: "text-yellow-600", border: "border-yellow-500", pill: "bg-yellow-500" },
-                purple: { bg: "bg-purple-100", icon: "text-purple-600", border: "border-purple-500", pill: "bg-purple-500" },
-                gray: { bg: "bg-gray-100", icon: "text-gray-600", border: "border-gray-500", pill: "bg-gray-500" }
-            }
-        };
+        // Simple state management
+        let currentMode = 'camera'; // 'camera' or 'preview'
+        
+        // DOM elements
+        const cameraMode = document.getElementById('cameraMode');
+        const previewMode = document.getElementById('previewMode');
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toastMessage');
 
-        // SVG Icons
-        const icons = {
-            'pencil': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>',
-            'scan': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>',
-            'wifi': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.212 0"/></svg>',
-            'clock': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
-            'trending-up': '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>',
-            'package': '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>',
-            'utensils': '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>',
-            'zap': '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>',
-            'users': '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>',
-            'shopping-cart': '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>',
-            'arrow-down': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>',
-            'arrow-up': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>',
-            'check': '<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>',
-            'camera': '<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>',
-            'refresh': '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>',
-            'search': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>',
-            'filter': '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>'
-        };
-
-        // State management
-        let state = {
-            activeTab: 'simple',
-            type: 'pemasukan',
-            amount: '',
-            selectedCategory: null,
-            selectedPayment: 'tunai',
-            note: '',
-            showSuccess: false,
-            ocrStep: 'camera'
-        };
-
-        let previousState = { ...state };
-
-        // DOM element
-        const app = document.getElementById('app');
-
-        // Helper functions
-        function formatAmount(amount) {
-            if (!amount) return 'Rp 0';
-            return `Rp ${parseInt(amount).toLocaleString('id-ID')}`;
+        // Switch to preview mode
+        function switchToPreview() {
+            currentMode = 'preview';
+            cameraMode.classList.add('hidden');
+            previewMode.classList.remove('hidden');
+            previewMode.classList.add('animate-fade-in');
         }
 
+        // Switch to camera mode
+        function switchToCamera() {
+            currentMode = 'camera';
+            previewMode.classList.add('hidden');
+            cameraMode.classList.remove('hidden');
+            cameraMode.classList.add('animate-fade-in');
+        }
+
+        // Go back to previous page
+        function goBack() {
+            // Simulate back navigation
+            showToast('Kembali ke halaman utama', 'info');
+            setTimeout(() => {
+                window.location.href = 'about:blank'; // In real app, this would be actual navigation
+            }, 1000);
+        }
+
+        // Show toast notification
         function showToast(message, type = 'success') {
-            const toast = document.createElement('div');
-            toast.className = 'fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-full text-sm z-50 animate-slide-up';
-            toast.textContent = message;
-            document.body.appendChild(toast);
+            toastMessage.textContent = message;
+            
+            // Change icon color based on type
+            const icon = toast.querySelector('svg');
+            if (type === 'success') {
+                icon.classList.remove('text-red-400', 'text-blue-400');
+                icon.classList.add('text-emerald-400');
+            } else if (type === 'error') {
+                icon.classList.remove('text-emerald-400', 'text-blue-400');
+                icon.classList.add('text-red-400');
+            } else if (type === 'info') {
+                icon.classList.remove('text-emerald-400', 'text-red-400');
+                icon.classList.add('text-blue-400');
+            }
+            
+            toast.classList.remove('hidden');
+            toast.classList.add('animate-slide-up');
+            
             setTimeout(() => {
                 toast.classList.add('animate-fade-out');
-                setTimeout(() => toast.remove(), 300);
+                setTimeout(() => {
+                    toast.classList.add('hidden');
+                    toast.classList.remove('animate-slide-up', 'animate-fade-out');
+                }, 300);
             }, 2000);
         }
 
-        function updateState(newState) {
-            previousState = { ...state };
-            state = { ...state, ...newState };
-            render();
-        }
-
-        // Event handlers
-        function handleNumberPress(num) {
-            if (num === '000') {
-                if (state.amount.length <= 9) {
-                    updateState({ amount: state.amount + '000' });
-                }
-                return;
-            }
-            if (state.amount.length < 12) {
-                updateState({ amount: state.amount + num });
-            }
-        }
-
-        function handleDelete() {
-            updateState({ amount: state.amount.slice(0, -1) });
-        }
-
-        function handleSave() {
-            if (!state.amount || !state.selectedCategory) {
-                showToast('Lengkapi nominal dan kategori terlebih dahulu', 'error');
-                return;
-            }
+        // Show success toast for save action
+        function showSuccessToast() {
+            showToast('Transaksi dari struk disimpan! 🎉', 'success');
             
-            updateState({ showSuccess: true });
-            
+            // Simulate saving and redirect
             setTimeout(() => {
-                updateState({ 
-                    showSuccess: false, 
-                    amount: '', 
-                    selectedCategory: null, 
-                    note: '' 
-                });
-                showToast('Transaksi berhasil disimpan! 🎉');
-            }, 1800);
+                switchToCamera(); // Reset to camera mode
+                // In real app, you would navigate away or reset form
+            }, 2000);
         }
 
-        function handleClear() {
-            updateState({ amount: '', selectedCategory: null, note: '' });
-        }
+        // Add touch feedback to all buttons
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('touchstart', function() {
+                this.style.transform = 'scale(0.95)';
+            });
+            button.addEventListener('touchend', function() {
+                this.style.transform = 'scale(1)';
+            });
+            button.addEventListener('touchcancel', function() {
+                this.style.transform = 'scale(1)';
+            });
+        });
 
-        // Render functions
-        function renderTabs() {
-            const tabs = [
-                { id: 'simple', label: 'Manual', icon: 'pencil' },
-                { id: 'ocr', label: 'Scan Struk', icon: 'scan' },
-                { id: 'sync', label: 'Sinkron', icon: 'wifi' },
-                { id: 'history', label: 'Riwayat', icon: 'clock' }
-            ];
-
-            return `
-                <div class="flex gap-0 border-b border-gray-100">
-                    ${tabs.map(tab => `
-                        <div 
-                            class="flex-1 flex flex-col items-center gap-1 py-3 text-xs border-b-2 transition-colors cursor-pointer tap-highlight-none ${
-                                state.activeTab === tab.id 
-                                    ? 'border-emerald-500 text-emerald-600' 
-                                    : 'border-transparent text-gray-400'
-                            }"
-                            style="font-weight: ${state.activeTab === tab.id ? '600' : '400'};"
-                            onclick="updateState({ activeTab: '${tab.id}' })"
-                        >
-                            ${icons[tab.icon]}
-                            ${tab.label}
-                        </div>
-                    `).join('')}
-                </div>
-            `;
-        }
-
-        function renderSimpleMode() {
-            return `
-                <div class="animate-fade-in">
-                    <!-- Type Toggle -->
-                    <div class="px-4 pt-4 pb-2 bg-white border-b border-gray-100">
-                        <div class="flex gap-2 bg-gray-100 p-1 rounded-2xl">
-                            <div 
-                                class="flex-1 py-3 rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer tap-highlight-none ${
-                                    state.type === 'pemasukan' 
-                                        ? 'bg-emerald-500 text-white shadow-sm' 
-                                        : 'text-gray-600'
-                                }"
-                                style="font-weight: 600;"
-                                onclick="updateState({ type: 'pemasukan' })"
-                            >
-                                ${icons['arrow-down']}
-                                Uang Masuk
-                            </div>
-                            <div 
-                                class="flex-1 py-3 rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer tap-highlight-none ${
-                                    state.type === 'pengeluaran' 
-                                        ? 'bg-red-500 text-white shadow-sm' 
-                                        : 'text-gray-600'
-                                }"
-                                style="font-weight: 600;"
-                                onclick="updateState({ type: 'pengeluaran' })"
-                            >
-                                ${icons['arrow-up']}
-                                Uang Keluar
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Amount Display -->
-                    <div class="bg-white px-5 py-6 border-b border-gray-100">
-                        <p class="text-gray-500 text-xs mb-2" style="font-weight: 500;">JUMLAH</p>
-                        <p class="animate-fade-in ${state.type === 'pemasukan' ? 'text-emerald-600' : 'text-red-500'}" 
-                           style="font-size: 36px; font-weight: 800;">
-                            ${formatAmount(state.amount)}
-                        </p>
-                    </div>
-
-                    <div class="px-4 py-4 space-y-4">
-                        <!-- Category -->
-                        <div>
-                            <p class="text-gray-500 text-xs mb-3 px-1" style="font-weight: 600;">KATEGORI</p>
-                            <div class="grid grid-cols-3 gap-2.5">
-                                ${appData.categories.map(cat => {
-                                    const colors = appData.colorMap[cat.color];
-                                    const isSelected = state.selectedCategory === cat.id;
-                                    return `
-                                        <div 
-                                            class="relative p-3.5 rounded-2xl border-2 transition-all cursor-pointer scale-transition tap-highlight-none ${
-                                                isSelected ? `${colors.bg} ${colors.border}` : 'bg-white border-gray-200'
-                                            }"
-                                            onclick="updateState({ selectedCategory: '${cat.id}' })"
-                                        >
-                                            <div class="flex flex-col items-center gap-1.5">
-                                                <div class="w-10 h-10 rounded-xl flex items-center justify-center ${isSelected ? colors.bg : 'bg-gray-50'}">
-                                                    <div class="${isSelected ? colors.icon : 'text-gray-500'}">
-                                                        ${icons[cat.icon]}
-                                                    </div>
-                                                </div>
-                                                <span class="text-xs ${isSelected ? colors.icon : 'text-gray-600'}" style="font-weight: 500;">
-                                                    ${cat.label}
-                                                </span>
-                                            </div>
-                                            ${isSelected ? `
-                                                <div class="absolute top-1.5 right-1.5 w-5 h-5 bg-emerald-500 rounded-full flex items-center justify-center animate-scale-in">
-                                                    ${icons['check']}
-                                                </div>
-                                            ` : ''}
-                                        </div>
-                                    `;
-                                }).join('')}
-                            </div>
-                        </div>
-
-                        <!-- Payment Method -->
-                        <div>
-                            <p class="text-gray-500 text-xs mb-3 px-1" style="font-weight: 600;">METODE BAYAR</p>
-                            <div class="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-                                ${appData.paymentMethods.map(pm => `
-                                    <div 
-                                        class="flex-shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 transition-all cursor-pointer scale-transition tap-highlight-none ${
-                                            state.selectedPayment === pm.id
-                                                ? 'border-emerald-500 bg-emerald-50'
-                                                : 'border-gray-200 bg-white'
-                                        }"
-                                        onclick="updateState({ selectedPayment: '${pm.id}' })"
-                                    >
-                                        <span class="text-base">${pm.emoji}</span>
-                                        <span class="text-sm ${state.selectedPayment === pm.id ? 'text-emerald-700' : 'text-gray-600'}" 
-                                              style="font-weight: ${state.selectedPayment === pm.id ? '600' : '400'};">
-                                            ${pm.label}
-                                        </span>
-                                    </div>
-                                `).join('')}
-                            </div>
-                        </div>
-
-                        <!-- Note -->
-                        <div>
-                            <p class="text-gray-500 text-xs mb-2 px-1" style="font-weight: 600;">CATATAN (OPSIONAL)</p>
-                            <input 
-                                type="text" 
-                                placeholder="Tambahkan catatan..." 
-                                class="w-full px-4 py-3.5 bg-white border-2 border-gray-200 rounded-2xl outline-none focus:border-emerald-500 transition-colors text-sm"
-                                value="${state.note}"
-                                oninput="updateState({ note: this.value })"
-                            >
-                        </div>
-
-                        <!-- Keypad -->
-                        <div class="bg-white rounded-3xl p-4 shadow-sm border border-gray-100">
-                            <div class="grid grid-cols-3 gap-2">
-                                ${['1','2','3','4','5','6','7','8','9','000','0','⌫'].map(key => `
-                                    <div 
-                                        class="h-14 rounded-2xl flex items-center justify-center transition-colors cursor-pointer scale-transition tap-highlight-none ${
-                                            key === '⌫' ? 'bg-red-50 hover:bg-red-100' : 'bg-gray-50 hover:bg-gray-100'
-                                        }"
-                                        style="font-size: 20px; font-weight: 600;"
-                                        onclick="${key === '⌫' ? 'handleDelete()' : `handleNumberPress('${key}')`}"
-                                    >
-                                        ${key === '⌫' ? '<span class="text-red-500" style="font-size: 20px;">⌫</span>' : key}
-                                    </div>
-                                `).join('')}
-                            </div>
-                            
-                            <div class="grid grid-cols-2 gap-2 mt-2">
-                                <div 
-                                    class="h-14 rounded-2xl bg-gray-100 text-gray-700 flex items-center justify-center cursor-pointer scale-transition tap-highlight-none"
-                                    style="font-weight: 600;"
-                                    onclick="handleClear()"
-                                >
-                                    Hapus
-                                </div>
-                                <div 
-                                    class="h-14 rounded-2xl bg-emerald-500 text-white shadow-md flex items-center justify-center cursor-pointer scale-transition tap-highlight-none"
-                                    style="font-weight: 700;"
-                                    onclick="handleSave()"
-                                >
-                                    Simpan ✓
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        function renderOCRMode() {
-            if (state.ocrStep === 'camera') {
-                return `
-                    <div class="p-4 animate-fade-in">
-                        <div class="text-center">
-                            <div class="bg-white rounded-3xl p-6 mb-4 shadow-sm border border-gray-100">
-                                <p class="text-gray-500 text-sm mb-6">Arahkan kamera ke struk pembelian atau invoice kamu</p>
-                                
-                                <!-- Camera frame mockup -->
-                                <div class="relative bg-gray-900 rounded-2xl overflow-hidden mb-6" style="height: 300px;">
-                                    <div class="absolute inset-0 flex items-center justify-center">
-                                        <div class="text-gray-600">${icons['camera']}</div>
-                                    </div>
-                                    <div class="corner-top-left"></div>
-                                    <div class="corner-top-right"></div>
-                                    <div class="corner-bottom-left"></div>
-                                    <div class="corner-bottom-right"></div>
-                                    <div class="absolute bottom-4 left-0 right-0 flex justify-center">
-                                        <div class="bg-white/20 backdrop-blur-sm text-white text-xs px-4 py-2 rounded-full">
-                                            Posisikan struk di dalam bingkai
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div 
-                                    class="w-20 h-20 bg-emerald-500 rounded-full flex items-center justify-center mx-auto shadow-lg cursor-pointer scale-transition tap-highlight-none"
-                                    onclick="updateState({ ocrStep: 'preview' })"
-                                >
-                                    ${icons['camera'].replace('w-8 h-8', 'w-8 h-8 text-white')}
-                                </div>
-                                <p class="text-gray-400 text-xs mt-3">Tekan untuk memfoto</p>
-                            </div>
-
-                            <p class="text-gray-500 text-sm">atau</p>
-                            <button class="mt-3 text-emerald-600 text-sm" style="font-weight: 600;">
-                                Upload dari galeri
-                            </button>
-                        </div>
-                    </div>
-                `;
-            } else {
-                return `
-                    <div class="p-4 animate-fade-in">
-                        <div class="bg-white rounded-3xl p-5 shadow-sm border border-gray-100 mb-4">
-                            <div class="flex items-center gap-2 mb-4">
-                                <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                                <p class="text-emerald-600 text-sm" style="font-weight: 600;">Struk berhasil dipindai!</p>
-                            </div>
-                            <div class="space-y-3">
-                                <div>
-                                    <label class="text-xs text-gray-500 mb-1 block" style="font-weight: 500;">Nama Toko</label>
-                                    <input value="Toko Berkah Jaya" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl outline-none focus:border-emerald-500 text-sm">
-                                </div>
-                                <div>
-                                    <label class="text-xs text-gray-500 mb-1 block" style="font-weight: 500;">Total Belanja</label>
-                                    <input value="Rp 185.000" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl outline-none focus:border-emerald-500 text-sm">
-                                </div>
-                                <div>
-                                    <label class="text-xs text-gray-500 mb-1 block" style="font-weight: 500;">Tanggal</label>
-                                    <input value="22 Feb 2026" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl outline-none focus:border-emerald-500 text-sm">
-                                </div>
-                                <div>
-                                    <label class="text-xs text-gray-500 mb-1 block" style="font-weight: 500;">Kategori</label>
-                                    <select class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl outline-none focus:border-emerald-500 text-sm bg-white">
-                                        <option>Pembelian</option>
-                                        <option>Penjualan</option>
-                                        <option>Tagihan</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex gap-3">
-                            <button onclick="updateState({ ocrStep: 'camera' })" class="flex-1 py-4 rounded-2xl border-2 border-gray-200 text-gray-600" style="font-weight: 600;">
-                                Foto Ulang
-                            </button>
-                            <div 
-                                class="flex-1 py-4 rounded-2xl bg-emerald-500 text-white shadow-md flex items-center justify-center cursor-pointer scale-transition tap-highlight-none"
-                                style="font-weight: 700;"
-                                onclick="showToast('Transaksi dari struk disimpan! 🎉'); updateState({ activeTab: 'simple' })"
-                            >
-                                Simpan ✓
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }
-        }
-
-        function renderSyncMode() {
-            return `
-                <div class="p-4 animate-fade-in">
-                    <div class="bg-blue-50 rounded-2xl p-4 mb-4 border border-blue-100">
-                        <div class="flex items-start gap-3">
-                            <div class="text-blue-600 mt-0.5">${icons['refresh']}</div>
-                            <p class="text-blue-800 text-sm">Hubungkan rekening bank atau e-wallet untuk sinkronisasi transaksi otomatis</p>
-                        </div>
-                    </div>
-                    <div class="space-y-3">
-                        ${appData.syncAccounts.map(acc => `
-                            <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex items-center gap-4 cursor-pointer scale-transition tap-highlight-none">
-                                <div class="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center text-2xl">
-                                    ${acc.icon}
-                                </div>
-                                <div class="flex-1">
-                                    <p class="text-gray-900 text-sm" style="font-weight: 600;">${acc.name}</p>
-                                    <p class="text-gray-500 text-xs">${acc.type}</p>
-                                    ${acc.lastSync ? `
-                                        <p class="text-emerald-600 text-xs mt-0.5">Sinkron ${acc.lastSync}</p>
-                                    ` : ''}
-                                </div>
-                                ${acc.status === 'connected' ? `
-                                    <div class="px-3 py-1.5 bg-emerald-100 text-emerald-700 rounded-full text-xs" style="font-weight: 600;">
-                                        Terhubung
-                                    </div>
-                                ` : `
-                                    <div class="px-3 py-1.5 bg-emerald-500 text-white rounded-full text-xs" style="font-weight: 600;">
-                                        Hubungkan
-                                    </div>
-                                `}
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-            `;
-        }
-
-        function renderHistoryMode() {
-            return `
-                <div class="p-4 animate-fade-in">
-                    <div class="flex gap-2 mb-4">
-                        <div class="flex-1 bg-white rounded-2xl px-4 py-3 flex items-center gap-2 border border-gray-200">
-                            <div class="text-gray-400">${icons['search']}</div>
-                            <input type="text" placeholder="Cari transaksi..." class="flex-1 outline-none text-sm">
-                        </div>
-                        <div class="bg-white p-3 rounded-2xl border border-gray-200">
-                            ${icons['filter']}
-                        </div>
-                    </div>
-
-                    <!-- Date groups -->
-                    <div class="space-y-1">
-                        <p class="text-gray-500 text-xs px-1 py-2" style="font-weight: 600;">HARI INI</p>
-                        ${appData.historyTx.slice(0, 2).map(tx => `
-                            <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex items-center gap-3 cursor-pointer scale-transition tap-highlight-none">
-                                <div class="w-11 h-11 rounded-xl flex items-center justify-center ${tx.type === 'income' ? 'bg-emerald-100' : 'bg-red-100'}">
-                                    ${tx.type === 'income' 
-                                        ? '<div class="text-emerald-600">' + icons['arrow-down'].replace('w-4 h-4', 'w-5 h-5') + '</div>'
-                                        : '<div class="text-red-500">' + icons['arrow-up'].replace('w-4 h-4', 'w-5 h-5') + '</div>'
-                                    }
-                                </div>
-                                <div class="flex-1">
-                                    <p class="text-gray-900 text-sm" style="font-weight: 500;">${tx.label}</p>
-                                    <p class="text-gray-400 text-xs">${tx.cat} · ${tx.method}</p>
-                                </div>
-                                <div class="text-right">
-                                    <p class="text-sm ${tx.type === 'income' ? 'text-emerald-600' : 'text-red-500'}" style="font-weight: 600;">
-                                        ${tx.type === 'income' ? '+' : '-'}Rp ${tx.amount.toLocaleString('id-ID')}
-                                    </p>
-                                    <p class="text-gray-400 text-xs">${tx.date.split(', ')[1]}</p>
-                                </div>
-                            </div>
-                        `).join('')}
-
-                        <p class="text-gray-500 text-xs px-1 py-2 mt-2" style="font-weight: 600;">KEMARIN</p>
-                        ${appData.historyTx.slice(2, 4).map(tx => `
-                            <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex items-center gap-3 cursor-pointer scale-transition tap-highlight-none">
-                                <div class="w-11 h-11 rounded-xl flex items-center justify-center ${tx.type === 'income' ? 'bg-emerald-100' : 'bg-red-100'}">
-                                    ${tx.type === 'income' 
-                                        ? '<div class="text-emerald-600">' + icons['arrow-down'].replace('w-4 h-4', 'w-5 h-5') + '</div>'
-                                        : '<div class="text-red-500">' + icons['arrow-up'].replace('w-4 h-4', 'w-5 h-5') + '</div>'
-                                    }
-                                </div>
-                                <div class="flex-1">
-                                    <p class="text-gray-900 text-sm" style="font-weight: 500;">${tx.label}</p>
-                                    <p class="text-gray-400 text-xs">${tx.cat} · ${tx.method}</p>
-                                </div>
-                                <div class="text-right">
-                                    <p class="text-sm ${tx.type === 'income' ? 'text-emerald-600' : 'text-red-500'}" style="font-weight: 600;">
-                                        ${tx.type === 'income' ? '+' : '-'}Rp ${tx.amount.toLocaleString('id-ID')}
-                                    </p>
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-            `;
-        }
-
-        function renderSuccessOverlay() {
-            if (!state.showSuccess) return '';
-            
-            return `
-                <div class="fixed inset-0 bg-emerald-500 flex flex-col items-center justify-center z-50 max-w-md mx-auto animate-fade-in">
-                    <div class="text-center animate-scale-in">
-                        <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto mb-6">
-                            ${icons['check'].replace('w-3 h-3', 'w-12 h-12 text-emerald-500')}
-                        </div>
-                        <h3 class="text-white mb-2" style="font-size: 24px; font-weight: 700;">Tersimpan!</h3>
-                        <p class="text-emerald-100">Transaksi ${state.type === 'pemasukan' ? 'uang masuk' : 'uang keluar'} berhasil dicatat</p>
-                        <div class="mt-4 bg-white/20 rounded-2xl px-6 py-3 inline-block">
-                            <p class="text-white" style="font-weight: 700; font-size: 22px;">${formatAmount(state.amount)}</p>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        // Main render function
-        function render() {
-            const content = `
-                <div class="bg-white px-5 pt-12 pb-0 sticky top-0 z-10 shadow-sm">
-                    <h1 class="text-gray-900 mb-4" style="font-size: 22px; font-weight: 700;">Catat Transaksi</h1>
-                    ${renderTabs()}
-                </div>
-
-                ${state.activeTab === 'simple' ? renderSimpleMode() : ''}
-                ${state.activeTab === 'ocr' ? renderOCRMode() : ''}
-                ${state.activeTab === 'sync' ? renderSyncMode() : ''}
-                ${state.activeTab === 'history' ? renderHistoryMode() : ''}
-
-                ${renderSuccessOverlay()}
-            `;
-
-            app.innerHTML = content;
-        }
-
-        // Make functions global for onclick handlers
-        window.updateState = updateState;
-        window.handleNumberPress = handleNumberPress;
-        window.handleDelete = handleDelete;
-        window.handleSave = handleSave;
-        window.handleClear = handleClear;
-        window.showToast = showToast;
-
-        // Initial render
-        render();
-
-        // Add style for camera corners
-        const style = document.createElement('style');
-        style.textContent = `
-            .corner-top-left {
-                position: absolute;
-                top: 1rem;
-                left: 1rem;
-                width: 2rem;
-                height: 2rem;
-                border-top: 2px solid #34d399;
-                border-left: 2px solid #34d399;
-            }
-            .corner-top-right {
-                position: absolute;
-                top: 1rem;
-                right: 1rem;
-                width: 2rem;
-                height: 2rem;
-                border-top: 2px solid #34d399;
-                border-right: 2px solid #34d399;
-            }
-            .corner-bottom-left {
-                position: absolute;
-                bottom: 1rem;
-                left: 1rem;
-                width: 2rem;
-                height: 2rem;
-                border-bottom: 2px solid #34d399;
-                border-left: 2px solid #34d399;
-            }
-            .corner-bottom-right {
-                position: absolute;
-                bottom: 1rem;
-                right: 1rem;
-                width: 2rem;
-                height: 2rem;
-                border-bottom: 2px solid #34d399;
-                border-right: 2px solid #34d399;
-            }
-        `;
-        document.head.appendChild(style);
+        // Simulate camera initialization
+        window.addEventListener('load', function() {
+            console.log('Camera view initialized');
+            // In real app, you would initialize the camera here
+        });
     </script>
 </body>
 </html>
