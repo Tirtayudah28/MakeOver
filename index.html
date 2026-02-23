@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scan Struk - Catat Transaksi</title>
+    <title>Riwayat Transaksi - Catat Transaksi</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -26,18 +26,13 @@
             to { opacity: 0; }
         }
         
-        @keyframes scaleIn {
-            from { transform: scale(0); }
-            to { transform: scale(1); }
-        }
-        
-        @keyframes scaleOut {
-            from { transform: scale(1); }
-            to { transform: scale(0); }
-        }
-        
         @keyframes slideUp {
             from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        @keyframes slideDown {
+            from { transform: translateY(-20px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
         
@@ -46,9 +41,9 @@
             50% { opacity: 0.5; }
         }
         
-        @keyframes scanLine {
-            0% { transform: translateY(-100%); }
-            100% { transform: translateY(100%); }
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
         }
         
         .animate-fade-in {
@@ -59,83 +54,20 @@
             animation: fadeOut 0.3s ease-out forwards;
         }
         
-        .animate-scale-in {
-            animation: scaleIn 0.2s ease-out forwards;
-        }
-        
-        .animate-scale-out {
-            animation: scaleOut 0.2s ease-out forwards;
-        }
-        
         .animate-slide-up {
             animation: slideUp 0.3s ease-out forwards;
+        }
+        
+        .animate-slide-down {
+            animation: slideDown 0.3s ease-out forwards;
         }
         
         .animate-pulse {
             animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         }
         
-        .animate-scan {
-            animation: scanLine 2s linear infinite;
-        }
-        
-        /* Camera corners */
-        .camera-frame {
-            position: relative;
-            width: 100%;
-            height: 300px;
-            background-color: #111827;
-            border-radius: 1rem;
-            overflow: hidden;
-        }
-        
-        .corner {
-            position: absolute;
-            width: 2rem;
-            height: 2rem;
-            border: 2px solid #34d399;
-            z-index: 10;
-        }
-        
-        .corner-tl {
-            top: 1rem;
-            left: 1rem;
-            border-right: 0;
-            border-bottom: 0;
-        }
-        
-        .corner-tr {
-            top: 1rem;
-            right: 1rem;
-            border-left: 0;
-            border-bottom: 0;
-        }
-        
-        .corner-bl {
-            bottom: 1rem;
-            left: 1rem;
-            border-right: 0;
-            border-top: 0;
-        }
-        
-        .corner-br {
-            bottom: 1rem;
-            right: 1rem;
-            border-left: 0;
-            border-top: 0;
-        }
-        
-        /* Scan line effect */
-        .scan-line {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, transparent, #34d399, transparent);
-            filter: blur(2px);
-            opacity: 0.7;
-            z-index: 5;
+        .animate-shimmer {
+            animation: shimmer 2s infinite;
         }
         
         /* Tap effect */
@@ -145,7 +77,7 @@
         }
         
         .tap-effect:active {
-            transform: scale(0.95);
+            transform: scale(0.97);
         }
         
         /* Scrollbar hide */
@@ -156,230 +88,537 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
+        
+        /* Skeleton loading */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+        
+        /* Chart styles */
+        .chart-bar {
+            transition: height 0.3s ease;
+        }
+        
+        /* Filter modal */
+        .filter-modal {
+            transform: translateY(100%);
+            transition: transform 0.3s ease-out;
+        }
+        
+        .filter-modal.show {
+            transform: translateY(0);
+        }
+        
+        /* Empty state */
+        .empty-state-emoji {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
     </style>
 </head>
 <body class="min-h-screen bg-gray-50">
     <div class="max-w-md mx-auto bg-gray-50 min-h-screen relative">
         <!-- Header -->
         <div class="bg-white px-5 pt-12 pb-4 sticky top-0 z-10 shadow-sm">
-            <div class="flex items-center gap-3">
-                <button class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center tap-effect" onclick="goBack()">
-                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                    </svg>
-                </button>
-                <h1 class="text-gray-900" style="font-size: 22px; font-weight: 700;">Scan Struk</h1>
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <button class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center tap-effect" onclick="goBack()">
+                        <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                        </svg>
+                    </button>
+                    <h1 class="text-gray-900" style="font-size: 22px; font-weight: 700;">Riwayat Transaksi</h1>
+                </div>
+                <div class="flex gap-2">
+                    <button class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center tap-effect" onclick="showFilterModal()">
+                        <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path>
+                        </svg>
+                    </button>
+                </div>
             </div>
         </div>
 
-        <!-- Main Content with Tabs -->
+        <!-- Main Content -->
         <div class="p-4">
-            <!-- Step Indicator -->
-            <div class="flex items-center justify-between mb-6 px-2">
-                <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 rounded-full bg-emerald-500 text-white flex items-center justify-center text-sm font-bold">1</div>
-                    <span class="text-sm font-medium text-gray-700">Ambil Foto</span>
+            <!-- Summary Cards -->
+            <div class="grid grid-cols-3 gap-3 mb-4">
+                <div class="bg-white rounded-2xl p-3 shadow-sm border border-gray-100">
+                    <p class="text-gray-500 text-xs mb-1">Saldo</p>
+                    <p class="text-gray-900 font-bold text-lg">Rp 2.450K</p>
+                    <p class="text-emerald-500 text-xs">+12%</p>
                 </div>
-                <div class="flex-1 h-0.5 bg-gray-200 mx-2"></div>
-                <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 rounded-full bg-gray-200 text-gray-400 flex items-center justify-center text-sm font-bold">2</div>
-                    <span class="text-sm font-medium text-gray-400">Preview</span>
+                <div class="bg-white rounded-2xl p-3 shadow-sm border border-gray-100">
+                    <p class="text-gray-500 text-xs mb-1">Pemasukan</p>
+                    <p class="text-emerald-600 font-bold text-lg">Rp 3.250K</p>
+                    <p class="text-emerald-500 text-xs">↑ 8%</p>
+                </div>
+                <div class="bg-white rounded-2xl p-3 shadow-sm border border-gray-100">
+                    <p class="text-gray-500 text-xs mb-1">Pengeluaran</p>
+                    <p class="text-red-500 font-bold text-lg">Rp 800K</p>
+                    <p class="text-red-400 text-xs">↓ 3%</p>
                 </div>
             </div>
 
-            <!-- Camera Mode -->
-            <div id="cameraMode" class="animate-fade-in">
-                <div class="bg-white rounded-3xl p-6 mb-4 shadow-sm border border-gray-100">
-                    <p class="text-gray-500 text-sm mb-6 text-center">
-                        Arahkan kamera ke struk pembelian atau invoice kamu
-                    </p>
-
-                    <!-- Camera Frame with Animation -->
-                    <div class="camera-frame mb-6">
-                        <!-- Camera icon background -->
-                        <div class="absolute inset-0 flex items-center justify-center">
-                            <svg class="w-16 h-16 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                            </svg>
+            <!-- Chart Section -->
+            <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 mb-4">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="text-sm font-semibold text-gray-700">Grafik Mingguan</h3>
+                    <select class="text-xs text-gray-500 border-0 bg-transparent focus:outline-none">
+                        <option>Minggu ini</option>
+                        <option>Bulan ini</option>
+                        <option>Tahun ini</option>
+                    </select>
+                </div>
+                <div class="h-32 flex items-end justify-between gap-1">
+                    <div class="flex-1 flex flex-col items-center gap-1">
+                        <div class="w-full bg-emerald-100 rounded-t-lg relative" style="height: 40%">
+                            <div class="absolute inset-0 bg-emerald-500 rounded-t-lg opacity-75" style="height: 100%"></div>
                         </div>
-                        
-                        <!-- Corner Markers -->
-                        <div class="corner corner-tl"></div>
-                        <div class="corner corner-tr"></div>
-                        <div class="corner corner-bl"></div>
-                        <div class="corner corner-br"></div>
-                        
-                        <!-- Scanning Line Animation -->
-                        <div class="scan-line animate-scan"></div>
-                        
-                        <!-- Instruction Badge -->
-                        <div class="absolute bottom-4 left-0 right-0 flex justify-center">
-                            <div class="bg-black/30 backdrop-blur-sm text-white text-xs px-4 py-2 rounded-full border border-white/20">
-                                <span class="flex items-center gap-1">
-                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                    </svg>
-                                    Posisikan struk di dalam bingkai
-                                </span>
-                            </div>
-                        </div>
+                        <span class="text-xs text-gray-500">Sen</span>
                     </div>
-
-                    <!-- Camera Button -->
-                    <div class="flex flex-col items-center">
-                        <button class="w-20 h-20 bg-emerald-500 rounded-full flex items-center justify-center shadow-lg tap-effect hover:bg-emerald-600 transition-colors" onclick="switchToPreview()">
-                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                            </svg>
-                        </button>
-                        <p class="text-gray-400 text-xs mt-3">Tekan untuk memfoto</p>
+                    <div class="flex-1 flex flex-col items-center gap-1">
+                        <div class="w-full bg-emerald-100 rounded-t-lg relative" style="height: 65%">
+                            <div class="absolute inset-0 bg-emerald-500 rounded-t-lg opacity-75" style="height: 100%"></div>
+                        </div>
+                        <span class="text-xs text-gray-500">Sel</span>
+                    </div>
+                    <div class="flex-1 flex flex-col items-center gap-1">
+                        <div class="w-full bg-emerald-100 rounded-t-lg relative" style="height: 30%">
+                            <div class="absolute inset-0 bg-emerald-500 rounded-t-lg opacity-75" style="height: 100%"></div>
+                        </div>
+                        <span class="text-xs text-gray-500">Rab</span>
+                    </div>
+                    <div class="flex-1 flex flex-col items-center gap-1">
+                        <div class="w-full bg-emerald-100 rounded-t-lg relative" style="height: 80%">
+                            <div class="absolute inset-0 bg-emerald-500 rounded-t-lg opacity-75" style="height: 100%"></div>
+                        </div>
+                        <span class="text-xs text-gray-500">Kam</span>
+                    </div>
+                    <div class="flex-1 flex flex-col items-center gap-1">
+                        <div class="w-full bg-emerald-100 rounded-t-lg relative" style="height: 55%">
+                            <div class="absolute inset-0 bg-emerald-500 rounded-t-lg opacity-75" style="height: 100%"></div>
+                        </div>
+                        <span class="text-xs text-gray-500">Jum</span>
+                    </div>
+                    <div class="flex-1 flex flex-col items-center gap-1">
+                        <div class="w-full bg-emerald-100 rounded-t-lg relative" style="height: 45%">
+                            <div class="absolute inset-0 bg-emerald-500 rounded-t-lg opacity-75" style="height: 100%"></div>
+                        </div>
+                        <span class="text-xs text-gray-500">Sab</span>
+                    </div>
+                    <div class="flex-1 flex flex-col items-center gap-1">
+                        <div class="w-full bg-emerald-100 rounded-t-lg relative" style="height: 20%">
+                            <div class="absolute inset-0 bg-emerald-500 rounded-t-lg opacity-75" style="height: 100%"></div>
+                        </div>
+                        <span class="text-xs text-gray-500">Min</span>
                     </div>
                 </div>
+            </div>
 
-                <!-- Alternative Option -->
-                <div class="text-center">
-                    <p class="text-gray-500 text-sm">atau</p>
-                    <button class="mt-3 text-emerald-600 text-sm font-semibold flex items-center justify-center gap-2 mx-auto tap-effect">
+            <!-- Search and Filter Bar -->
+            <div class="flex gap-2 mb-4">
+                <div class="flex-1 bg-white rounded-2xl px-4 py-2 flex items-center gap-2 border border-gray-200 focus-within:border-emerald-500 transition-colors">
+                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                    <input type="text" id="searchInput" placeholder="Cari transaksi..." class="flex-1 outline-none text-sm py-2" onkeyup="filterTransactions()">
+                    <button class="text-gray-400 hover:text-gray-600" onclick="clearSearch()">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
-                        Upload dari galeri
                     </button>
                 </div>
+                <button class="bg-white p-3 rounded-2xl border border-gray-200 tap-effect relative" onclick="toggleFilter()">
+                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+                    </svg>
+                    <span id="filterBadge" class="absolute -top-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full text-white text-xs flex items-center justify-center hidden">1</span>
+                </button>
+            </div>
 
-                <!-- Tips Section -->
-                <div class="mt-6 bg-blue-50 rounded-2xl p-4 border border-blue-100">
-                    <h3 class="text-blue-800 text-sm font-semibold mb-2 flex items-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            <!-- Quick Filters -->
+            <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide mb-3">
+                <button class="px-4 py-2 bg-emerald-500 text-white rounded-full text-xs font-medium tap-effect whitespace-nowrap" onclick="quickFilter('all')">
+                    Semua
+                </button>
+                <button class="px-4 py-2 bg-white border border-gray-200 text-gray-600 rounded-full text-xs font-medium tap-effect whitespace-nowrap hover:bg-gray-50" onclick="quickFilter('income')">
+                    <span class="flex items-center gap-1">
+                        <svg class="w-3 h-3 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
                         </svg>
-                        Tips memindai struk
-                    </h3>
-                    <ul class="text-blue-700 text-xs space-y-2">
-                        <li class="flex items-start gap-2">
-                            <span class="text-blue-500">•</span>
-                            Pastikan pencahayaan cukup terang
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-blue-500">•</span>
-                            Posisikan struk rata dengan bingkai
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-blue-500">•</span>
-                            Hindari bayangan yang menutupi teks
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-blue-500">•</span>
-                            Pastikan semua teks terbaca jelas
-                        </li>
-                    </ul>
+                        Pemasukan
+                    </span>
+                </button>
+                <button class="px-4 py-2 bg-white border border-gray-200 text-gray-600 rounded-full text-xs font-medium tap-effect whitespace-nowrap hover:bg-gray-50" onclick="quickFilter('expense')">
+                    <span class="flex items-center gap-1">
+                        <svg class="w-3 h-3 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+                        </svg>
+                        Pengeluaran
+                    </span>
+                </button>
+                <button class="px-4 py-2 bg-white border border-gray-200 text-gray-600 rounded-full text-xs font-medium tap-effect whitespace-nowrap hover:bg-gray-50" onclick="quickFilter('today')">
+                    Hari ini
+                </button>
+                <button class="px-4 py-2 bg-white border border-gray-200 text-gray-600 rounded-full text-xs font-medium tap-effect whitespace-nowrap hover:bg-gray-50" onclick="quickFilter('week')">
+                    Minggu ini
+                </button>
+                <button class="px-4 py-2 bg-white border border-gray-200 text-gray-600 rounded-full text-xs font-medium tap-effect whitespace-nowrap hover:bg-gray-50" onclick="quickFilter('month')">
+                    Bulan ini
+                </button>
+            </div>
+
+            <!-- Loading State (hidden by default) -->
+            <div id="loadingState" class="hidden space-y-3 mb-4">
+                <div class="px-1 py-2">
+                    <div class="h-4 w-20 bg-gray-200 rounded skeleton mb-3"></div>
+                </div>
+                <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+                    <div class="flex items-center gap-3">
+                        <div class="w-11 h-11 rounded-xl bg-gray-200 skeleton"></div>
+                        <div class="flex-1">
+                            <div class="h-4 w-32 bg-gray-200 rounded skeleton mb-2"></div>
+                            <div class="h-3 w-24 bg-gray-200 rounded skeleton"></div>
+                        </div>
+                        <div class="text-right">
+                            <div class="h-4 w-20 bg-gray-200 rounded skeleton mb-2"></div>
+                            <div class="h-3 w-16 bg-gray-200 rounded skeleton"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+                    <div class="flex items-center gap-3">
+                        <div class="w-11 h-11 rounded-xl bg-gray-200 skeleton"></div>
+                        <div class="flex-1">
+                            <div class="h-4 w-28 bg-gray-200 rounded skeleton mb-2"></div>
+                            <div class="h-3 w-20 bg-gray-200 rounded skeleton"></div>
+                        </div>
+                        <div class="text-right">
+                            <div class="h-4 w-20 bg-gray-200 rounded skeleton mb-2"></div>
+                            <div class="h-3 w-16 bg-gray-200 rounded skeleton"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Preview Mode (Hidden by default) -->
-            <div id="previewMode" class="hidden animate-fade-in">
-                <div class="bg-white rounded-3xl p-5 shadow-sm border border-gray-100 mb-4">
-                    <!-- Success Indicator -->
-                    <div class="flex items-center gap-2 mb-4 pb-3 border-b border-gray-100">
-                        <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                        <p class="text-emerald-600 text-sm font-semibold">Struk berhasil dipindai!</p>
+            <!-- Transaction List -->
+            <div id="transactionList" class="space-y-1">
+                <!-- Date group: Hari Ini -->
+                <div class="px-1 py-2">
+                    <p class="text-gray-500 text-xs font-semibold flex items-center gap-2">
+                        <span>HARI INI</span>
+                        <span class="text-emerald-500 bg-emerald-50 px-2 py-0.5 rounded-full text-[10px]">3 transaksi</span>
+                    </p>
+                </div>
+                
+                <!-- Transaction Items -->
+                <div class="transaction-item bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex items-center gap-3 tap-effect mb-2" data-type="income" data-category="Penjualan" data-date="2026-02-24" data-amount="850000" onclick="showTransactionDetail(1)">
+                    <div class="w-11 h-11 rounded-xl flex items-center justify-center bg-emerald-100">
+                        <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                        </svg>
                     </div>
-
-                    <!-- Preview Image -->
-                    <div class="bg-gray-100 rounded-xl h-40 mb-4 flex items-center justify-center relative overflow-hidden">
-                        <img src="https://placehold.co/600x400/1a1a1a/34d399?text=Struk+Preview" alt="Preview Struk" class="w-full h-full object-cover opacity-80">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-                        <div class="absolute bottom-2 left-2 right-2 flex justify-between items-center">
-                            <span class="text-white text-xs bg-black/50 px-2 py-1 rounded-full">Struk ditemukan</span>
-                            <span class="text-white text-xs bg-emerald-500/80 px-2 py-1 rounded-full">✓ 95% akurat</span>
-                        </div>
+                    <div class="flex-1">
+                        <p class="text-gray-900 text-sm font-medium">Penjualan Kopi</p>
+                        <p class="text-gray-400 text-xs flex items-center gap-1">
+                            <span>Penjualan</span>
+                            <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
+                            <span>Tunai</span>
+                        </p>
                     </div>
-
-                    <!-- Form Preview -->
-                    <div class="space-y-3">
-                        <div>
-                            <label class="text-xs text-gray-500 mb-1 block font-medium">Nama Toko</label>
-                            <div class="relative">
-                                <input type="text" value="Toko Berkah Jaya" class="w-full px-4 py-3 border-2 border-emerald-200 bg-emerald-50/30 rounded-xl outline-none focus:border-emerald-500 text-sm pr-8">
-                                <svg class="w-4 h-4 text-emerald-500 absolute right-3 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                </svg>
-                            </div>
-                        </div>
-                        <div>
-                            <label class="text-xs text-gray-500 mb-1 block font-medium">Total Belanja</label>
-                            <div class="relative">
-                                <input type="text" value="Rp 185.000" class="w-full px-4 py-3 border-2 border-emerald-200 bg-emerald-50/30 rounded-xl outline-none focus:border-emerald-500 text-sm pr-8">
-                                <svg class="w-4 h-4 text-emerald-500 absolute right-3 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                </svg>
-                            </div>
-                        </div>
-                        <div>
-                            <label class="text-xs text-gray-500 mb-1 block font-medium">Tanggal</label>
-                            <div class="relative">
-                                <input type="text" value="22 Feb 2026" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl outline-none focus:border-emerald-500 text-sm">
-                                <svg class="w-4 h-4 text-gray-400 absolute right-3 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                </svg>
-                            </div>
-                        </div>
-                        <div>
-                            <label class="text-xs text-gray-500 mb-1 block font-medium">Kategori</label>
-                            <div class="relative">
-                                <select class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl outline-none focus:border-emerald-500 text-sm bg-white appearance-none">
-                                    <option>Pembelian</option>
-                                    <option selected>Penjualan</option>
-                                    <option>Tagihan</option>
-                                </select>
-                                <svg class="w-4 h-4 text-gray-400 absolute right-3 top-3.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                </svg>
-                            </div>
-                        </div>
+                    <div class="text-right">
+                        <p class="text-sm text-emerald-600 font-semibold">+Rp 850.000</p>
+                        <p class="text-gray-400 text-xs">09:15</p>
                     </div>
+                </div>
 
-                    <!-- Detected Items Preview -->
-                    <div class="mt-4 pt-3 border-t border-gray-100">
-                        <p class="text-xs text-gray-500 mb-2 font-medium">Item yang terdeteksi:</p>
-                        <div class="space-y-2">
-                            <div class="flex justify-between items-center text-sm">
-                                <span class="text-gray-700">Kopi Bubuk 200g</span>
-                                <span class="font-medium text-gray-900">Rp 45.000</span>
-                            </div>
-                            <div class="flex justify-between items-center text-sm">
-                                <span class="text-gray-700">Gula Pasir 1kg</span>
-                                <span class="font-medium text-gray-900">Rp 18.000</span>
-                            </div>
-                            <div class="flex justify-between items-center text-sm">
-                                <span class="text-gray-700">Susu UHT 1L</span>
-                                <span class="font-medium text-gray-900">Rp 22.000</span>
-                            </div>
-                            <div class="flex justify-between items-center text-sm font-semibold border-t border-gray-100 pt-2 mt-2">
-                                <span class="text-gray-700">Total</span>
-                                <span class="text-emerald-600">Rp 85.000</span>
-                            </div>
-                        </div>
+                <div class="transaction-item bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex items-center gap-3 tap-effect mb-2" data-type="expense" data-category="Pembelian" data-date="2026-02-24" data-amount="320000" onclick="showTransactionDetail(2)">
+                    <div class="w-11 h-11 rounded-xl flex items-center justify-center bg-red-100">
+                        <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-gray-900 text-sm font-medium">Beli Bahan Baku</p>
+                        <p class="text-gray-400 text-xs flex items-center gap-1">
+                            <span>Pembelian</span>
+                            <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
+                            <span>Transfer</span>
+                        </p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm text-red-500 font-semibold">-Rp 320.000</p>
+                        <p class="text-gray-400 text-xs">07:30</p>
+                    </div>
+                </div>
+
+                <div class="transaction-item bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex items-center gap-3 tap-effect mb-2" data-type="income" data-category="Penjualan" data-date="2026-02-24" data-amount="45000" onclick="showTransactionDetail(3)">
+                    <div class="w-11 h-11 rounded-xl flex items-center justify-center bg-emerald-100">
+                        <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-gray-900 text-sm font-medium">Penjualan Roti</p>
+                        <p class="text-gray-400 text-xs flex items-center gap-1">
+                            <span>Penjualan</span>
+                            <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
+                            <span>QRIS</span>
+                        </p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm text-emerald-600 font-semibold">+Rp 45.000</p>
+                        <p class="text-gray-400 text-xs">11:20</p>
+                    </div>
+                </div>
+
+                <!-- Date group: Kemarin -->
+                <div class="px-1 py-2 mt-2">
+                    <p class="text-gray-500 text-xs font-semibold flex items-center gap-2">
+                        <span>KEMARIN</span>
+                        <span class="text-emerald-500 bg-emerald-50 px-2 py-0.5 rounded-full text-[10px]">2 transaksi</span>
+                    </p>
+                </div>
+
+                <div class="transaction-item bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex items-center gap-3 tap-effect mb-2" data-type="income" data-category="Penjualan" data-date="2026-02-23" data-amount="120000" onclick="showTransactionDetail(4)">
+                    <div class="w-11 h-11 rounded-xl flex items-center justify-center bg-emerald-100">
+                        <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-gray-900 text-sm font-medium">Penjualan Kopi</p>
+                        <p class="text-gray-400 text-xs flex items-center gap-1">
+                            <span>Penjualan</span>
+                            <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
+                            <span>GoPay</span>
+                        </p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm text-emerald-600 font-semibold">+Rp 120.000</p>
+                        <p class="text-gray-400 text-xs">15:45</p>
+                    </div>
+                </div>
+
+                <div class="transaction-item bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex items-center gap-3 tap-effect mb-2" data-type="expense" data-category="Tagihan" data-date="2026-02-23" data-amount="450000" onclick="showTransactionDetail(5)">
+                    <div class="w-11 h-11 rounded-xl flex items-center justify-center bg-red-100">
+                        <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-gray-900 text-sm font-medium">Tagihan Listrik</p>
+                        <p class="text-gray-400 text-xs flex items-center gap-1">
+                            <span>Tagihan</span>
+                            <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
+                            <span>Transfer</span>
+                        </p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm text-red-500 font-semibold">-Rp 450.000</p>
+                        <p class="text-gray-400 text-xs">10:00</p>
+                    </div>
+                </div>
+
+                <!-- Date group: 21 Februari -->
+                <div class="px-1 py-2 mt-2">
+                    <p class="text-gray-500 text-xs font-semibold">21 FEBRUARI 2026</p>
+                </div>
+
+                <div class="transaction-item bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex items-center gap-3 tap-effect mb-2" data-type="income" data-category="Penjualan" data-date="2026-02-21" data-amount="95000" onclick="showTransactionDetail(6)">
+                    <div class="w-11 h-11 rounded-xl flex items-center justify-center bg-emerald-100">
+                        <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-gray-900 text-sm font-medium">Penjualan Camilan</p>
+                        <p class="text-gray-400 text-xs flex items-center gap-1">
+                            <span>Penjualan</span>
+                            <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
+                            <span>Tunai</span>
+                        </p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm text-emerald-600 font-semibold">+Rp 95.000</p>
+                        <p class="text-gray-400 text-xs">13:30</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Empty State (hidden by default) -->
+            <div id="emptyState" class="hidden flex flex-col items-center justify-center py-12 px-4">
+                <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4 empty-state-emoji">
+                    <span class="text-4xl">📭</span>
+                </div>
+                <h3 class="text-gray-700 font-semibold mb-2">Belum ada transaksi</h3>
+                <p class="text-gray-400 text-sm text-center mb-4">Mulai catat transaksi pertama kamu untuk melihat riwayat</p>
+                <button class="px-6 py-3 bg-emerald-500 text-white rounded-xl font-semibold tap-effect" onclick="goToRecord()">
+                    + Catat Transaksi
+                </button>
+            </div>
+
+            <!-- Load More Button -->
+            <div class="flex justify-center mt-4 mb-20">
+                <button class="px-6 py-3 bg-white border border-gray-200 rounded-xl text-gray-600 text-sm font-medium tap-effect hover:bg-gray-50 flex items-center gap-2" onclick="loadMore()">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                    Muat lebih banyak
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Modal -->
+    <div id="filterModal" class="fixed inset-0 bg-black/50 z-50 hidden items-end justify-center" onclick="hideFilterModal(event)">
+        <div class="bg-white rounded-t-3xl w-full max-w-md p-5 animate-slide-up" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold text-gray-900">Filter Transaksi</h3>
+                <button class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center tap-effect" onclick="hideFilterModal()">
+                    <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Filter Options -->
+            <div class="space-y-4">
+                <!-- Tipe Transaksi -->
+                <div>
+                    <p class="text-sm font-medium text-gray-700 mb-2">Tipe Transaksi</p>
+                    <div class="flex gap-2">
+                        <button class="flex-1 py-2 px-3 rounded-xl border-2 border-emerald-500 bg-emerald-50 text-emerald-700 font-medium text-sm tap-effect">
+                            Semua
+                        </button>
+                        <button class="flex-1 py-2 px-3 rounded-xl border-2 border-gray-200 text-gray-600 text-sm tap-effect">
+                            Pemasukan
+                        </button>
+                        <button class="flex-1 py-2 px-3 rounded-xl border-2 border-gray-200 text-gray-600 text-sm tap-effect">
+                            Pengeluaran
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Kategori -->
+                <div>
+                    <p class="text-sm font-medium text-gray-700 mb-2">Kategori</p>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button class="py-2 px-3 rounded-xl border-2 border-emerald-500 bg-emerald-50 text-emerald-700 text-xs font-medium tap-effect">
+                            Semua
+                        </button>
+                        <button class="py-2 px-3 rounded-xl border-2 border-gray-200 text-gray-600 text-xs tap-effect">
+                            Penjualan
+                        </button>
+                        <button class="py-2 px-3 rounded-xl border-2 border-gray-200 text-gray-600 text-xs tap-effect">
+                            Pembelian
+                        </button>
+                        <button class="py-2 px-3 rounded-xl border-2 border-gray-200 text-gray-600 text-xs tap-effect">
+                            Makanan
+                        </button>
+                        <button class="py-2 px-3 rounded-xl border-2 border-gray-200 text-gray-600 text-xs tap-effect">
+                            Tagihan
+                        </button>
+                        <button class="py-2 px-3 rounded-xl border-2 border-gray-200 text-gray-600 text-xs tap-effect">
+                            Marketing
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Metode Bayar -->
+                <div>
+                    <p class="text-sm font-medium text-gray-700 mb-2">Metode Bayar</p>
+                    <div class="flex flex-wrap gap-2">
+                        <button class="px-3 py-1.5 rounded-full border-2 border-emerald-500 bg-emerald-50 text-emerald-700 text-xs font-medium tap-effect">
+                            Semua
+                        </button>
+                        <button class="px-3 py-1.5 rounded-full border-2 border-gray-200 text-gray-600 text-xs tap-effect">
+                            💵 Tunai
+                        </button>
+                        <button class="px-3 py-1.5 rounded-full border-2 border-gray-200 text-gray-600 text-xs tap-effect">
+                            🏦 Transfer
+                        </button>
+                        <button class="px-3 py-1.5 rounded-full border-2 border-gray-200 text-gray-600 text-xs tap-effect">
+                            💚 GoPay
+                        </button>
+                        <button class="px-3 py-1.5 rounded-full border-2 border-gray-200 text-gray-600 text-xs tap-effect">
+                            💜 OVO
+                        </button>
+                        <button class="px-3 py-1.5 rounded-full border-2 border-gray-200 text-gray-600 text-xs tap-effect">
+                            📲 QRIS
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Rentang Tanggal -->
+                <div>
+                    <p class="text-sm font-medium text-gray-700 mb-2">Rentang Tanggal</p>
+                    <div class="flex gap-2">
+                        <input type="date" class="flex-1 px-3 py-2 border-2 border-gray-200 rounded-xl text-sm focus:border-emerald-500 outline-none" value="2026-02-01">
+                        <span class="text-gray-400 self-center">-</span>
+                        <input type="date" class="flex-1 px-3 py-2 border-2 border-gray-200 rounded-xl text-sm focus:border-emerald-500 outline-none" value="2026-02-28">
+                    </div>
+                </div>
+
+                <!-- Nominal Range -->
+                <div>
+                    <p class="text-sm font-medium text-gray-700 mb-2">Rentang Nominal</p>
+                    <div class="flex gap-2">
+                        <input type="text" placeholder="Min" class="flex-1 px-3 py-2 border-2 border-gray-200 rounded-xl text-sm focus:border-emerald-500 outline-none">
+                        <span class="text-gray-400 self-center">-</span>
+                        <input type="text" placeholder="Max" class="flex-1 px-3 py-2 border-2 border-gray-200 rounded-xl text-sm focus:border-emerald-500 outline-none">
                     </div>
                 </div>
 
                 <!-- Action Buttons -->
-                <div class="flex gap-3">
-                    <button class="flex-1 py-4 rounded-2xl border-2 border-gray-200 text-gray-600 font-semibold tap-effect hover:bg-gray-50 transition-colors flex items-center justify-center gap-2" onclick="switchToCamera()">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
-                        </svg>
-                        Foto Ulang
+                <div class="flex gap-3 pt-3">
+                    <button class="flex-1 py-3 rounded-xl border-2 border-gray-200 text-gray-600 font-medium tap-effect" onclick="resetFilter()">
+                        Reset
                     </button>
-                    <button class="flex-1 py-4 rounded-2xl bg-emerald-500 text-white shadow-md font-bold tap-effect hover:bg-emerald-600 transition-colors flex items-center justify-center gap-2" onclick="showSuccessToast()">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                        </svg>
-                        Simpan
+                    <button class="flex-1 py-3 rounded-xl bg-emerald-500 text-white font-medium tap-effect" onclick="applyFilter()">
+                        Terapkan
                     </button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transaction Detail Modal -->
+    <div id="detailModal" class="fixed inset-0 bg-black/50 z-50 hidden items-end justify-center" onclick="hideDetailModal(event)">
+        <div class="bg-white rounded-t-3xl w-full max-w-md p-5 animate-slide-up" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold text-gray-900">Detail Transaksi</h3>
+                <button class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center tap-effect" onclick="hideDetailModal()">
+                    <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <div id="detailContent" class="space-y-4">
+                <!-- Content will be filled dynamically -->
+            </div>
+
+            <div class="flex gap-3 mt-4 pt-3 border-t border-gray-100">
+                <button class="flex-1 py-3 rounded-xl border-2 border-red-200 text-red-500 font-medium tap-effect flex items-center justify-center gap-2" onclick="deleteTransaction()">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                    Hapus
+                </button>
+                <button class="flex-1 py-3 rounded-xl bg-emerald-500 text-white font-medium tap-effect flex items-center justify-center gap-2" onclick="editTransaction()">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                    </svg>
+                    Edit
+                </button>
             </div>
         </div>
     </div>
@@ -389,49 +628,230 @@
         <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
         </svg>
-        <span id="toastMessage">Transaksi berhasil disimpan! 🎉</span>
+        <span id="toastMessage">Berhasil</span>
     </div>
 
     <script>
-        // Simple state management
-        let currentMode = 'camera'; // 'camera' or 'preview'
-        
+        // State management
+        let currentFilter = 'all';
+        let filterActive = false;
+        let currentTransactionId = null;
+
+        // Sample transaction data
+        const transactions = [
+            { id: 1, label: "Penjualan Kopi", category: "Penjualan", amount: 850000, type: "income", date: "2026-02-24", time: "09:15", method: "Tunai", note: "Pelanggan membeli 2 kopi" },
+            { id: 2, label: "Beli Bahan Baku", category: "Pembelian", amount: 320000, type: "expense", date: "2026-02-24", time: "07:30", method: "Transfer", note: "Beli kopi dan gula" },
+            { id: 3, label: "Penjualan Roti", category: "Penjualan", amount: 45000, type: "income", date: "2026-02-24", time: "11:20", method: "QRIS", note: "Roti coklat 5 pcs" },
+            { id: 4, label: "Penjualan Kopi", category: "Penjualan", amount: 120000, type: "income", date: "2026-02-23", time: "15:45", method: "GoPay", note: "Kopi susu 3 cup" },
+            { id: 5, label: "Tagihan Listrik", category: "Tagihan", amount: 450000, type: "expense", date: "2026-02-23", time: "10:00", method: "Transfer", note: "Token listrik" },
+            { id: 6, label: "Penjualan Camilan", category: "Penjualan", amount: 95000, type: "income", date: "2026-02-21", time: "13:30", method: "Tunai", note: "Keripik dan kacang" }
+        ];
+
         // DOM elements
-        const cameraMode = document.getElementById('cameraMode');
-        const previewMode = document.getElementById('previewMode');
+        const filterModal = document.getElementById('filterModal');
+        const detailModal = document.getElementById('detailModal');
+        const detailContent = document.getElementById('detailContent');
         const toast = document.getElementById('toast');
         const toastMessage = document.getElementById('toastMessage');
+        const filterBadge = document.getElementById('filterBadge');
+        const loadingState = document.getElementById('loadingState');
+        const transactionList = document.getElementById('transactionList');
+        const emptyState = document.getElementById('emptyState');
+        const searchInput = document.getElementById('searchInput');
 
-        // Switch to preview mode
-        function switchToPreview() {
-            currentMode = 'preview';
-            cameraMode.classList.add('hidden');
-            previewMode.classList.remove('hidden');
-            previewMode.classList.add('animate-fade-in');
-        }
-
-        // Switch to camera mode
-        function switchToCamera() {
-            currentMode = 'camera';
-            previewMode.classList.add('hidden');
-            cameraMode.classList.remove('hidden');
-            cameraMode.classList.add('animate-fade-in');
-        }
-
-        // Go back to previous page
+        // Navigation
         function goBack() {
-            // Simulate back navigation
             showToast('Kembali ke halaman utama', 'info');
             setTimeout(() => {
-                window.location.href = 'about:blank'; // In real app, this would be actual navigation
+                window.location.href = 'about:blank';
             }, 1000);
         }
 
-        // Show toast notification
+        function goToRecord() {
+            showToast('Membuka form catat transaksi', 'info');
+        }
+
+        // Filter functions
+        function toggleFilter() {
+            filterModal.classList.remove('hidden');
+        }
+
+        function showFilterModal() {
+            filterModal.classList.remove('hidden');
+        }
+
+        function hideFilterModal(event) {
+            if (event && event.target === filterModal) {
+                filterModal.classList.add('hidden');
+            } else if (!event) {
+                filterModal.classList.add('hidden');
+            }
+        }
+
+        function quickFilter(filter) {
+            currentFilter = filter;
+            filterActive = true;
+            filterBadge.classList.remove('hidden');
+            
+            // Update button styles
+            document.querySelectorAll('.quick-filter-btn').forEach(btn => {
+                btn.classList.remove('bg-emerald-500', 'text-white');
+                btn.classList.add('bg-white', 'border', 'border-gray-200', 'text-gray-600');
+            });
+            
+            showToast(`Filter: ${filter}`, 'info');
+            filterTransactions();
+        }
+
+        function resetFilter() {
+            currentFilter = 'all';
+            filterActive = false;
+            filterBadge.classList.add('hidden');
+            showToast('Filter direset', 'info');
+            hideFilterModal();
+            filterTransactions();
+        }
+
+        function applyFilter() {
+            filterActive = true;
+            filterBadge.classList.remove('hidden');
+            showToast('Filter diterapkan', 'success');
+            hideFilterModal();
+            filterTransactions();
+        }
+
+        // Search function
+        function filterTransactions() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const items = document.querySelectorAll('.transaction-item');
+            let visibleCount = 0;
+
+            items.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                const type = item.dataset.type;
+                
+                let matchesFilter = true;
+                if (currentFilter === 'income' && type !== 'income') matchesFilter = false;
+                if (currentFilter === 'expense' && type !== 'expense') matchesFilter = false;
+                
+                const matchesSearch = text.includes(searchTerm);
+                
+                if (matchesFilter && matchesSearch) {
+                    item.classList.remove('hidden');
+                    visibleCount++;
+                } else {
+                    item.classList.add('hidden');
+                }
+            });
+
+            // Show empty state if no results
+            if (visibleCount === 0) {
+                emptyState.classList.remove('hidden');
+                transactionList.classList.add('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+                transactionList.classList.remove('hidden');
+            }
+        }
+
+        function clearSearch() {
+            searchInput.value = '';
+            filterTransactions();
+        }
+
+        // Load more (simulate)
+        function loadMore() {
+            showToast('Memuat data...', 'info');
+            loadingState.classList.remove('hidden');
+            
+            setTimeout(() => {
+                loadingState.classList.add('hidden');
+                showToast('Data dimuat', 'success');
+            }, 2000);
+        }
+
+        // Transaction detail
+        function showTransactionDetail(id) {
+            currentTransactionId = id;
+            const transaction = transactions.find(t => t.id === id);
+            
+            if (transaction) {
+                const typeIcon = transaction.type === 'income' 
+                    ? '<svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>'
+                    : '<svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>';
+                
+                const typeText = transaction.type === 'income' ? 'Pemasukan' : 'Pengeluaran';
+                const amountClass = transaction.type === 'income' ? 'text-emerald-600' : 'text-red-500';
+                const amountPrefix = transaction.type === 'income' ? '+' : '-';
+                
+                detailContent.innerHTML = `
+                    <div class="flex items-center gap-3 pb-3 border-b border-gray-100">
+                        <div class="w-12 h-12 rounded-xl flex items-center justify-center ${transaction.type === 'income' ? 'bg-emerald-100' : 'bg-red-100'}">
+                            ${typeIcon}
+                        </div>
+                        <div>
+                            <p class="text-gray-900 font-semibold">${transaction.label}</p>
+                            <p class="text-gray-500 text-sm">${typeText}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Nominal</span>
+                            <span class="font-bold text-lg ${amountClass}">${amountPrefix}Rp ${transaction.amount.toLocaleString('id-ID')}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Kategori</span>
+                            <span class="text-gray-900 font-medium">${transaction.category}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Metode Bayar</span>
+                            <span class="text-gray-900 font-medium">${transaction.method}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Tanggal</span>
+                            <span class="text-gray-900 font-medium">${transaction.date} ${transaction.time}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Catatan</span>
+                            <span class="text-gray-900 font-medium text-right">${transaction.note || '-'}</span>
+                        </div>
+                    </div>
+                `;
+                
+                detailModal.classList.remove('hidden');
+            }
+        }
+
+        function hideDetailModal(event) {
+            if (event && event.target === detailModal) {
+                detailModal.classList.add('hidden');
+            } else if (!event) {
+                detailModal.classList.add('hidden');
+            }
+        }
+
+        function deleteTransaction() {
+            if (confirm('Hapus transaksi ini?')) {
+                showToast('Transaksi dihapus', 'success');
+                hideDetailModal();
+                
+                // In real app, you would remove from DOM
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            }
+        }
+
+        function editTransaction() {
+            showToast('Membuka form edit', 'info');
+            hideDetailModal();
+        }
+
+        // Toast
         function showToast(message, type = 'success') {
             toastMessage.textContent = message;
             
-            // Change icon color based on type
             const icon = toast.querySelector('svg');
             if (type === 'success') {
                 icon.classList.remove('text-red-400', 'text-blue-400');
@@ -456,21 +876,10 @@
             }, 2000);
         }
 
-        // Show success toast for save action
-        function showSuccessToast() {
-            showToast('Transaksi dari struk disimpan! 🎉', 'success');
-            
-            // Simulate saving and redirect
-            setTimeout(() => {
-                switchToCamera(); // Reset to camera mode
-                // In real app, you would navigate away or reset form
-            }, 2000);
-        }
-
-        // Add touch feedback to all buttons
+        // Touch effects
         document.querySelectorAll('button').forEach(button => {
             button.addEventListener('touchstart', function() {
-                this.style.transform = 'scale(0.95)';
+                this.style.transform = 'scale(0.97)';
             });
             button.addEventListener('touchend', function() {
                 this.style.transform = 'scale(1)';
@@ -480,10 +889,9 @@
             });
         });
 
-        // Simulate camera initialization
+        // Initialize
         window.addEventListener('load', function() {
-            console.log('Camera view initialized');
-            // In real app, you would initialize the camera here
+            console.log('History page loaded');
         });
     </script>
 </body>
