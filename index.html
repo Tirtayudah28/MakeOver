@@ -3,1391 +3,712 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Growth Dashboard</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>Catat Transaksi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary-navy: #0B2340;
-            --primary-green: #29B25D;
-            --secondary-green: #7EDC90;
-            --secondary-yellow: #FFC857;
-            --accent-blue: #3B82F6;
-            --accent-purple: #8B5CF6;
-            --neutral-white: #FFFFFF;
-            --neutral-light: #F4F5F7;
-            --neutral-text: #4A4A4A;
-            --neutral-gray: #8C8C8C;
-            --shadow-sm: 0 2px 8px rgba(11, 35, 64, 0.05);
-            --shadow-md: 0 4px 12px rgba(11, 35, 64, 0.08);
-            --radius-sm: 8px;
-            --radius-md: 12px;
-            --radius-lg: 16px;
-            --transition: all 0.25s ease;
-        }
-        
         * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
+            font-family: 'Inter', sans-serif;
         }
         
         body {
-            background-color: var(--neutral-light);
-            color: var(--neutral-text);
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            line-height: 1.5;
-            max-width: 393px;
-            margin: 0 auto;
-            min-height: 100vh;
-            padding: 0;
+            background-color: #f9fafb;
         }
         
-        /* Header Mobile */
-        .mobile-header {
-            background: linear-gradient(135deg, var(--primary-navy) 0%, #1a3a5e 100%);
-            color: var(--neutral-white);
-            padding: 20px 16px 16px;
-            border-radius: 0 0 20px 20px;
-            box-shadow: var(--shadow-md);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        
-        .header-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-        
-        .brand-container {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        
-        .brand-logo {
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
-            background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 18px;
-            color: white;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-        }
-        
-        .brand-text {
-            font-family: 'Poppins', sans-serif;
-            font-size: 20px;
-            font-weight: 700;
-            letter-spacing: -0.3px;
-        }
-        
-        .mobile-time {
-            font-size: 14px;
-            font-weight: 500;
-            opacity: 0.9;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 6px 10px;
-            border-radius: 20px;
-        }
-        
-        /* Navigation Tabs */
-        .mobile-tabs {
-            display: flex;
-            gap: 4px;
-            overflow-x: auto;
-            padding-bottom: 4px;
-            -webkit-overflow-scrolling: touch;
-        }
-        
-        .mobile-tabs::-webkit-scrollbar {
-            display: none;
-        }
-        
-        .mobile-tab {
-            flex: 1;
-            min-width: 80px;
-            text-align: center;
-            padding: 10px 8px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: var(--radius-sm);
-            font-family: 'Poppins', sans-serif;
-            font-size: 13px;
-            font-weight: 500;
-            white-space: nowrap;
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-        }
-        
-        .mobile-tab.active {
-            background: var(--neutral-white);
-            color: var(--primary-navy);
-            font-weight: 600;
-        }
-        
-        /* Main Content */
-        .mobile-content {
-            padding: 16px;
-            padding-bottom: 80px;
-        }
-        
-        /* Page Container */
-        .page-container {
-            display: none;
-        }
-        
-        .page-container.active {
-            display: block;
-            animation: fadeIn 0.3s ease;
-        }
-        
+        /* Custom animations */
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
         
-        /* Cards */
-        .mobile-card {
-            background: var(--neutral-white);
-            border-radius: var(--radius-md);
-            padding: 20px;
-            margin-bottom: 16px;
-            box-shadow: var(--shadow-sm);
-            border: 1px solid rgba(11, 35, 64, 0.05);
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
         }
         
-        .card-title {
-            font-family: 'Poppins', sans-serif;
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--primary-navy);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 20px;
+        @keyframes scaleIn {
+            from { transform: scale(0); }
+            to { transform: scale(1); }
         }
         
-        /* ==================== HALAMAN LAPORAN ==================== */
-        .score-circle-mobile {
-            width: 140px;
-            height: 140px;
-            border-radius: 50%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            margin: 10px auto 20px;
-            background: conic-gradient(
-                #EF4444 0% 20%,
-                #F59E0B 20% 50%,
-                #29B25D 50% 100%
-            );
-            position: relative;
-            box-shadow: 0 8px 20px rgba(41, 178, 93, 0.15);
+        @keyframes scaleOut {
+            from { transform: scale(1); }
+            to { transform: scale(0); }
         }
         
-        .score-circle-inner-mobile {
-            width: 110px;
-            height: 110px;
-            border-radius: 50%;
-            background: var(--neutral-white);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
         
-        .score-value-mobile {
-            font-family: 'Poppins', sans-serif;
-            font-size: 36px;
-            font-weight: 700;
-            color: var(--primary-navy);
-            line-height: 1;
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
         
-        .indicators-mobile {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            margin: 20px 0;
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-out forwards;
         }
         
-        .indicator-mobile {
-            text-align: center;
-            padding: 12px 6px;
-            background: var(--neutral-light);
-            border-radius: var(--radius-sm);
+        .animate-fade-out {
+            animation: fadeOut 0.3s ease-out forwards;
         }
         
-        /* Chart */
-        .chart-container-mobile {
-            position: relative;
-            margin: 20px 0 30px;
-            padding-left: 35px;
-            height: 180px;
+        .animate-scale-in {
+            animation: scaleIn 0.2s ease-out forwards;
         }
         
-        /* ==================== HALAMAN ANALISIS ==================== */
-        /* Analysis Metrics */
-        .analysis-metrics {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin: 20px 0;
+        .animate-scale-out {
+            animation: scaleOut 0.2s ease-out forwards;
         }
         
-        .analysis-card {
-            background: var(--neutral-light);
-            border-radius: var(--radius-sm);
-            padding: 16px;
-            text-align: center;
-            transition: var(--transition);
-            border-top: 4px solid transparent;
+        .animate-slide-up {
+            animation: slideUp 0.3s ease-out forwards;
         }
         
-        .analysis-card:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-sm);
+        .animate-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         }
         
-        .analysis-card.revenue { border-color: var(--primary-green); }
-        .analysis-card.expenses { border-color: #EF4444; }
-        .analysis-card.customers { border-color: var(--accent-blue); }
-        .analysis-card.conversion { border-color: var(--accent-purple); }
-        
-        .analysis-value {
-            font-family: 'Poppins', sans-serif;
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 4px;
+        /* Scrollbar hide */
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
         
-        .analysis-label {
-            font-size: 12px;
-            color: var(--neutral-text);
-            font-weight: 500;
+        /* Tap highlight */
+        .tap-highlight-none {
+            -webkit-tap-highlight-color: transparent;
         }
         
-        /* Trend Chart */
-        .trend-chart {
-            height: 120px;
-            position: relative;
-            margin: 20px 0;
-            background: var(--neutral-light);
-            border-radius: var(--radius-sm);
-            padding: 16px;
-        }
-        
-        /* Comparison */
-        .comparison-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 14px 0;
-            border-bottom: 1px solid rgba(11, 35, 64, 0.05);
-        }
-        
-        .comparison-item:last-child {
-            border-bottom: none;
-        }
-        
-        .comparison-label {
-            font-size: 14px;
-            color: var(--primary-navy);
-            font-weight: 500;
-        }
-        
-        .comparison-value {
-            font-family: 'Poppins', sans-serif;
-            font-weight: 600;
-            font-size: 16px;
-        }
-        
-        .comparison-trend {
-            font-size: 12px;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-weight: 500;
-        }
-        
-        .trend-up { background: rgba(41, 178, 93, 0.1); color: var(--primary-green); }
-        .trend-down { background: rgba(239, 68, 68, 0.1); color: #EF4444; }
-        
-        /* ==================== HALAMAN TIPS ==================== */
-        .tips-category {
-            margin-bottom: 24px;
-        }
-        
-        .category-title {
-            font-family: 'Poppins', sans-serif;
-            font-size: 15px;
-            font-weight: 600;
-            color: var(--primary-navy);
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .tip-item {
-            background: var(--neutral-light);
-            border-radius: var(--radius-sm);
-            padding: 16px;
-            margin-bottom: 12px;
-            border-left: 4px solid var(--primary-green);
-            transition: var(--transition);
-        }
-        
-        .tip-item:hover {
-            background: rgba(41, 178, 93, 0.05);
-            transform: translateX(4px);
-        }
-        
-        .tip-header {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            margin-bottom: 8px;
-        }
-        
-        .tip-icon {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: var(--primary-green);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 14px;
-            flex-shrink: 0;
-        }
-        
-        .tip-content h4 {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--primary-navy);
-            margin-bottom: 4px;
-        }
-        
-        .tip-content p {
-            font-size: 13px;
-            color: var(--neutral-text);
-            line-height: 1.5;
-        }
-        
-        .tip-actions {
-            display: flex;
-            gap: 8px;
-            margin-top: 12px;
-        }
-        
-        .tip-action-btn {
-            padding: 6px 12px;
-            background: rgba(41, 178, 93, 0.1);
-            border: none;
-            border-radius: 6px;
-            font-size: 12px;
-            color: var(--primary-green);
-            font-weight: 500;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-        
-        .tip-action-btn:hover {
-            background: var(--primary-green);
-            color: white;
-        }
-        
-        /* ==================== HALAMAN SETTING ==================== */
-        .settings-section {
-            margin-bottom: 24px;
-        }
-        
-        .settings-title {
-            font-family: 'Poppins', sans-serif;
-            font-size: 15px;
-            font-weight: 600;
-            color: var(--primary-navy);
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .setting-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px 0;
-            border-bottom: 1px solid rgba(11, 35, 64, 0.05);
-            cursor: pointer;
-            transition: var(--transition);
-        }
-        
-        .setting-item:hover {
-            background: rgba(11, 35, 64, 0.02);
-            padding-left: 8px;
-            padding-right: 8px;
-            border-radius: var(--radius-sm);
-        }
-        
-        .setting-label {
-            font-size: 14px;
-            color: var(--primary-navy);
-            font-weight: 500;
-        }
-        
-        .setting-value {
-            font-size: 14px;
-            color: var(--neutral-gray);
-        }
-        
-        /* Toggle Switch */
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 50px;
-            height: 26px;
-        }
-        
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-        
-        .slider {
+        /* Camera corners */
+        .camera-corner {
             position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: .4s;
-            border-radius: 34px;
+            width: 2rem;
+            height: 2rem;
+            border: 2px solid #34d399;
         }
         
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 18px;
-            width: 18px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
+        /* Transitions */
+        .tab-transition {
+            transition: all 0.2s ease;
         }
         
-        input:checked + .slider {
-            background-color: var(--primary-green);
+        .scale-transition {
+            transition: transform 0.1s ease;
         }
         
-        input:checked + .slider:before {
-            transform: translateX(24px);
-        }
-        
-        /* Profile Section */
-        .profile-section {
-            text-align: center;
-            padding: 24px;
-            background: linear-gradient(135deg, rgba(11, 35, 64, 0.05), rgba(41, 178, 93, 0.05));
-            border-radius: var(--radius-md);
-            margin-bottom: 20px;
-        }
-        
-        .profile-avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary-navy), var(--primary-green));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 32px;
-            color: white;
-            margin: 0 auto 16px;
-            font-weight: 700;
-        }
-        
-        .profile-name {
-            font-family: 'Poppins', sans-serif;
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--primary-navy);
-            margin-bottom: 4px;
-        }
-        
-        .profile-role {
-            font-size: 14px;
-            color: var(--neutral-gray);
-            margin-bottom: 16px;
-        }
-        
-        /* Buttons */
-        .btn-mobile {
-            width: 100%;
-            padding: 14px;
-            background-color: var(--primary-green);
-            color: var(--neutral-white);
-            border: none;
-            border-radius: var(--radius-sm);
-            font-family: 'Poppins', sans-serif;
-            font-weight: 500;
-            font-size: 14px;
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            box-shadow: 0 2px 8px rgba(41, 178, 93, 0.2);
-            margin-top: 16px;
-        }
-        
-        .btn-mobile:hover {
-            background-color: #1F9E4D;
-            transform: translateY(-2px);
-        }
-        
-        .btn-secondary {
-            background-color: transparent;
-            border: 1px solid var(--primary-navy);
-            color: var(--primary-navy);
-            box-shadow: none;
-        }
-        
-        /* Footer */
-        .mobile-footer {
-            text-align: center;
-            padding: 20px 16px;
-            font-size: 12px;
-            color: var(--neutral-gray);
-            background: var(--neutral-white);
-            border-top: 1px solid rgba(11, 35, 64, 0.1);
-            margin-top: 20px;
-        }
-        
-        /* Hidden Class */
-        .hidden {
-            display: none !important;
+        .scale-transition:active {
+            transform: scale(0.95);
         }
     </style>
 </head>
-<body>
-    <!-- Mobile Header -->
-    <header class="mobile-header">
-        <div class="header-top">
-            <div class="brand-container">
-                <div class="brand-logo">BS</div>
-                <div class="brand-text">Growth Dashboard</div>
-            </div>
-            <div class="mobile-time" id="currentTime">09:21</div>
-        </div>
-        
-        <nav class="mobile-tabs">
-            <div class="mobile-tab active" data-page="report">
-                <i class="fas fa-chart-bar"></i> Laporan
-            </div>
-            <div class="mobile-tab" data-page="analysis">
-                <i class="fas fa-analytics"></i> Analisis
-            </div>
-            <div class="mobile-tab" data-page="tips">
-                <i class="fas fa-lightbulb"></i> Tips
-            </div>
-            <div class="mobile-tab" data-page="settings">
-                <i class="fas fa-cog"></i> Setting
-            </div>
-        </nav>
-    </header>
-    
-    <!-- Main Content - Multiple Pages -->
-    <main class="mobile-content">
-        <!-- ==================== HALAMAN LAPORAN ==================== -->
-        <div id="report-page" class="page-container active">
-            <!-- Growth Score Card -->
-            <section class="mobile-card">
-                <div class="card-title">
-                    <i class="fas fa-trophy" style="color: #FFC857;"></i>
-                    <span>Growth Score</span>
-                </div>
-                
-                <div class="score-circle-mobile">
-                    <div class="score-circle-inner-mobile">
-                        <div class="score-value-mobile">78</div>
-                        <div style="font-size: 12px; color: var(--neutral-gray);">Skor Bisnis</div>
-                    </div>
-                </div>
-                
-                <div class="indicators-mobile">
-                    <div class="indicator-mobile">
-                        <div class="indicator-value-mobile" style="color: #29B25D;">85%</div>
-                        <div class="indicator-label-mobile">Kinerja</div>
-                    </div>
-                    <div class="indicator-mobile">
-                        <div class="indicator-value-mobile" style="color: #FFC857;">72%</div>
-                        <div class="indicator-label-mobile">Pertumbuhan</div>
-                    </div>
-                    <div class="indicator-mobile">
-                        <div class="indicator-value-mobile" style="color: #0B2340;">91%</div>
-                        <div class="indicator-label-mobile">Stabilitas</div>
-                    </div>
-                </div>
-                
-                <button class="btn-mobile">
-                    <i class="fas fa-chart-line"></i> Lihat Detail Analisis
-                </button>
-            </section>
-            
-            <!-- Ringkasan Keuangan -->
-            <section class="mobile-card">
-                <div class="card-title">
-                    <i class="fas fa-wallet" style="color: #0B2340;"></i>
-                    <span>Ringkasan Keuangan</span>
-                </div>
-                
-                <div class="chart-container-mobile">
-                    <!-- Chart akan diisi oleh JavaScript -->
-                    <div style="text-align: center; padding: 40px 0; color: var(--neutral-gray);">
-                        <i class="fas fa-chart-bar" style="font-size: 32px; margin-bottom: 8px; display: block;"></i>
-                        Grafik Mingguan
-                    </div>
-                </div>
-                
-                <div style="text-align: center; margin: 10px 0; font-size: 11px; color: var(--neutral-gray);">
-                    <i class="fas fa-info-circle"></i> Data diperbarui real-time
-                </div>
-                
-                <button class="btn-mobile" style="background-color: var(--primary-navy);">
-                    <i class="fas fa-download"></i> Unduh Laporan Lengkap
-                </button>
-            </section>
-        </div>
-        
-        <!-- ==================== HALAMAN ANALISIS ==================== -->
-        <div id="analysis-page" class="page-container">
-            <!-- Analisis Mendalam -->
-            <section class="mobile-card">
-                <div class="card-title">
-                    <i class="fas fa-chart-line" style="color: var(--accent-blue);"></i>
-                    <span>Analisis Mendalam</span>
-                </div>
-                
-                <div class="analysis-metrics">
-                    <div class="analysis-card revenue">
-                        <div class="analysis-value" style="color: var(--primary-green);">+18.5%</div>
-                        <div class="analysis-label">Pertumbuhan Revenue</div>
-                        <div style="font-size: 11px; color: var(--neutral-gray); margin-top: 4px;">vs bulan lalu</div>
-                    </div>
-                    
-                    <div class="analysis-card expenses">
-                        <div class="analysis-value" style="color: #EF4444;">-8.2%</div>
-                        <div class="analysis-label">Pengeluaran</div>
-                        <div style="font-size: 11px; color: var(--neutral-gray); margin-top: 4px;">lebih efisien</div>
-                    </div>
-                    
-                    <div class="analysis-card customers">
-                        <div class="analysis-value" style="color: var(--accent-blue);">+24</div>
-                        <div class="analysis-label">Pelanggan Baru</div>
-                        <div style="font-size: 11px; color: var(--neutral-gray); margin-top: 4px;">30 hari terakhir</div>
-                    </div>
-                    
-                    <div class="analysis-card conversion">
-                        <div class="analysis-value" style="color: var(--accent-purple);">3.8%</div>
-                        <div class="analysis-label">Conversion Rate</div>
-                        <div style="font-size: 11px; color: var(--neutral-gray); margin-top: 4px;">optimalisasi</div>
-                    </div>
-                </div>
-            </section>
-            
-            <!-- Perbandingan Bulanan -->
-            <section class="mobile-card">
-                <div class="card-title">
-                    <i class="fas fa-balance-scale" style="color: var(--primary-navy);"></i>
-                    <span>Perbandingan Bulanan</span>
-                </div>
-                
-                <div class="comparison-item">
-                    <div class="comparison-label">Pendapatan</div>
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <div class="comparison-value" style="color: var(--primary-green);">Rp 8.2JT</div>
-                        <div class="comparison-trend trend-up">+12%</div>
-                    </div>
-                </div>
-                
-                <div class="comparison-item">
-                    <div class="comparison-label">Pengeluaran</div>
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <div class="comparison-value" style="color: #EF4444;">Rp 4.5JT</div>
-                        <div class="comparison-trend trend-down">-5%</div>
-                    </div>
-                </div>
-                
-                <div class="comparison-item">
-                    <div class="comparison-label">Laba Bersih</div>
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <div class="comparison-value" style="color: var(--primary-navy);">Rp 3.7JT</div>
-                        <div class="comparison-trend trend-up">+28%</div>
-                    </div>
-                </div>
-                
-                <div class="comparison-item">
-                    <div class="comparison-label">Transaksi</div>
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <div class="comparison-value" style="color: var(--accent-blue);">312</div>
-                        <div class="comparison-trend trend-up">+15%</div>
-                    </div>
-                </div>
-            </section>
-            
-            <!-- Tren Jangka Panjang -->
-            <section class="mobile-card">
-                <div class="card-title">
-                    <i class="fas fa-chart-area" style="color: var(--accent-purple);"></i>
-                    <span>Tren 6 Bulan</span>
-                </div>
-                
-                <div class="trend-chart">
-                    <div style="text-align: center; padding: 40px 0; color: var(--neutral-gray);">
-                        <i class="fas fa-chart-line" style="font-size: 32px; margin-bottom: 8px; display: block;"></i>
-                        Grafik Tren Panjang
-                    </div>
-                </div>
-                
-                <div style="font-size: 13px; color: var(--neutral-text); line-height: 1.6; margin-top: 16px;">
-                    <strong>Insight:</strong> Bisnis menunjukkan tren pertumbuhan yang konsisten dengan peningkatan rata-rata 15% per bulan. Fokus pada Q2 menunjukkan hasil optimal.
-                </div>
-            </section>
-        </div>
-        
-        <!-- ==================== HALAMAN TIPS ==================== -->
-        <div id="tips-page" class="page-container">
-            <!-- Tips Berdasarkan Skor -->
-            <section class="mobile-card">
-                <div class="card-title">
-                    <i class="fas fa-bullseye" style="color: var(--primary-green);"></i>
-                    <span>Tips untuk Skor 78</span>
-                </div>
-                
-                <div class="tips-category">
-                    <div class="category-title">
-                        <i class="fas fa-money-bill-wave"></i>
-                        <span>Optimasi Keuangan</span>
-                    </div>
-                    
-                    <div class="tip-item">
-                        <div class="tip-header">
-                            <div class="tip-icon">
-                                <i class="fas fa-piggy-bank"></i>
-                            </div>
-                            <div class="tip-content">
-                                <h4>Dana Darurat Bisnis</h4>
-                                <p>Sisihkan 20% dari laba bersih setiap bulan untuk dana darurat. Target: 3x pengeluaran bulanan.</p>
-                            </div>
-                        </div>
-                        <div class="tip-actions">
-                            <button class="tip-action-btn">Terapkan</button>
-                            <button class="tip-action-btn">Pelajari</button>
-                        </div>
-                    </div>
-                    
-                    <div class="tip-item">
-                        <div class="tip-header">
-                            <div class="tip-icon" style="background: var(--accent-blue);">
-                                <i class="fas fa-chart-pie"></i>
-                            </div>
-                            <div class="tip-content">
-                                <h4>Diversifikasi Pendapatan</h4>
-                                <p>Tambahkan 1 sumber pendapatan baru dalam 60 hari untuk mengurangi risiko ketergantungan.</p>
-                            </div>
-                        </div>
-                        <div class="tip-actions">
-                            <button class="tip-action-btn">Mulai</button>
-                            <button class="tip-action-btn">Contoh</button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="tips-category">
-                    <div class="category-title">
-                        <i class="fas fa-chart-line"></i>
-                        <span>Pertumbuhan Bisnis</span>
-                    </div>
-                    
-                    <div class="tip-item">
-                        <div class="tip-header">
-                            <div class="tip-icon" style="background: var(--secondary-yellow);">
-                                <i class="fas fa-users"></i>
-                            </div>
-                            <div class="tip-content">
-                                <h4>Retensi Pelanggan</h4>
-                                <p>Fokus pada pelanggan tetap. Naikkan retensi 15% untuk meningkatkan pendapatan berulang.</p>
-                            </div>
-                        </div>
-                        <div class="tip-actions">
-                            <button class="tip-action-btn">Strategi</button>
-                            <button class="tip-action-btn">Tools</button>
-                        </div>
-                    </div>
-                    
-                    <div class="tip-item">
-                        <div class="tip-header">
-                            <div class="tip-icon" style="background: var(--accent-purple);">
-                                <i class="fas fa-bolt"></i>
-                            </div>
-                            <div class="tip-content">
-                                <h4>Optimasi Proses</h4>
-                                <p>Identifikasi 3 proses yang bisa diotomatisasi. Hemat waktu 10 jam/minggu untuk fokus growth.</p>
-                            </div>
-                        </div>
-                        <div class="tip-actions">
-                            <button class="tip-action-btn">Audit</button>
-                            <button class="tip-action-btn">Solusi</button>
-                        </div>
-                    </div>
-                </div>
-            </section>
-            
-            <!-- Tips Harian -->
-            <section class="mobile-card">
-                <div class="card-title">
-                    <i class="fas fa-calendar-day" style="color: var(--primary-navy);"></i>
-                    <span>Tips Hari Ini</span>
-                </div>
-                
-                <div style="background: linear-gradient(135deg, rgba(41, 178, 93, 0.08), rgba(126, 220, 144, 0.08)); padding: 20px; border-radius: var(--radius-sm);">
-                    <div style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 16px;">
-                        <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary-green); display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; flex-shrink: 0;">
-                            <i class="fas fa-lightbulb"></i>
-                        </div>
-                        <div>
-                            <div style="font-weight: 600; color: var(--primary-navy); margin-bottom: 8px; font-size: 15px;">
-                                Review Mingguan
-                            </div>
-                            <div style="font-size: 13px; color: var(--neutral-text); line-height: 1.6;">
-                                Luangkan 30 menit hari ini untuk menganalisis performa minggu ini. Identifikasi apa yang bekerja baik dan area perbaikan.
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div style="background: white; padding: 12px; border-radius: var(--radius-sm); border-left: 4px solid var(--primary-green);">
-                        <div style="font-weight: 600; color: var(--primary-navy); margin-bottom: 4px; font-size: 13px;">
-                            <i class="fas fa-check-circle" style="color: var(--primary-green);"></i> Tindakan Cepat:
-                        </div>
-                        <div style="font-size: 12px; color: var(--neutral-text);">
-                            1. Cek arus kas harian<br>
-                            2. Review target vs realisasi<br>
-                            3. Update rencana besok
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </div>
-        
-        <!-- ==================== HALAMAN SETTING ==================== -->
-        <div id="settings-page" class="page-container">
-            <!-- Profile Section -->
-            <section class="profile-section">
-                <div class="profile-avatar">BS</div>
-                <div class="profile-name">Bisnis Sukses</div>
-                <div class="profile-role">Premium Member</div>
-                <button class="btn-mobile btn-secondary" style="max-width: 200px; margin: 0 auto;">
-                    <i class="fas fa-edit"></i> Edit Profil
-                </button>
-            </section>
-            
-            <!-- Pengaturan Aplikasi -->
-            <section class="mobile-card">
-                <div class="settings-section">
-                    <div class="settings-title">
-                        <i class="fas fa-sliders-h"></i>
-                        <span>Pengaturan Aplikasi</span>
-                    </div>
-                    
-                    <div class="setting-item">
-                        <div class="setting-label">Notifikasi</div>
-                        <label class="switch">
-                            <input type="checkbox" checked>
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                    
-                    <div class="setting-item">
-                        <div class="setting-label">Mode Gelap</div>
-                        <label class="switch">
-                            <input type="checkbox">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                    
-                    <div class="setting-item">
-                        <div class="setting-label">Auto Refresh</div>
-                        <div class="setting-value">Setiap 1 jam</div>
-                    </div>
-                    
-                    <div class="setting-item">
-                        <div class="setting-label">Format Mata Uang</div>
-                        <div class="setting-value">Rp (IDR)</div>
-                    </div>
-                </div>
-                
-                <div class="settings-section">
-                    <div class="settings-title">
-                        <i class="fas fa-bell"></i>
-                        <span>Notifikasi</span>
-                    </div>
-                    
-                    <div class="setting-item">
-                        <div class="setting-label">Reminder Pencatatan</div>
-                        <label class="switch">
-                            <input type="checkbox" checked>
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                    
-                    <div class="setting-item">
-                        <div class="setting-label">Laporan Mingguan</div>
-                        <label class="switch">
-                            <input type="checkbox" checked>
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                    
-                    <div class="setting-item">
-                        <div class="setting-label">Tips Harian</div>
-                        <label class="switch">
-                            <input type="checkbox">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                </div>
-                
-                <div class="settings-section">
-                    <div class="settings-title">
-                        <i class="fas fa-shield-alt"></i>
-                        <span>Keamanan & Privasi</span>
-                    </div>
-                    
-                    <div class="setting-item">
-                        <div class="setting-label">Verifikasi 2 Langkah</div>
-                        <label class="switch">
-                            <input type="checkbox">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                    
-                    <div class="setting-item">
-                        <div class="setting-label">Auto Logout</div>
-                        <div class="setting-value">15 menit</div>
-                    </div>
-                </div>
-            </section>
-            
-            <!-- Account Actions -->
-            <section class="mobile-card">
-                <div class="settings-section">
-                    <div class="settings-title">
-                        <i class="fas fa-user-cog"></i>
-                        <span>Akun & Data</span>
-                    </div>
-                    
-                    <button class="btn-mobile btn-secondary" style="margin-bottom: 12px;">
-                        <i class="fas fa-download"></i> Backup Data
-                    </button>
-                    
-                    <button class="btn-mobile btn-secondary" style="margin-bottom: 12px;">
-                        <i class="fas fa-sync"></i> Sinkronisasi Cloud
-                    </button>
-                    
-                    <button class="btn-mobile" style="background-color: #EF4444; margin-top: 24px;">
-                        <i class="fas fa-sign-out-alt"></i> Logout
-                    </button>
-                </div>
-            </section>
-        </div>
-    </main>
-    
-    <!-- Footer -->
-    <footer class="mobile-footer">
-        <p>Growth Dashboard • <span id="currentDate">16 Januari 2026</span></p>
-        <p>© 2026 Bisnis Sukses • v2.1</p>
-    </footer>
+<body class="min-h-screen bg-gray-50">
+    <div id="app" class="max-w-md mx-auto bg-gray-50 min-h-screen relative"></div>
 
     <script>
-        // ==================== INITIALIZATION ====================
-        document.addEventListener('DOMContentLoaded', function() {
-            updateDateTime();
-            initializeNavigation();
-            initializeSettings();
-            animateElements();
-        });
-        
-        // Update waktu dan tanggal
-        function updateDateTime() {
-            const now = new Date();
-            
-            // Update time
-            let hours = now.getHours();
-            let minutes = now.getMinutes();
-            hours = hours < 10 ? '0' + hours : hours;
-            minutes = minutes < 10 ? '0' + minutes : minutes;
-            document.getElementById('currentTime').textContent = `${hours}:${minutes}`;
-            
-            // Update date
-            const options = { day: 'numeric', month: 'long', year: 'numeric' };
-            const dateString = now.toLocaleDateString('id-ID', options);
-            document.getElementById('currentDate').textContent = dateString;
+        // Data JSON
+        const appData = {
+            categories: [
+                { id: "penjualan", icon: "trending-up", label: "Penjualan", color: "emerald" },
+                { id: "pembelian", icon: "package", label: "Pembelian", color: "blue" },
+                { id: "makanan", icon: "utensils", label: "Makanan", color: "orange" },
+                { id: "tagihan", icon: "zap", label: "Tagihan", color: "yellow" },
+                { id: "marketing", icon: "users", label: "Marketing", color: "purple" },
+                { id: "lainnya", icon: "shopping-cart", label: "Lainnya", color: "gray" }
+            ],
+            paymentMethods: [
+                { id: "tunai", label: "Tunai", emoji: "💵" },
+                { id: "transfer", label: "Transfer", emoji: "🏦" },
+                { id: "gopay", label: "GoPay", emoji: "💚" },
+                { id: "ovo", label: "OVO", emoji: "💜" },
+                { id: "qris", label: "QRIS", emoji: "📲" }
+            ],
+            historyTx: [
+                { id: 1, label: "Penjualan Kopi", cat: "Penjualan", amount: 850000, type: "income", date: "Hari ini, 09:15", method: "Tunai" },
+                { id: 2, label: "Beli Bahan Baku", cat: "Pembelian", amount: 320000, type: "expense", date: "Hari ini, 07:30", method: "Transfer" },
+                { id: 3, label: "Penjualan Roti", cat: "Penjualan", amount: 120000, type: "income", date: "Kemarin, 15:45", method: "GoPay" },
+                { id: 4, label: "Tagihan Listrik", cat: "Tagihan", amount: 450000, type: "expense", date: "Kemarin, 10:00", method: "Transfer" },
+                { id: 5, label: "Penjualan Camilan", cat: "Penjualan", amount: 95000, type: "income", date: "21 Feb, 13:30", method: "Tunai" }
+            ],
+            syncAccounts: [
+                { id: 1, name: "BCA Mobile", type: "Bank", icon: "🏦", status: "connected", lastSync: "2 menit lalu" },
+                { id: 2, name: "GoPay", type: "E-Wallet", icon: "💚", status: "connected", lastSync: "5 menit lalu" },
+                { id: 3, name: "Mandiri", type: "Bank", icon: "🏛️", status: "not_connected", lastSync: null },
+                { id: 4, name: "OVO", type: "E-Wallet", icon: "💜", status: "not_connected", lastSync: null }
+            ],
+            colorMap: {
+                emerald: { bg: "bg-emerald-100", icon: "text-emerald-600", border: "border-emerald-500", pill: "bg-emerald-500" },
+                blue: { bg: "bg-blue-100", icon: "text-blue-600", border: "border-blue-500", pill: "bg-blue-500" },
+                orange: { bg: "bg-orange-100", icon: "text-orange-600", border: "border-orange-500", pill: "bg-orange-500" },
+                yellow: { bg: "bg-yellow-100", icon: "text-yellow-600", border: "border-yellow-500", pill: "bg-yellow-500" },
+                purple: { bg: "bg-purple-100", icon: "text-purple-600", border: "border-purple-500", pill: "bg-purple-500" },
+                gray: { bg: "bg-gray-100", icon: "text-gray-600", border: "border-gray-500", pill: "bg-gray-500" }
+            }
+        };
+
+        // SVG Icons
+        const icons = {
+            'pencil': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>',
+            'scan': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>',
+            'wifi': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.212 0"/></svg>',
+            'clock': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+            'trending-up': '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>',
+            'package': '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>',
+            'utensils': '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>',
+            'zap': '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>',
+            'users': '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>',
+            'shopping-cart': '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>',
+            'arrow-down': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>',
+            'arrow-up': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>',
+            'check': '<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>',
+            'camera': '<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>',
+            'refresh': '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>',
+            'search': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>',
+            'filter': '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>'
+        };
+
+        // State management
+        let state = {
+            activeTab: 'simple',
+            type: 'pemasukan',
+            amount: '',
+            selectedCategory: null,
+            selectedPayment: 'tunai',
+            note: '',
+            showSuccess: false,
+            ocrStep: 'camera'
+        };
+
+        let previousState = { ...state };
+
+        // DOM element
+        const app = document.getElementById('app');
+
+        // Helper functions
+        function formatAmount(amount) {
+            if (!amount) return 'Rp 0';
+            return `Rp ${parseInt(amount).toLocaleString('id-ID')}`;
         }
-        
-        setInterval(updateDateTime, 60000);
-        
-        // ==================== NAVIGATION ====================
-        function initializeNavigation() {
-            const tabs = document.querySelectorAll('.mobile-tab');
-            const pages = document.querySelectorAll('.page-container');
+
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-full text-sm z-50 animate-slide-up';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.add('animate-fade-out');
+                setTimeout(() => toast.remove(), 300);
+            }, 2000);
+        }
+
+        function updateState(newState) {
+            previousState = { ...state };
+            state = { ...state, ...newState };
+            render();
+        }
+
+        // Event handlers
+        function handleNumberPress(num) {
+            if (num === '000') {
+                if (state.amount.length <= 9) {
+                    updateState({ amount: state.amount + '000' });
+                }
+                return;
+            }
+            if (state.amount.length < 12) {
+                updateState({ amount: state.amount + num });
+            }
+        }
+
+        function handleDelete() {
+            updateState({ amount: state.amount.slice(0, -1) });
+        }
+
+        function handleSave() {
+            if (!state.amount || !state.selectedCategory) {
+                showToast('Lengkapi nominal dan kategori terlebih dahulu', 'error');
+                return;
+            }
             
-            tabs.forEach(tab => {
-                tab.addEventListener('click', function() {
-                    const targetPage = this.dataset.page;
-                    
-                    // Update active tab
-                    tabs.forEach(t => t.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    // Show target page
-                    pages.forEach(page => page.classList.remove('active'));
-                    document.getElementById(`${targetPage}-page`).classList.add('active');
-                    
-                    // Update header title
-                    updateHeaderTitle(targetPage);
-                    
-                    // Show toast notification
-                    showToast(`Membuka halaman: ${this.textContent.trim()}`);
+            updateState({ showSuccess: true });
+            
+            setTimeout(() => {
+                updateState({ 
+                    showSuccess: false, 
+                    amount: '', 
+                    selectedCategory: null, 
+                    note: '' 
                 });
-            });
+                showToast('Transaksi berhasil disimpan! 🎉');
+            }, 1800);
         }
-        
-        function updateHeaderTitle(page) {
-            const titles = {
-                'report': 'Growth Dashboard',
-                'analysis': 'Analisis Mendalam',
-                'tips': 'Tips & Strategi',
-                'settings': 'Pengaturan'
-            };
-            document.querySelector('.brand-text').textContent = titles[page];
+
+        function handleClear() {
+            updateState({ amount: '', selectedCategory: null, note: '' });
         }
-        
-        // ==================== SETTINGS ====================
-        function initializeSettings() {
-            // Toggle switches
-            const switches = document.querySelectorAll('.switch input');
-            switches.forEach(sw => {
-                sw.addEventListener('change', function() {
-                    const label = this.closest('.setting-item').querySelector('.setting-label').textContent;
-                    const status = this.checked ? 'diaktifkan' : 'dinonaktifkan';
-                    showToast(`${label} ${status}`);
-                });
-            });
-            
-            // Setting items click
-            const settingItems = document.querySelectorAll('.setting-item');
-            settingItems.forEach(item => {
-                const valueEl = item.querySelector('.setting-value');
-                if (valueEl) {
-                    item.addEventListener('click', function() {
-                        const label = this.querySelector('.setting-label').textContent;
-                        
-                        if (label === 'Auto Refresh') {
-                            showRefreshOptions(this);
-                        } else if (label === 'Format Mata Uang') {
-                            showCurrencyOptions(this);
-                        } else if (label === 'Auto Logout') {
-                            showLogoutOptions(this);
-                        }
-                    });
-                }
-            });
-            
-            // Action buttons
-            document.querySelector('button[style*="background-color: #EF4444"]').addEventListener('click', function() {
-                if (confirm('Anda yakin ingin logout?')) {
-                    showToast('Berhasil logout. Sampai jumpa!');
-                    setTimeout(() => {
-                        document.querySelector('[data-page="report"]').click();
-                    }, 1000);
-                }
-            });
-        }
-        
-        // ==================== MODAL FUNCTIONS ====================
-        function showRefreshOptions(element) {
-            const options = ['Setiap 30 menit', 'Setiap 1 jam', 'Setiap 3 jam', 'Manual'];
-            const current = element.querySelector('.setting-value').textContent;
-            
-            const modal = createModal('Pilih Interval Refresh', options, current);
-            modal.querySelector('.modal-options').addEventListener('click', function(e) {
-                if (e.target.classList.contains('modal-option')) {
-                    const selected = e.target.textContent;
-                    element.querySelector('.setting-value').textContent = selected;
-                    closeModal();
-                    showToast(`Auto refresh diatur ke: ${selected}`);
-                }
-            });
-        }
-        
-        function showCurrencyOptions(element) {
-            const options = ['Rp (IDR)', '$ (USD)', '€ (EUR)', '¥ (JPY)'];
-            const current = element.querySelector('.setting-value').textContent;
-            
-            const modal = createModal('Pilih Mata Uang', options, current);
-            modal.querySelector('.modal-options').addEventListener('click', function(e) {
-                if (e.target.classList.contains('modal-option')) {
-                    const selected = e.target.textContent;
-                    element.querySelector('.setting-value').textContent = selected;
-                    closeModal();
-                    showToast(`Mata uang diubah ke: ${selected}`);
-                }
-            });
-        }
-        
-        function showLogoutOptions(element) {
-            const options = ['5 menit', '15 menit', '30 menit', '1 jam', 'Tidak pernah'];
-            const current = element.querySelector('.setting-value').textContent;
-            
-            const modal = createModal('Auto Logout', options, current);
-            modal.querySelector('.modal-options').addEventListener('click', function(e) {
-                if (e.target.classList.contains('modal-option')) {
-                    const selected = e.target.textContent;
-                    element.querySelector('.setting-value').textContent = selected;
-                    closeModal();
-                    showToast(`Auto logout diatur: ${selected}`);
-                }
-            });
-        }
-        
-        function createModal(title, options, current) {
-            // Remove existing modal
-            const existingModal = document.querySelector('.modal-overlay');
-            if (existingModal) existingModal.remove();
-            
-            // Create modal overlay
-            const overlay = document.createElement('div');
-            overlay.className = 'modal-overlay';
-            overlay.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: rgba(11, 35, 64, 0.8);
-                z-index: 1000;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                padding: 20px;
-                animation: fadeIn 0.3s ease;
-            `;
-            
-            // Create modal content
-            const modal = document.createElement('div');
-            modal.style.cssText = `
-                background: white;
-                border-radius: var(--radius-lg);
-                padding: 24px;
-                width: 100%;
-                max-width: 320px;
-                box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-            `;
-            
-            modal.innerHTML = `
-                <div style="margin-bottom: 20px;">
-                    <div style="font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 600; color: var(--primary-navy); margin-bottom: 8px;">
-                        ${title}
-                    </div>
-                    <div style="font-size: 13px; color: var(--neutral-gray);">
-                        Pilih salah satu opsi di bawah:
-                    </div>
-                </div>
-                <div class="modal-options" style="display: flex; flex-direction: column; gap: 8px;">
-                    ${options.map(opt => `
-                        <button class="modal-option" style="
-                            padding: 14px;
-                            border: 1px solid ${opt === current ? 'var(--primary-green)' : 'rgba(11, 35, 64, 0.1)'};
-                            background: ${opt === current ? 'rgba(41, 178, 93, 0.1)' : 'white'};
-                            border-radius: var(--radius-sm);
-                            font-size: 14px;
-                            color: ${opt === current ? 'var(--primary-green)' : 'var(--neutral-text)'};
-                            font-weight: ${opt === current ? '600' : '500'};
-                            cursor: pointer;
-                            transition: var(--transition);
-                            text-align: left;
-                        ">
-                            ${opt}
-                            ${opt === current ? ' <i class="fas fa-check" style="float: right;"></i>' : ''}
-                        </button>
+
+        // Render functions
+        function renderTabs() {
+            const tabs = [
+                { id: 'simple', label: 'Manual', icon: 'pencil' },
+                { id: 'ocr', label: 'Scan Struk', icon: 'scan' },
+                { id: 'sync', label: 'Sinkron', icon: 'wifi' },
+                { id: 'history', label: 'Riwayat', icon: 'clock' }
+            ];
+
+            return `
+                <div class="flex gap-0 border-b border-gray-100">
+                    ${tabs.map(tab => `
+                        <div 
+                            class="flex-1 flex flex-col items-center gap-1 py-3 text-xs border-b-2 transition-colors cursor-pointer tap-highlight-none ${
+                                state.activeTab === tab.id 
+                                    ? 'border-emerald-500 text-emerald-600' 
+                                    : 'border-transparent text-gray-400'
+                            }"
+                            style="font-weight: ${state.activeTab === tab.id ? '600' : '400'};"
+                            onclick="updateState({ activeTab: '${tab.id}' })"
+                        >
+                            ${icons[tab.icon]}
+                            ${tab.label}
+                        </div>
                     `).join('')}
                 </div>
-                <button class="modal-close" style="
-                    margin-top: 20px;
-                    width: 100%;
-                    padding: 12px;
-                    background: var(--neutral-light);
-                    border: none;
-                    border-radius: var(--radius-sm);
-                    font-size: 14px;
-                    color: var(--neutral-text);
-                    font-weight: 500;
-                    cursor: pointer;
-                    transition: var(--transition);
-                ">
-                    Batal
-                </button>
             `;
-            
-            overlay.appendChild(modal);
-            document.body.appendChild(overlay);
-            
-            // Close modal on close button click
-            overlay.querySelector('.modal-close').addEventListener('click', closeModal);
-            
-            // Close modal on overlay click
-            overlay.addEventListener('click', function(e) {
-                if (e.target === overlay) closeModal();
-            });
-            
-            return modal;
         }
-        
-        function closeModal() {
-            const modal = document.querySelector('.modal-overlay');
-            if (modal) {
-                modal.style.animation = 'fadeIn 0.3s ease reverse';
-                setTimeout(() => modal.remove(), 300);
-            }
-        }
-        
-        // ==================== TIPS INTERACTION ====================
-        function initializeTips() {
-            const tipButtons = document.querySelectorAll('.tip-action-btn');
-            tipButtons.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const action = this.textContent;
-                    const tipTitle = this.closest('.tip-item').querySelector('h4').textContent;
-                    
-                    if (action === 'Terapkan' || action === 'Mulai' || action === 'Strategi' || action === 'Audit') {
-                        showToast(`Menerapkan: ${tipTitle}`);
-                    } else {
-                        showToast(`Mempelajari: ${tipTitle}`);
-                    }
-                });
-            });
-        }
-        
-        initializeTips();
-        
-        // ==================== ANIMATIONS ====================
-        function animateElements() {
-            // Animate score circle
-            const scoreCircle = document.querySelector('.score-circle-mobile');
-            if (scoreCircle) {
-                scoreCircle.style.opacity = '0';
-                scoreCircle.style.transform = 'scale(0.8)';
-                
-                setTimeout(() => {
-                    scoreCircle.style.transition = 'opacity 0.6s ease, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
-                    scoreCircle.style.opacity = '1';
-                    scoreCircle.style.transform = 'scale(1)';
-                }, 300);
-            }
-        }
-        
-        // ==================== TOAST NOTIFICATION ====================
-        function showToast(message) {
-            // Remove existing toast
-            const existingToast = document.querySelector('.toast');
-            if (existingToast) existingToast.remove();
-            
-            const toast = document.createElement('div');
-            toast.className = 'toast';
-            toast.style.cssText = `
-                position: fixed;
-                bottom: 100px;
-                left: 50%;
-                transform: translateX(-50%);
-                background: var(--primary-navy);
-                color: white;
-                padding: 12px 20px;
-                border-radius: 8px;
-                font-size: 14px;
-                font-weight: 500;
-                z-index: 1000;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-                animation: slideUp 0.3s ease;
-                white-space: nowrap;
-                max-width: 300px;
-                text-align: center;
+
+        function renderSimpleMode() {
+            return `
+                <div class="animate-fade-in">
+                    <!-- Type Toggle -->
+                    <div class="px-4 pt-4 pb-2 bg-white border-b border-gray-100">
+                        <div class="flex gap-2 bg-gray-100 p-1 rounded-2xl">
+                            <div 
+                                class="flex-1 py-3 rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer tap-highlight-none ${
+                                    state.type === 'pemasukan' 
+                                        ? 'bg-emerald-500 text-white shadow-sm' 
+                                        : 'text-gray-600'
+                                }"
+                                style="font-weight: 600;"
+                                onclick="updateState({ type: 'pemasukan' })"
+                            >
+                                ${icons['arrow-down']}
+                                Uang Masuk
+                            </div>
+                            <div 
+                                class="flex-1 py-3 rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer tap-highlight-none ${
+                                    state.type === 'pengeluaran' 
+                                        ? 'bg-red-500 text-white shadow-sm' 
+                                        : 'text-gray-600'
+                                }"
+                                style="font-weight: 600;"
+                                onclick="updateState({ type: 'pengeluaran' })"
+                            >
+                                ${icons['arrow-up']}
+                                Uang Keluar
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Amount Display -->
+                    <div class="bg-white px-5 py-6 border-b border-gray-100">
+                        <p class="text-gray-500 text-xs mb-2" style="font-weight: 500;">JUMLAH</p>
+                        <p class="animate-fade-in ${state.type === 'pemasukan' ? 'text-emerald-600' : 'text-red-500'}" 
+                           style="font-size: 36px; font-weight: 800;">
+                            ${formatAmount(state.amount)}
+                        </p>
+                    </div>
+
+                    <div class="px-4 py-4 space-y-4">
+                        <!-- Category -->
+                        <div>
+                            <p class="text-gray-500 text-xs mb-3 px-1" style="font-weight: 600;">KATEGORI</p>
+                            <div class="grid grid-cols-3 gap-2.5">
+                                ${appData.categories.map(cat => {
+                                    const colors = appData.colorMap[cat.color];
+                                    const isSelected = state.selectedCategory === cat.id;
+                                    return `
+                                        <div 
+                                            class="relative p-3.5 rounded-2xl border-2 transition-all cursor-pointer scale-transition tap-highlight-none ${
+                                                isSelected ? `${colors.bg} ${colors.border}` : 'bg-white border-gray-200'
+                                            }"
+                                            onclick="updateState({ selectedCategory: '${cat.id}' })"
+                                        >
+                                            <div class="flex flex-col items-center gap-1.5">
+                                                <div class="w-10 h-10 rounded-xl flex items-center justify-center ${isSelected ? colors.bg : 'bg-gray-50'}">
+                                                    <div class="${isSelected ? colors.icon : 'text-gray-500'}">
+                                                        ${icons[cat.icon]}
+                                                    </div>
+                                                </div>
+                                                <span class="text-xs ${isSelected ? colors.icon : 'text-gray-600'}" style="font-weight: 500;">
+                                                    ${cat.label}
+                                                </span>
+                                            </div>
+                                            ${isSelected ? `
+                                                <div class="absolute top-1.5 right-1.5 w-5 h-5 bg-emerald-500 rounded-full flex items-center justify-center animate-scale-in">
+                                                    ${icons['check']}
+                                                </div>
+                                            ` : ''}
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+
+                        <!-- Payment Method -->
+                        <div>
+                            <p class="text-gray-500 text-xs mb-3 px-1" style="font-weight: 600;">METODE BAYAR</p>
+                            <div class="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+                                ${appData.paymentMethods.map(pm => `
+                                    <div 
+                                        class="flex-shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 transition-all cursor-pointer scale-transition tap-highlight-none ${
+                                            state.selectedPayment === pm.id
+                                                ? 'border-emerald-500 bg-emerald-50'
+                                                : 'border-gray-200 bg-white'
+                                        }"
+                                        onclick="updateState({ selectedPayment: '${pm.id}' })"
+                                    >
+                                        <span class="text-base">${pm.emoji}</span>
+                                        <span class="text-sm ${state.selectedPayment === pm.id ? 'text-emerald-700' : 'text-gray-600'}" 
+                                              style="font-weight: ${state.selectedPayment === pm.id ? '600' : '400'};">
+                                            ${pm.label}
+                                        </span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <!-- Note -->
+                        <div>
+                            <p class="text-gray-500 text-xs mb-2 px-1" style="font-weight: 600;">CATATAN (OPSIONAL)</p>
+                            <input 
+                                type="text" 
+                                placeholder="Tambahkan catatan..." 
+                                class="w-full px-4 py-3.5 bg-white border-2 border-gray-200 rounded-2xl outline-none focus:border-emerald-500 transition-colors text-sm"
+                                value="${state.note}"
+                                oninput="updateState({ note: this.value })"
+                            >
+                        </div>
+
+                        <!-- Keypad -->
+                        <div class="bg-white rounded-3xl p-4 shadow-sm border border-gray-100">
+                            <div class="grid grid-cols-3 gap-2">
+                                ${['1','2','3','4','5','6','7','8','9','000','0','⌫'].map(key => `
+                                    <div 
+                                        class="h-14 rounded-2xl flex items-center justify-center transition-colors cursor-pointer scale-transition tap-highlight-none ${
+                                            key === '⌫' ? 'bg-red-50 hover:bg-red-100' : 'bg-gray-50 hover:bg-gray-100'
+                                        }"
+                                        style="font-size: 20px; font-weight: 600;"
+                                        onclick="${key === '⌫' ? 'handleDelete()' : `handleNumberPress('${key}')`}"
+                                    >
+                                        ${key === '⌫' ? '<span class="text-red-500" style="font-size: 20px;">⌫</span>' : key}
+                                    </div>
+                                `).join('')}
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-2 mt-2">
+                                <div 
+                                    class="h-14 rounded-2xl bg-gray-100 text-gray-700 flex items-center justify-center cursor-pointer scale-transition tap-highlight-none"
+                                    style="font-weight: 600;"
+                                    onclick="handleClear()"
+                                >
+                                    Hapus
+                                </div>
+                                <div 
+                                    class="h-14 rounded-2xl bg-emerald-500 text-white shadow-md flex items-center justify-center cursor-pointer scale-transition tap-highlight-none"
+                                    style="font-weight: 700;"
+                                    onclick="handleSave()"
+                                >
+                                    Simpan ✓
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             `;
-            toast.textContent = message;
-            
-            document.body.appendChild(toast);
-            
-            // Add animation style
-            const style = document.createElement('style');
-            style.textContent = `
-                @keyframes slideUp {
-                    from { opacity: 0; transform: translateX(-50%) translateY(20px); }
-                    to { opacity: 1; transform: translateX(-50%) translateY(0); }
-                }
-                @keyframes slideDown {
-                    from { opacity: 1; transform: translateX(-50%) translateY(0); }
-                    to { opacity: 0; transform: translateX(-50%) translateY(20px); }
-                }
-            `;
-            document.head.appendChild(style);
-            
-            // Remove after 3 seconds
-            setTimeout(() => {
-                toast.style.animation = 'slideDown 0.3s ease';
-                setTimeout(() => {
-                    toast.remove();
-                    style.remove();
-                }, 300);
-            }, 3000);
         }
-        
-        // ==================== ADD MODAL STYLES ====================
-        const modalStyles = document.createElement('style');
-        modalStyles.textContent = `
-            .modal-option:hover {
-                background: rgba(41, 178, 93, 0.05) !important;
-                border-color: var(--primary-green) !important;
-                transform: translateX(4px);
+
+        function renderOCRMode() {
+            if (state.ocrStep === 'camera') {
+                return `
+                    <div class="p-4 animate-fade-in">
+                        <div class="text-center">
+                            <div class="bg-white rounded-3xl p-6 mb-4 shadow-sm border border-gray-100">
+                                <p class="text-gray-500 text-sm mb-6">Arahkan kamera ke struk pembelian atau invoice kamu</p>
+                                
+                                <!-- Camera frame mockup -->
+                                <div class="relative bg-gray-900 rounded-2xl overflow-hidden mb-6" style="height: 300px;">
+                                    <div class="absolute inset-0 flex items-center justify-center">
+                                        <div class="text-gray-600">${icons['camera']}</div>
+                                    </div>
+                                    <div class="corner-top-left"></div>
+                                    <div class="corner-top-right"></div>
+                                    <div class="corner-bottom-left"></div>
+                                    <div class="corner-bottom-right"></div>
+                                    <div class="absolute bottom-4 left-0 right-0 flex justify-center">
+                                        <div class="bg-white/20 backdrop-blur-sm text-white text-xs px-4 py-2 rounded-full">
+                                            Posisikan struk di dalam bingkai
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div 
+                                    class="w-20 h-20 bg-emerald-500 rounded-full flex items-center justify-center mx-auto shadow-lg cursor-pointer scale-transition tap-highlight-none"
+                                    onclick="updateState({ ocrStep: 'preview' })"
+                                >
+                                    ${icons['camera'].replace('w-8 h-8', 'w-8 h-8 text-white')}
+                                </div>
+                                <p class="text-gray-400 text-xs mt-3">Tekan untuk memfoto</p>
+                            </div>
+
+                            <p class="text-gray-500 text-sm">atau</p>
+                            <button class="mt-3 text-emerald-600 text-sm" style="font-weight: 600;">
+                                Upload dari galeri
+                            </button>
+                        </div>
+                    </div>
+                `;
+            } else {
+                return `
+                    <div class="p-4 animate-fade-in">
+                        <div class="bg-white rounded-3xl p-5 shadow-sm border border-gray-100 mb-4">
+                            <div class="flex items-center gap-2 mb-4">
+                                <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                                <p class="text-emerald-600 text-sm" style="font-weight: 600;">Struk berhasil dipindai!</p>
+                            </div>
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="text-xs text-gray-500 mb-1 block" style="font-weight: 500;">Nama Toko</label>
+                                    <input value="Toko Berkah Jaya" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl outline-none focus:border-emerald-500 text-sm">
+                                </div>
+                                <div>
+                                    <label class="text-xs text-gray-500 mb-1 block" style="font-weight: 500;">Total Belanja</label>
+                                    <input value="Rp 185.000" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl outline-none focus:border-emerald-500 text-sm">
+                                </div>
+                                <div>
+                                    <label class="text-xs text-gray-500 mb-1 block" style="font-weight: 500;">Tanggal</label>
+                                    <input value="22 Feb 2026" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl outline-none focus:border-emerald-500 text-sm">
+                                </div>
+                                <div>
+                                    <label class="text-xs text-gray-500 mb-1 block" style="font-weight: 500;">Kategori</label>
+                                    <select class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl outline-none focus:border-emerald-500 text-sm bg-white">
+                                        <option>Pembelian</option>
+                                        <option>Penjualan</option>
+                                        <option>Tagihan</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex gap-3">
+                            <button onclick="updateState({ ocrStep: 'camera' })" class="flex-1 py-4 rounded-2xl border-2 border-gray-200 text-gray-600" style="font-weight: 600;">
+                                Foto Ulang
+                            </button>
+                            <div 
+                                class="flex-1 py-4 rounded-2xl bg-emerald-500 text-white shadow-md flex items-center justify-center cursor-pointer scale-transition tap-highlight-none"
+                                style="font-weight: 700;"
+                                onclick="showToast('Transaksi dari struk disimpan! 🎉'); updateState({ activeTab: 'simple' })"
+                            >
+                                Simpan ✓
+                            </div>
+                        </div>
+                    </div>
+                `;
             }
+        }
+
+        function renderSyncMode() {
+            return `
+                <div class="p-4 animate-fade-in">
+                    <div class="bg-blue-50 rounded-2xl p-4 mb-4 border border-blue-100">
+                        <div class="flex items-start gap-3">
+                            <div class="text-blue-600 mt-0.5">${icons['refresh']}</div>
+                            <p class="text-blue-800 text-sm">Hubungkan rekening bank atau e-wallet untuk sinkronisasi transaksi otomatis</p>
+                        </div>
+                    </div>
+                    <div class="space-y-3">
+                        ${appData.syncAccounts.map(acc => `
+                            <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex items-center gap-4 cursor-pointer scale-transition tap-highlight-none">
+                                <div class="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center text-2xl">
+                                    ${acc.icon}
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-gray-900 text-sm" style="font-weight: 600;">${acc.name}</p>
+                                    <p class="text-gray-500 text-xs">${acc.type}</p>
+                                    ${acc.lastSync ? `
+                                        <p class="text-emerald-600 text-xs mt-0.5">Sinkron ${acc.lastSync}</p>
+                                    ` : ''}
+                                </div>
+                                ${acc.status === 'connected' ? `
+                                    <div class="px-3 py-1.5 bg-emerald-100 text-emerald-700 rounded-full text-xs" style="font-weight: 600;">
+                                        Terhubung
+                                    </div>
+                                ` : `
+                                    <div class="px-3 py-1.5 bg-emerald-500 text-white rounded-full text-xs" style="font-weight: 600;">
+                                        Hubungkan
+                                    </div>
+                                `}
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderHistoryMode() {
+            return `
+                <div class="p-4 animate-fade-in">
+                    <div class="flex gap-2 mb-4">
+                        <div class="flex-1 bg-white rounded-2xl px-4 py-3 flex items-center gap-2 border border-gray-200">
+                            <div class="text-gray-400">${icons['search']}</div>
+                            <input type="text" placeholder="Cari transaksi..." class="flex-1 outline-none text-sm">
+                        </div>
+                        <div class="bg-white p-3 rounded-2xl border border-gray-200">
+                            ${icons['filter']}
+                        </div>
+                    </div>
+
+                    <!-- Date groups -->
+                    <div class="space-y-1">
+                        <p class="text-gray-500 text-xs px-1 py-2" style="font-weight: 600;">HARI INI</p>
+                        ${appData.historyTx.slice(0, 2).map(tx => `
+                            <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex items-center gap-3 cursor-pointer scale-transition tap-highlight-none">
+                                <div class="w-11 h-11 rounded-xl flex items-center justify-center ${tx.type === 'income' ? 'bg-emerald-100' : 'bg-red-100'}">
+                                    ${tx.type === 'income' 
+                                        ? '<div class="text-emerald-600">' + icons['arrow-down'].replace('w-4 h-4', 'w-5 h-5') + '</div>'
+                                        : '<div class="text-red-500">' + icons['arrow-up'].replace('w-4 h-4', 'w-5 h-5') + '</div>'
+                                    }
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-gray-900 text-sm" style="font-weight: 500;">${tx.label}</p>
+                                    <p class="text-gray-400 text-xs">${tx.cat} · ${tx.method}</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-sm ${tx.type === 'income' ? 'text-emerald-600' : 'text-red-500'}" style="font-weight: 600;">
+                                        ${tx.type === 'income' ? '+' : '-'}Rp ${tx.amount.toLocaleString('id-ID')}
+                                    </p>
+                                    <p class="text-gray-400 text-xs">${tx.date.split(', ')[1]}</p>
+                                </div>
+                            </div>
+                        `).join('')}
+
+                        <p class="text-gray-500 text-xs px-1 py-2 mt-2" style="font-weight: 600;">KEMARIN</p>
+                        ${appData.historyTx.slice(2, 4).map(tx => `
+                            <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex items-center gap-3 cursor-pointer scale-transition tap-highlight-none">
+                                <div class="w-11 h-11 rounded-xl flex items-center justify-center ${tx.type === 'income' ? 'bg-emerald-100' : 'bg-red-100'}">
+                                    ${tx.type === 'income' 
+                                        ? '<div class="text-emerald-600">' + icons['arrow-down'].replace('w-4 h-4', 'w-5 h-5') + '</div>'
+                                        : '<div class="text-red-500">' + icons['arrow-up'].replace('w-4 h-4', 'w-5 h-5') + '</div>'
+                                    }
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-gray-900 text-sm" style="font-weight: 500;">${tx.label}</p>
+                                    <p class="text-gray-400 text-xs">${tx.cat} · ${tx.method}</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-sm ${tx.type === 'income' ? 'text-emerald-600' : 'text-red-500'}" style="font-weight: 600;">
+                                        ${tx.type === 'income' ? '+' : '-'}Rp ${tx.amount.toLocaleString('id-ID')}
+                                    </p>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderSuccessOverlay() {
+            if (!state.showSuccess) return '';
             
-            .modal-close:hover {
-                background: rgba(11, 35, 64, 0.1) !important;
+            return `
+                <div class="fixed inset-0 bg-emerald-500 flex flex-col items-center justify-center z-50 max-w-md mx-auto animate-fade-in">
+                    <div class="text-center animate-scale-in">
+                        <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto mb-6">
+                            ${icons['check'].replace('w-3 h-3', 'w-12 h-12 text-emerald-500')}
+                        </div>
+                        <h3 class="text-white mb-2" style="font-size: 24px; font-weight: 700;">Tersimpan!</h3>
+                        <p class="text-emerald-100">Transaksi ${state.type === 'pemasukan' ? 'uang masuk' : 'uang keluar'} berhasil dicatat</p>
+                        <div class="mt-4 bg-white/20 rounded-2xl px-6 py-3 inline-block">
+                            <p class="text-white" style="font-weight: 700; font-size: 22px;">${formatAmount(state.amount)}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Main render function
+        function render() {
+            const content = `
+                <div class="bg-white px-5 pt-12 pb-0 sticky top-0 z-10 shadow-sm">
+                    <h1 class="text-gray-900 mb-4" style="font-size: 22px; font-weight: 700;">Catat Transaksi</h1>
+                    ${renderTabs()}
+                </div>
+
+                ${state.activeTab === 'simple' ? renderSimpleMode() : ''}
+                ${state.activeTab === 'ocr' ? renderOCRMode() : ''}
+                ${state.activeTab === 'sync' ? renderSyncMode() : ''}
+                ${state.activeTab === 'history' ? renderHistoryMode() : ''}
+
+                ${renderSuccessOverlay()}
+            `;
+
+            app.innerHTML = content;
+        }
+
+        // Make functions global for onclick handlers
+        window.updateState = updateState;
+        window.handleNumberPress = handleNumberPress;
+        window.handleDelete = handleDelete;
+        window.handleSave = handleSave;
+        window.handleClear = handleClear;
+        window.showToast = showToast;
+
+        // Initial render
+        render();
+
+        // Add style for camera corners
+        const style = document.createElement('style');
+        style.textContent = `
+            .corner-top-left {
+                position: absolute;
+                top: 1rem;
+                left: 1rem;
+                width: 2rem;
+                height: 2rem;
+                border-top: 2px solid #34d399;
+                border-left: 2px solid #34d399;
             }
-            
-            @keyframes fadeIn {
-                from { opacity: 0; }
-                to { opacity: 1; }
+            .corner-top-right {
+                position: absolute;
+                top: 1rem;
+                right: 1rem;
+                width: 2rem;
+                height: 2rem;
+                border-top: 2px solid #34d399;
+                border-right: 2px solid #34d399;
+            }
+            .corner-bottom-left {
+                position: absolute;
+                bottom: 1rem;
+                left: 1rem;
+                width: 2rem;
+                height: 2rem;
+                border-bottom: 2px solid #34d399;
+                border-left: 2px solid #34d399;
+            }
+            .corner-bottom-right {
+                position: absolute;
+                bottom: 1rem;
+                right: 1rem;
+                width: 2rem;
+                height: 2rem;
+                border-bottom: 2px solid #34d399;
+                border-right: 2px solid #34d399;
             }
         `;
-        document.head.appendChild(modalStyles);
+        document.head.appendChild(style);
     </script>
 </body>
 </html>
