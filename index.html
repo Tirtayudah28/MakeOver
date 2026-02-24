@@ -3,656 +3,365 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Quest - Warung Bu Sari</title>
+    <title>OCR Gagal - Pindah Manual / Foto Ulang</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * {
             font-family: 'Inter', sans-serif;
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
         }
-        
         body {
-            background-color: #f0fdf4;
-        }
-        
-        /* Variabel warna */
-        :root {
-            --primary: #10b981;
-            --primary-dark: #059669;
-            --primary-soft: #d1fae5;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --gray-100: #f3f4f6;
-            --gray-200: #e5e7eb;
-            --gray-400: #9ca3af;
-            --gray-600: #4b5563;
-            --gray-800: #1f2937;
-        }
-        
-        /* Animasi */
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        @keyframes bounce { 0%,100%{ transform: translateY(0); } 50%{ transform: translateY(-5px); } }
-        @keyframes pulse { 0%,100%{ opacity:1; } 50%{ opacity:0.7; } }
-        @keyframes float { 0%,100%{ transform: translateY(0px); } 50%{ transform: translateY(-10px); } }
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        
-        .animate-fade-in { animation: fadeIn 0.4s ease-out; }
-        .animate-slide-up { animation: slideUp 0.4s ease-out; }
-        .animate-bounce { animation: bounce 2s infinite; }
-        .animate-pulse { animation: pulse 2s infinite; }
-        .animate-float { animation: float 3s ease-in-out infinite; }
-        .animate-spin-slow { animation: spin 3s linear infinite; }
-        
-        /* Tap effect */
-        .tap-effect {
-            transition: all 0.1s ease;
-            -webkit-tap-highlight-color: transparent;
-            cursor: pointer;
-        }
-        .tap-effect:active { transform: scale(0.97); opacity: 0.9; }
-        
-        /* Card style */
-        .card {
-            background: white;
-            border-radius: 24px;
-            padding: 20px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-            border: 1px solid #e2e8f0;
-        }
-        
-        /* Status bar */
-        .status-bar {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px 20px 4px;
-            font-size: 14px;
-            font-weight: 600;
-            background: white;
-            color: #1f2937;
-        }
-        
-        /* Bottom navigation */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            max-width: 480px;
-            margin: 0 auto;
-            background: white;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            padding: 8px 16px 20px;
-            border-top: 1px solid #edf2f7;
-            border-radius: 30px 30px 0 0;
-            box-shadow: 0 -4px 12px rgba(0,0,0,0.02);
-            z-index: 50;
-        }
-        
-        .nav-tab {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            font-size: 12px;
-            color: #9ca3af;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .nav-tab.active {
-            color: #10b981;
-        }
-        
-        .nav-tab .ni {
-            font-size: 22px;
-        }
-        
-        .fab-wrap {
-            position: relative;
-            top: -20px;
-        }
-        
-        .fab {
-            width: 56px;
-            height: 56px;
-            background: #10b981;
-            border-radius: 28px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 28px;
-            font-weight: 700;
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
-        }
-        
-        /* Avatar */
-        .avatar {
-            width: 44px;
-            height: 44px;
-            border-radius: 22px;
-            background: linear-gradient(135deg, #10b981, #047857);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        
-        /* Icon button */
-        .icon-btn {
-            width: 44px;
-            height: 44px;
-            border-radius: 22px;
             background: #f3f4f6;
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            position: relative;
-            cursor: pointer;
+            min-height: 100vh;
         }
-        
-        /* Progress bar */
-        .progress-bar {
-            width: 100%;
-            height: 12px;
-            background: #e5e7eb;
-            border-radius: 20px;
-            overflow: hidden;
+        /* animasi scan error */
+        @keyframes glitch {
+            0% { transform: translate(0); filter: blur(0); opacity: 1; }
+            20% { transform: translate(-2px, 2px); filter: blur(1px); opacity: 0.8; }
+            40% { transform: translate(2px, -2px); filter: blur(2px); opacity: 0.6; }
+            60% { transform: translate(-2px, -2px); filter: blur(1px); opacity: 0.4; }
+            80% { transform: translate(2px, 2px); filter: blur(0); opacity: 0.8; }
+            100% { transform: translate(0); filter: blur(0); opacity: 1; }
         }
-        
-        .progress-fill {
-            height: 100%;
-            background: #10b981;
-            border-radius: 20px;
-            transition: width 0.5s ease;
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+            20%, 40%, 60%, 80% { transform: translateX(4px); }
         }
-        
-        /* Badge */
-        .badge {
-            padding: 4px 8px;
-            border-radius: 20px;
-            font-size: 10px;
-            font-weight: 600;
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
         }
-        
-        .badge-success {
-            background: #d1fae5;
-            color: #059669;
+        .animate-glitch {
+            animation: glitch 0.6s ease-in-out forwards;
         }
-        
-        .badge-warning {
-            background: #fef3c7;
-            color: #d97706;
+        .animate-shake {
+            animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
         }
-        
-        .badge-blue {
-            background: #dbeafe;
-            color: #2563eb;
+        .blink-slow {
+            animation: blink 2s infinite;
         }
-        
-        .badge-purple {
-            background: #ede9fe;
-            color: #7c3aed;
+        /* camera corner */
+        .corner {
+            position: absolute;
+            width: 2rem;
+            height: 2rem;
+            border: 2px solid #ef4444;
+            z-index: 10;
         }
-        
-        /* Section head */
-        .section-head {
-            padding: 20px 20px 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .corner-tl { top: 1rem; left: 1rem; border-right: 0; border-bottom: 0; }
+        .corner-tr { top: 1rem; right: 1rem; border-left: 0; border-bottom: 0; }
+        .corner-bl { bottom: 1rem; left: 1rem; border-right: 0; border-top: 0; }
+        .corner-br { bottom: 1rem; right: 1rem; border-left: 0; border-top: 0; }
+        .scan-error-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, #ef4444, transparent);
+            filter: blur(3px);
+            opacity: 0.8;
+            z-index: 5;
         }
-        
-        .section-head h2 {
-            font-size: 18px;
-            font-weight: 700;
-            color: #1f2937;
+        .tap-effect:active {
+            transform: scale(0.96);
         }
-        
-        /* Scroll area */
-        .scroll-area {
-            height: calc(100vh - 140px);
-            overflow-y: auto;
-            padding-bottom: 100px;
-            scrollbar-width: none;
-        }
-        
-        .scroll-area::-webkit-scrollbar {
+        .hidden {
             display: none;
-        }
-        
-        /* Quest card */
-        .quest-glow {
-            box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.3);
-        }
-        
-        /* Step indicator */
-        .step-circle {
-            width: 40px;
-            height: 40px;
-            border-radius: 20px;
-            background: white;
-            border: 2px solid #10b981;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            color: #10b981;
-        }
-        
-        .step-circle.completed {
-            background: #10b981;
-            color: white;
-            border: none;
-        }
-        
-        /* Celebration effect */
-        .celebration {
-            position: relative;
-        }
-        
-        .celebration::after {
-            content: "🎉";
-            position: absolute;
-            top: -20px;
-            right: -20px;
-            font-size: 40px;
-            opacity: 0.2;
-            transform: rotate(15deg);
-        }
-        
-        /* Confetti */
-        .confetti-particle {
-            position: absolute;
-            width: 8px;
-            height: 8px;
-            background: #fbbf24;
-            opacity: 0.6;
-            border-radius: 2px;
-            animation: fall 3s linear infinite;
-        }
-        
-        @keyframes fall {
-            to { transform: translateY(300px) rotate(360deg); }
-        }
-        
-        /* Step connector */
-        .step-connector {
-            width: 2px;
-            height: 30px;
-            background: #d1fae5;
-            margin-left: 19px;
         }
     </style>
 </head>
-<body>
-    <div class="max-w-md mx-auto bg-[#f0fdf4] min-h-screen relative">
-        <!-- Status Bar -->
-        <div class="status-bar bg-white">
-            <span>9:41</span>
-            <span class="font-semibold text-gray-800">📶 🔋 100%</span>
-        </div>
+<body class="p-4 w-full">
+    <div class="max-w-md mx-auto bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-200 w-full relative">
 
-        <!-- Main Scroll Area -->
-        <div class="scroll-area">
-            <!-- Header dengan Progress Welcome -->
-            <div class="flex items-center justify-between px-5 pt-6 pb-2">
-                <div>
-                    <div class="flex items-center gap-2 mb-1">
-                        <span class="text-sm text-emerald-600 font-semibold bg-emerald-50 px-3 py-1 rounded-full animate-pulse">✨ Member Baru</span>
-                    </div>
-                    <p class="text-2xl font-extrabold text-gray-800">Halo, Warung Bu Sari! 👋</p>
-                    <p class="text-sm text-gray-500 mt-1">Selesaikan misi tunggal ini untuk memulai</p>
+        <!-- Header -->
+        <div class="px-5 pt-8 pb-3 bg-white border-b border-gray-100">
+            <div class="flex items-center gap-2">
+                <button class="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center tap-effect">
+                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                </button>
+                <h1 class="text-xl font-bold text-gray-800">Scan OCR</h1>
+            </div>
+            <!-- step -->
+            <div class="flex items-center justify-between mt-4 px-1">
+                <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 rounded-full bg-red-500 text-white flex items-center justify-center text-xs font-bold">1</div>
+                    <span class="text-xs font-medium text-gray-600">Ambil Foto</span>
                 </div>
-                <div class="avatar tap-effect" onclick="goToProfile()">
-                    BS
+                <div class="flex-1 h-0.5 bg-gray-200 mx-2"></div>
+                <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 rounded-full bg-gray-300 text-gray-500 flex items-center justify-center text-xs font-bold">2</div>
+                    <span class="text-xs font-medium text-gray-400">Hasil</span>
                 </div>
             </div>
+        </div>
 
-            <!-- Quest Card BESAR - Fokus Hanya 1 Misi -->
-            <div class="px-5 mb-6 mt-2">
-                <div class="bg-gradient-to-br from-emerald-600 via-emerald-500 to-emerald-400 rounded-3xl p-6 text-white relative overflow-hidden quest-glow celebration">
-                    <!-- Animasi confetti -->
-                    <div class="absolute top-0 left-0 w-full h-full pointer-events-none">
-                        <div class="confetti-particle" style="left:10%; top:-20px; animation-delay:0s; background:#fbbf24;"></div>
-                        <div class="confetti-particle" style="left:30%; top:-20px; animation-delay:0.5s; background:#34d399;"></div>
-                        <div class="confetti-particle" style="left:50%; top:-20px; animation-delay:1s; background:#60a5fa;"></div>
-                        <div class="confetti-particle" style="left:70%; top:-20px; animation-delay:1.5s; background:#f87171;"></div>
-                        <div class="confetti-particle" style="left:90%; top:-20px; animation-delay:2s; background:#c084fc;"></div>
+        <!-- Main Area -->
+        <div class="p-5 bg-gray-50">
+
+            <!-- ========== KONDISI GAGAL ========== -->
+            <div id="ocrGagalContainer" class="animate-fade-in">
+                <!-- Card kamera dengan efek gagal -->
+                <div class="bg-white rounded-2xl p-4 shadow-sm border border-red-200 relative overflow-hidden mb-4">
+                    
+                    <!-- label gagal -->
+                    <div class="flex items-center gap-2 mb-3">
+                        <div class="bg-red-100 p-1.5 rounded-full">
+                            <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-red-600 font-bold text-base">OCR gagal membaca teks</p>
+                            <p class="text-xs text-gray-500">Gambar buram / pencahayaan kurang</p>
+                        </div>
                     </div>
-                    
-                    <!-- Background decoration -->
-                    <div class="absolute -top-20 -right-20 w-48 h-48 bg-white/10 rounded-full"></div>
-                    <div class="absolute -bottom-20 -left-20 w-48 h-48 bg-white/5 rounded-full"></div>
-                    
-                    <div class="relative z-10">
-                        <!-- Badge Quest -->
-                        <div class="flex items-center gap-2 mb-4">
-                            <span class="text-3xl animate-bounce">🏆</span>
-                            <span class="text-xs font-bold tracking-wider bg-white/20 px-3 py-1.5 rounded-full backdrop-blur-sm border border-white/20">
-                                QUEST PEMULA - 1 MISI
+
+                    <!-- area gambar preview dengan animasi error -->
+                    <div class="relative rounded-xl overflow-hidden bg-black mb-4" id="gambarPreview">
+                        <!-- gambar struk (simulasi buram) -->
+                        <img src="https://placehold.co/600x400/2d2d2d/aaaaaa?text=STRUK+TIDAK+TERBACA" alt="foto struk gagal" class="w-full h-44 object-cover opacity-70 blur-[1.5px] brightness-50" id="fotoStrukGagal">
+                        
+                        <!-- efek garis scan merah error -->
+                        <div class="scan-error-line animate-scan" style="animation: scanLine 1.2s linear infinite;"></div>
+                        
+                        <!-- overlay glitch -->
+                        <div class="absolute inset-0 bg-red-500/10 mix-blend-overlay animate-glitch pointer-events-none"></div>
+                        
+                        <!-- icon failed besar -->
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <div class="bg-black/50 backdrop-blur-sm p-3 rounded-full animate-shake">
+                                <svg class="w-10 h-10 text-red-400" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                                </svg>
+                            </div>
+                        </div>
+                        
+                        <!-- teks error berkedip -->
+                        <div class="absolute bottom-2 left-0 right-0 text-center">
+                            <span class="bg-red-600/80 text-white text-xs px-3 py-1.5 rounded-full font-medium blink-slow inline-flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span>
+                                TIDAK DAPAT MEMBACA
                             </span>
                         </div>
+
+                        <!-- corner merah -->
+                        <div class="corner corner-tl border-red-400"></div>
+                        <div class="corner corner-tr border-red-400"></div>
+                        <div class="corner corner-bl border-red-400"></div>
+                        <div class="corner corner-br border-red-400"></div>
+                    </div>
+
+                    <!-- === PERTANYAAN === -->
+                    <div class="bg-red-50 border border-red-200 rounded-xl p-5 mb-2 text-center animate-slide-up">
+                        <p class="text-gray-800 font-semibold text-base mb-5">📸 OCR gagal membaca gambar</p>
+                        <p class="text-red-700 font-medium text-sm mb-4">Mau pindah ke manual atau coba foto ulang?</p>
                         
-                        <!-- Judul Quest dengan efek glow -->
-                        <h3 class="text-4xl font-extrabold mb-3 tracking-tight">Misi Awal</h3>
-                        <p class="text-base opacity-95 mb-6 leading-relaxed">
-                            Hanya satu misi untuk membuka semua fitur dan memulai perjalanan UMKM-mu! 🚀
-                        </p>
-                        
-                        <!-- Single Mission Card (Fokus Utama) -->
-                        <div class="bg-white/20 backdrop-blur-md rounded-2xl p-5 mb-6 border border-white/30 shadow-xl">
-                            <div class="flex items-center justify-between mb-3">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-12 h-12 bg-white/30 rounded-xl flex items-center justify-center">
-                                        <span class="text-2xl">📝</span>
-                                    </div>
-                                    <div>
-                                        <p class="font-bold text-lg">Catat 3 Transaksi Pertama</p>
-                                        <p class="text-xs opacity-80">Langkah awal menuju kesuksesan</p>
-                                    </div>
-                                </div>
-                                <div class="bg-white/30 rounded-full px-4 py-2">
-                                    <span class="font-extrabold text-xl">0/3</span>
-                                </div>
-                            </div>
-                            
-                            <!-- Progress Bar Besar -->
-                            <div class="mb-3">
-                                <div class="progress-bar bg-white/30 h-4">
-                                    <div class="progress-fill bg-white" style="width: 0%"></div>
-                                </div>
-                            </div>
-                            
-                            <!-- Step by step indicator -->
-                            <div class="flex items-center justify-between mt-4">
-                                <div class="flex flex-col items-center">
-                                    <div class="step-circle">1</div>
-                                    <span class="text-xs mt-1 opacity-80">Transaksi 1</span>
-                                </div>
-                                <div class="flex-1 h-0.5 bg-white/30 mx-2"></div>
-                                <div class="flex flex-col items-center">
-                                    <div class="step-circle opacity-50">2</div>
-                                    <span class="text-xs mt-1 opacity-60">Transaksi 2</span>
-                                </div>
-                                <div class="flex-1 h-0.5 bg-white/30 mx-2"></div>
-                                <div class="flex flex-col items-center">
-                                    <div class="step-circle opacity-50">3</div>
-                                    <span class="text-xs mt-1 opacity-60">Transaksi 3</span>
-                                </div>
-                            </div>
+                        <div class="flex flex-col sm:flex-row gap-3">
+                            <!-- tombol pindah manual -->
+                            <button id="btnManual" class="flex-1 bg-white border-2 border-emerald-500 text-emerald-700 font-bold py-3.5 px-3 rounded-xl tap-effect hover:bg-emerald-50 transition flex items-center justify-center gap-2 shadow-sm" onclick="pindahManual()">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                                Pindah ke Manual
+                            </button>
+                            <!-- tombol foto ulang -->
+                            <button id="btnUlang" class="flex-1 bg-emerald-500 text-white font-bold py-3.5 px-3 rounded-xl tap-effect hover:bg-emerald-600 transition flex items-center justify-center gap-2 shadow-sm" onclick="fotoUlang()">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                Coba Foto Ulang
+                            </button>
                         </div>
-                        
-                        <!-- Hadiah yang akan didapat -->
-                        <div class="bg-emerald-700/40 rounded-xl p-4 mb-5 backdrop-blur-sm border border-white/20">
-                            <p class="text-sm font-bold mb-2 flex items-center gap-2">
-                                <span class="text-xl">🎁</span> Hadiah Setelah Misi Selesai:
-                            </p>
-                            <div class="grid grid-cols-3 gap-2 text-center">
-                                <div>
-                                    <span class="text-2xl">🔓</span>
-                                    <p class="text-xs">Semua Fitur</p>
-                                </div>
-                                <div>
-                                    <span class="text-2xl">🏅</span>
-                                    <p class="text-xs">Badge Pemula</p>
-                                </div>
-                                <div>
-                                    <span class="text-2xl">📊</span>
-                                    <p class="text-xs">Ringkasan Harian</p>
-                                </div>
-                            </div>
+                    </div>
+
+                    <!-- catatan kecil -->
+                    <p class="text-xs text-gray-400 text-center mt-3">pastikan teks jelas dan tidak buram</p>
+                </div>
+
+                <!-- opsi upload dari galeri (pelengkap) -->
+                <div class="text-center">
+                    <p class="text-gray-400 text-xs">atau</p>
+                    <button class="mt-2 text-emerald-600 text-sm font-semibold flex items-center justify-center gap-1 mx-auto tap-effect">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                        Upload dari galeri
+                    </button>
+                </div>
+            </div>
+
+            <!-- ========== AREA MANUAL (disembunyikan awal) ========== -->
+            <div id="manualContainer" class="hidden animate-fade-in">
+                <div class="bg-white rounded-2xl p-5 shadow-sm border border-emerald-200">
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="bg-emerald-100 p-1.5 rounded-full">
+                            <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                            </svg>
                         </div>
-                        
-                        <!-- CTA Button Besar -->
-                        <button class="w-full bg-white text-emerald-700 font-extrabold py-5 rounded-full tap-effect shadow-xl hover:bg-gray-50 transition-all text-lg flex items-center justify-center gap-2" onclick="goToCatat()">
-                            <span class="text-2xl">✍️</span>
-                            Catat Transaksi Sekarang
-                            <span class="text-emerald-500">→</span>
-                        </button>
-                        
-                        <!-- Motivasi -->
-                        <p class="text-center text-xs text-white/70 mt-4 italic">
-                            "Perjalanan 1000 transaksi dimulai dari 3 transaksi pertama"
-                        </p>
+                        <p class="font-bold text-gray-800">Input Manual Struk</p>
+                    </div>
+
+                    <!-- form manual sederhana -->
+                    <div class="space-y-3">
+                        <input type="text" placeholder="Nama toko / merchant" class="w-full border border-gray-200 rounded-xl p-3 text-sm">
+                        <input type="text" placeholder="Total belanja (Rp)" class="w-full border border-gray-200 rounded-xl p-3 text-sm">
+                        <input type="date" class="w-full border border-gray-200 rounded-xl p-3 text-sm">
+                        <textarea rows="2" placeholder="Catatan (opsional)" class="w-full border border-gray-200 rounded-xl p-3 text-sm"></textarea>
+                    </div>
+
+                    <div class="flex gap-3 mt-5">
+                        <button class="flex-1 py-3 border border-gray-300 rounded-xl text-gray-600 font-semibold tap-effect" onclick="kembaliKeGagal()">Batal</button>
+                        <button class="flex-1 py-3 bg-emerald-500 text-white rounded-xl font-bold tap-effect" onclick="simpanManual()">Simpan</button>
                     </div>
                 </div>
             </div>
 
-            <!-- Kenapa Perlu Catat Transaksi? -->
-            <div class="px-5 mb-5">
-                <div class="bg-white rounded-2xl p-5 border border-emerald-100 shadow-sm">
-                    <h3 class="font-bold text-gray-800 mb-4 flex items-center gap-2">
-                        <span class="text-emerald-500 text-xl">💡</span>
-                        Kenapa harus catat 3 transaksi pertama?
-                    </h3>
-                    
-                    <div class="space-y-4">
-                        <div class="flex items-start gap-3">
-                            <div class="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0">
-                                <span class="text-emerald-600 text-sm font-bold">1</span>
-                            </div>
-                            <div>
-                                <p class="font-semibold text-gray-800 text-sm">Buka Semua Fitur</p>
-                                <p class="text-xs text-gray-500">Setelah misi selesai, semua fitur seperti laporan dan ringkasan akan terbuka</p>
-                            </div>
-                        </div>
-                        
-                        <div class="flex items-start gap-3">
-                            <div class="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0">
-                                <span class="text-emerald-600 text-sm font-bold">2</span>
-                            </div>
-                            <div>
-                                <p class="font-semibold text-gray-800 text-sm">Dapatkan Badge Pemula</p>
-                                <p class="text-xs text-gray-500">Badge khusus untuk member yang menyelesaikan misi pertama</p>
-                            </div>
-                        </div>
-                        
-                        <div class="flex items-start gap-3">
-                            <div class="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0">
-                                <span class="text-emerald-600 text-sm font-bold">3</span>
-                            </div>
-                            <div>
-                                <p class="font-semibold text-gray-800 text-sm">Mulai Kebiasaan Baik</p>
-                                <p class="text-xs text-gray-500">Membiasakan mencatat transaksi setiap hari untuk bisnis yang sehat</p>
-                            </div>
-                        </div>
+            <!-- ========== AREA FOTO ULANG (simulasi) ========== -->
+            <div id="fotoUlangContainer" class="hidden animate-fade-in">
+                <div class="bg-white rounded-2xl p-5 shadow-sm border border-blue-200 text-center">
+                    <div class="camera-frame relative h-40 bg-gray-900 rounded-xl mb-4 flex items-center justify-center overflow-hidden">
+                        <svg class="w-12 h-12 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                        </svg>
+                        <!-- garis scan -->
+                        <div class="scan-line animate-scan"></div>
+                        <div class="absolute bottom-2 left-2 bg-black/50 text-white text-xs px-2 py-1 rounded-full">persiapkan kamera...</div>
+                    </div>
+                    <p class="text-blue-600 font-semibold">Silakan foto ulang struk</p>
+                    <p class="text-xs text-gray-500 mt-1">posisikan dalam bingkai</p>
+                    <div class="flex gap-2 mt-4">
+                        <button class="flex-1 py-3 border border-gray-300 rounded-xl text-sm tap-effect" onclick="kembaliKeGagal()">Batal</button>
+                        <button class="flex-1 py-3 bg-blue-500 text-white rounded-xl text-sm tap-effect" onclick="simulasiFotoUlang()">Ambil Foto</button>
                     </div>
                 </div>
             </div>
 
-            <!-- Preview Fitur yang Akan Terbuka -->
-            <div class="px-5 mb-5">
-                <div class="bg-white rounded-2xl p-5 border border-gray-100">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="font-bold text-gray-800">Fitur yang akan terbuka</h3>
-                        <span class="badge badge-purple text-xs">Setelah 3 transaksi</span>
-                    </div>
-                    
-                    <div class="grid grid-cols-2 gap-3">
-                        <div class="bg-gray-50 rounded-xl p-3 opacity-60">
-                            <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center mb-2">
-                                <span class="text-gray-500 text-lg">📊</span>
-                            </div>
-                            <p class="font-semibold text-sm text-gray-600">Ringkasan Harian</p>
-                            <p class="text-xs text-gray-400">Lihat pemasukan & pengeluaran</p>
-                        </div>
-                        
-                        <div class="bg-gray-50 rounded-xl p-3 opacity-60">
-                            <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center mb-2">
-                                <span class="text-gray-500 text-lg">📈</span>
-                            </div>
-                            <p class="font-semibold text-sm text-gray-600">Laporan Keuangan</p>
-                            <p class="text-xs text-gray-400">Grafik dan analisa</p>
-                        </div>
-                        
-                        <div class="bg-gray-50 rounded-xl p-3 opacity-60">
-                            <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center mb-2">
-                                <span class="text-gray-500 text-lg">🔄</span>
-                            </div>
-                            <p class="font-semibold text-sm text-gray-600">Sinkron Bank</p>
-                            <p class="text-xs text-gray-400">Hubungkan e-wallet</p>
-                        </div>
-                        
-                        <div class="bg-gray-50 rounded-xl p-3 opacity-60">
-                            <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center mb-2">
-                                <span class="text-gray-500 text-lg">📸</span>
-                            </div>
-                            <p class="font-semibold text-sm text-gray-600">Scan Struk</p>
-                            <p class="text-xs text-gray-400">Catat otomatis dari foto</p>
-                        </div>
-                    </div>
-                    
-                    <!-- Lock info -->
-                    <div class="flex items-center justify-center gap-2 mt-4 text-xs text-gray-400">
-                        <span class="text-gray-400">🔒</span>
-                        <span>Fitur masih terkunci. Selesaikan misi 3 transaksi untuk membuka</span>
-                    </div>
-                </div>
-            </div>
+        </div> <!-- end p-5 -->
 
-            <!-- Testimoni atau Motivasi -->
-            <div class="px-5 mb-20">
-                <div class="bg-emerald-50 rounded-2xl p-5 border border-emerald-100">
-                    <p class="text-sm text-emerald-800 italic text-center">
-                        "Setelah mencatat 3 transaksi pertama, saya jadi paham ke mana uang saya pergi. Sekarang bisnis saya lebih terkontrol!"
-                    </p>
-                    <p class="text-xs text-emerald-600 text-center mt-2 font-semibold">— Ibu Sari, Warung Bu Sari</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Bottom Navigation (Sederhana untuk Quest) -->
-        <div class="bottom-nav">
-            <div class="nav-tab active" onclick="goToHome()">
-                <div class="ni">🏠</div>
-                <div class="nl">Quest</div>
-            </div>
-            <div class="nav-tab" onclick="goToCatat()">
-                <div class="ni">📝</div>
-                <div class="nl">Catat</div>
-            </div>
-            <div class="fab-wrap nav-tab" onclick="goToCatatCepat()">
-                <div class="fab tap-effect">+</div>
-            </div>
-            <div class="nav-tab" onclick="showLockedMessage()">
-                <div class="ni">🔒</div>
-                <div class="nl">Laporan</div>
-            </div>
-            <div class="nav-tab" onclick="showLockedMessage()">
-                <div class="ni">🔒</div>
-                <div class="nl">Lainnya</div>
-            </div>
+        <!-- bottom note -->
+        <div class="bg-white px-5 py-3 border-t border-gray-100 flex justify-between text-xs text-gray-400">
+            <span>⏳ OCR gagal otomatis</span>
+            <span>v1.0</span>
         </div>
     </div>
 
-    <!-- Modal untuk Fitur Terkunci -->
-    <div id="lockedModal" class="fixed inset-0 bg-black/50 z-50 hidden items-center justify-center p-5" onclick="hideLockedModal()">
-        <div class="bg-white rounded-3xl p-6 max-w-sm w-full animate-slide-up" onclick="event.stopPropagation()">
-            <div class="text-center">
-                <div class="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <span class="text-4xl">🔒</span>
-                </div>
-                <h3 class="font-bold text-xl text-gray-800 mb-2">Fitur Terkunci</h3>
-                <p class="text-gray-500 mb-4">Selesaikan misi <span class="font-bold text-emerald-600">"Catat 3 transaksi pertama"</span> untuk membuka fitur ini</p>
-                
-                <!-- Progress saat ini -->
-                <div class="bg-emerald-50 rounded-xl p-4 mb-4">
-                    <p class="text-sm text-emerald-700 mb-2">Progress misi kamu:</p>
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-sm">0 dari 3 transaksi</span>
-                        <span class="font-bold text-emerald-600">0%</span>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 0%"></div>
-                    </div>
-                </div>
-                
-                <button class="w-full bg-emerald-500 text-white py-3 rounded-xl font-bold tap-effect mb-2" onclick="goToCatat()">
-                    Catat Transaksi Sekarang
-                </button>
-                <button class="w-full py-3 text-gray-500 tap-effect" onclick="hideLockedModal()">
-                    Nanti Saja
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Toast Notification -->
-    <div id="toast" class="fixed bottom-24 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-full text-sm z-50 hidden items-center gap-2 shadow-lg">
-        <span id="toastMessage">Fitur terkunci</span>
+    <!-- toast sederhana -->
+    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-5 py-2.5 rounded-full text-sm shadow-lg hidden items-center gap-2 z-50">
+        <span id="toastMsg">oke</span>
     </div>
 
     <script>
-        // State untuk progress (simulasi)
-        let transactionCount = 0;
+        // elemen
+        const ocrGagal = document.getElementById('ocrGagalContainer');
+        const manualDiv = document.getElementById('manualContainer');
+        const fotoUlangDiv = document.getElementById('fotoUlangContainer');
+        const toast = document.getElementById('toast');
+        const toastMsg = document.getElementById('toastMsg');
 
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            document.getElementById('toastMessage').innerText = message;
-            toast.classList.remove('hidden');
-            setTimeout(() => {
-                toast.classList.add('hidden');
-            }, 2000);
-        }
-
-        // Navigation
-        function goToProfile() {
-            showToast('Membuka profil');
-        }
-
-        function goToCatat() {
-            showToast('Mari catat transaksi pertama!');
-            // Simulasi tambah progress (untuk demo)
-            transactionCount++;
-            if (transactionCount <= 3) {
-                showToast(`Transaksi ke-${transactionCount} berhasil dicatat!`);
-                if (transactionCount === 3) {
-                    setTimeout(() => {
-                        alert('🎉 SELAMAT! Misi 3 transaksi selesai! Semua fitur telah terbuka.');
-                    }, 500);
-                }
+        // animasi tambahan scan line
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes scanLine {
+                0% { transform: translateY(-100%); }
+                100% { transform: translateY(400%); }
             }
+            .animate-scan {
+                animation: scanLine 1.5s linear infinite;
+            }
+            .animate-fade-in { animation: fadeIn 0.2s ease; }
+            @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+            .animate-slide-up { animation: slideUp 0.25s ease; }
+            @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        `;
+        document.head.appendChild(style);
+
+        // fungsi pindah manual
+        function pindahManual() {
+            ocrGagal.classList.add('hidden');
+            manualDiv.classList.remove('hidden');
+            showToast('✏️ Mode manual aktif');
         }
 
-        function goToHome() {
-            showToast('Sudah di halaman Quest');
+        // fungsi foto ulang
+        function fotoUlang() {
+            ocrGagal.classList.add('hidden');
+            fotoUlangDiv.classList.remove('hidden');
+            showToast('📸 Buka kamera ulang');
         }
 
-        function goToCatatCepat() {
-            goToCatat();
+        // kembali ke halaman gagal dari manapun
+        function kembaliKeGagal() {
+            manualDiv.classList.add('hidden');
+            fotoUlangDiv.classList.add('hidden');
+            ocrGagal.classList.remove('hidden');
+            // tambahkan efek goyangan lagi (opsional)
+            document.getElementById('gambarPreview').classList.add('animate-shake');
+            setTimeout(() => {
+                document.getElementById('gambarPreview').classList.remove('animate-shake');
+            }, 500);
+            showToast('Kembali ke OCR gagal');
         }
 
-        function showLockedMessage() {
-            document.getElementById('lockedModal').classList.remove('hidden');
+        // simpan manual (hanya demo)
+        function simpanManual() {
+            showToast('✅ Data manual disimpan (demo)');
+            setTimeout(() => {
+                kembaliKeGagal();
+            }, 1000);
         }
 
-        function hideLockedModal() {
-            document.getElementById('lockedModal').classList.add('hidden');
+        // simulasi foto ulang -> kembali ke gagal (karena masih gagal)
+        function simulasiFotoUlang() {
+            showToast('📸 Memotret ulang...', 800);
+            setTimeout(() => {
+                // setelah foto, masih gagal (kondisi tetap gagal)
+                fotoUlangDiv.classList.add('hidden');
+                ocrGagal.classList.remove('hidden');
+                // tambahkan animasi glitch lagi untuk menunjukkan gagal
+                document.getElementById('fotoStrukGagal').classList.add('animate-glitch');
+                setTimeout(() => {
+                    document.getElementById('fotoStrukGagal').classList.remove('animate-glitch');
+                }, 600);
+                showToast('❌ OCR tetap gagal, coba lagi atau manual');
+            }, 1000);
         }
 
-        // Tap effect
-        document.querySelectorAll('.tap-effect').forEach(el => {
-            el.addEventListener('touchstart', function() {
-                this.style.transform = 'scale(0.97)';
-            });
-            el.addEventListener('touchend', function() {
-                this.style.transform = 'scale(1)';
-            });
-            el.addEventListener('touchcancel', function() {
-                this.style.transform = 'scale(1)';
+        // toast helper
+        function showToast(msg, duration = 1500) {
+            toastMsg.innerText = msg;
+            toast.classList.remove('hidden');
+            toast.classList.add('animate-slide-up');
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'transition-opacity');
+                setTimeout(() => {
+                    toast.classList.add('hidden');
+                    toast.classList.remove('opacity-0', 'transition-opacity', 'animate-slide-up');
+                }, 300);
+            }, duration);
+        }
+
+        // tambahan tap effect ke semua button
+        document.querySelectorAll('button').forEach(b => {
+            b.addEventListener('click', function(e) {
+                // mencegah efek ganda pada tombol dalam fungsi
             });
         });
+
+        // inisialisasi: animasi pertama
+        window.onload = function() {
+            // pastikan container gagal muncul dengan animasi
+            ocrGagal.classList.remove('hidden');
+            manualDiv.classList.add('hidden');
+            fotoUlangDiv.classList.add('hidden');
+        };
     </script>
 </body>
 </html>
