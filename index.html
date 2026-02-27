@@ -3,365 +3,1546 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>OCR Gagal - Pindah Manual / Foto Ulang</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>UMKMate - Beranda</title>
     <style>
         * {
-            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
         }
+
         body {
-            background: #f3f4f6;
-            display: flex;
-            align-items: center;
+            background-color: #f5f7fa;
             min-height: 100vh;
+            display: flex;
+            justify-content: center;
         }
-        /* animasi scan error */
-        @keyframes glitch {
-            0% { transform: translate(0); filter: blur(0); opacity: 1; }
-            20% { transform: translate(-2px, 2px); filter: blur(1px); opacity: 0.8; }
-            40% { transform: translate(2px, -2px); filter: blur(2px); opacity: 0.6; }
-            60% { transform: translate(-2px, -2px); filter: blur(1px); opacity: 0.4; }
-            80% { transform: translate(2px, 2px); filter: blur(0); opacity: 0.8; }
-            100% { transform: translate(0); filter: blur(0); opacity: 1; }
+
+        .app-container {
+            max-width: 480px;
+            width: 100%;
+            background-color: #f5f7fa;
+            min-height: 100vh;
+            position: relative;
         }
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
-            20%, 40%, 60%, 80% { transform: translateX(4px); }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        @keyframes blink {
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes pulse {
             0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
+            50% { opacity: 0.7; }
         }
-        .animate-glitch {
-            animation: glitch 0.6s ease-in-out forwards;
+
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-out forwards;
         }
-        .animate-shake {
-            animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+
+        .animate-slide-up {
+            animation: slideUp 0.3s ease-out forwards;
         }
-        .blink-slow {
-            animation: blink 2s infinite;
+
+        .animate-scale-in {
+            animation: scaleIn 0.2s ease-out forwards;
         }
-        /* camera corner */
-        .corner {
-            position: absolute;
-            width: 2rem;
-            height: 2rem;
-            border: 2px solid #ef4444;
+
+        .animate-pulse {
+            animation: pulse 2s infinite;
+        }
+
+        /* Tap effect */
+        .tap-effect {
+            transition: all 0.1s ease;
+            -webkit-tap-highlight-color: transparent;
+            cursor: pointer;
+        }
+
+        .tap-effect:active {
+            transform: scale(0.97);
+            opacity: 0.9;
+        }
+
+        /* Card style */
+        .card {
+            background: white;
+            border-radius: 24px;
+            padding: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            border: 1px solid #edf2f7;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            padding: 48px 20px 16px;
+            border-bottom: 1px solid #edf2f7;
+            position: sticky;
+            top: 0;
             z-index: 10;
         }
-        .corner-tl { top: 1rem; left: 1rem; border-right: 0; border-bottom: 0; }
-        .corner-tr { top: 1rem; right: 1rem; border-left: 0; border-bottom: 0; }
-        .corner-bl { bottom: 1rem; left: 1rem; border-right: 0; border-top: 0; }
-        .corner-br { bottom: 1rem; right: 1rem; border-left: 0; border-top: 0; }
-        .scan-error-line {
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .brand-icon {
+            width: 32px;
+            height: 32px;
+            background: #d1fae5;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .brand-name {
+            color: #10b981;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .icon-button {
+            width: 40px;
+            height: 40px;
+            background: #f5f7fa;
+            border: none;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .icon-button:hover {
+            background: #e5e7eb;
+        }
+
+        .notification-badge {
             position: absolute;
-            top: 0;
+            top: 8px;
+            right: 8px;
+            width: 8px;
+            height: 8px;
+            background: #ef4444;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            background: #d1fae5;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 600;
+            color: #10b981;
+            cursor: pointer;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 4px;
+        }
+
+        .greeting {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .greeting-name {
+            color: #1f2937;
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        .business-name {
+            color: #9ca3af;
+            font-size: 13px;
+            margin-top: 2px;
+        }
+
+        /* Badge container */
+        .badge-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .badge {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            background: white;
+            border: 1px solid #edf2f7;
+        }
+
+        .badge span:first-child {
+            font-size: 14px;
+        }
+
+        /* Main content */
+        .main-content {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            padding-bottom: 100px;
+        }
+
+        /* Balance card */
+        .balance-card {
+            background: linear-gradient(135deg, #10b981, #059669);
+            border-radius: 24px;
+            padding: 20px;
+            color: white;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+        }
+
+        .balance-label {
+            color: #d1fae5;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .balance-amount {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .balance-date {
+            color: #a7f3d0;
+            font-size: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stat-item {
+            background: rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 12px;
+        }
+
+        .stat-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .stat-icon {
+            width: 28px;
+            height: 28px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stat-icon svg {
+            width: 16px;
+            height: 16px;
+            color: white;
+        }
+
+        .stat-label {
+            color: #d1fae5;
+            font-size: 12px;
+        }
+
+        .stat-value {
+            font-weight: 700;
+            font-size: 15px;
+            color: white;
+        }
+
+        .btn-primary {
+            width: 100%;
+            background: white;
+            border: none;
+            border-radius: 16px;
+            padding: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: #10b981;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary:hover {
+            background: #f9fafb;
+        }
+
+        /* Section header */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 0 4px;
+        }
+
+        .section-title {
+            color: #6b7280;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .section-link {
+            color: #10b981;
+            font-size: 12px;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        /* Quest card */
+        .quest-card {
+            background: white;
+            border-radius: 24px;
+            padding: 20px;
+            border: 1px solid #edf2f7;
+        }
+
+        .quest-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .quest-title-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .quest-icon {
+            width: 44px;
+            height: 44px;
+            background: #f3e8ff;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .quest-icon svg {
+            width: 22px;
+            height: 22px;
+            color: #a855f7;
+        }
+
+        .quest-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .quest-subtitle {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 2px;
+        }
+
+        .quest-points {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 12px;
+            background: #f3e8ff;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #a855f7;
+        }
+
+        .quest-points svg {
+            width: 14px;
+            height: 14px;
+            color: #a855f7;
+        }
+
+        /* Progress */
+        .progress-container {
+            margin-bottom: 20px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+
+        .progress-percent {
+            font-weight: 600;
+            color: #10b981;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #f0fdf4;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #10b981;
+            border-radius: 20px;
+            transition: width 0.5s ease;
+        }
+
+        /* Quest list */
+        .quest-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .quest-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 16px;
+            background: #f9fafb;
+        }
+
+        .quest-item.completed {
+            background: #f0fdf4;
+        }
+
+        .quest-check {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .quest-check.completed {
+            background: #10b981;
+        }
+
+        .quest-check.pending {
+            border: 2px solid #d1d5db;
+        }
+
+        .quest-check svg {
+            width: 16px;
+            height: 16px;
+            color: white;
+        }
+
+        .quest-label {
+            flex: 1;
+            font-size: 14px;
+            color: #1f2937;
+            font-weight: 500;
+        }
+
+        .quest-label.completed {
+            color: #10b981;
+            text-decoration: line-through;
+            font-weight: 400;
+        }
+
+        .quest-point-value {
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .quest-point-value.completed {
+            color: #10b981;
+        }
+
+        .quest-point-value.pending {
+            color: #9ca3af;
+        }
+
+        .btn-claim {
+            width: 100%;
+            margin-top: 16px;
+            background: #f3e8ff;
+            border: 1px solid #e9d5ff;
+            border-radius: 16px;
+            padding: 14px;
+            color: #a855f7;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-claim:hover {
+            background: #ede9fe;
+        }
+
+        /* Quick grid */
+        .quick-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+
+        .quick-item {
+            background: white;
+            border: 1px solid #edf2f7;
+            border-radius: 16px;
+            padding: 12px 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .quick-item:hover {
+            border-color: #10b981;
+            transform: translateY(-2px);
+        }
+
+        .quick-emoji {
+            font-size: 24px;
+        }
+
+        .quick-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #4b5563;
+        }
+
+        /* Transaction item */
+        .transaction-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .transaction-item:last-child {
+            border-bottom: none;
+        }
+
+        .transaction-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .transaction-icon.income {
+            background: #d1fae5;
+        }
+
+        .transaction-icon.expense {
+            background: #fee2e2;
+        }
+
+        .transaction-icon svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .transaction-icon.income svg {
+            color: #10b981;
+        }
+
+        .transaction-icon.expense svg {
+            color: #ef4444;
+        }
+
+        .transaction-info {
+            flex: 1;
+        }
+
+        .transaction-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 2px;
+        }
+
+        .transaction-meta {
+            font-size: 11px;
+            color: #9ca3af;
+        }
+
+        .transaction-amount {
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .transaction-amount.income {
+            color: #10b981;
+        }
+
+        .transaction-amount.expense {
+            color: #ef4444;
+        }
+
+        /* Learning card */
+        .learning-card {
+            background: #eff6ff;
+            border: 1px solid #dbeafe;
+            border-radius: 24px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .learning-decoration {
+            position: absolute;
+            right: -20px;
+            bottom: -20px;
+            width: 120px;
+            height: 120px;
+            background: rgba(59, 130, 246, 0.05);
+            border-radius: 50%;
+        }
+
+        .learning-content {
+            position: relative;
+        }
+
+        .learning-badge {
+            color: #3b82f6;
+            font-size: 11px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .learning-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1e3a8a;
+            margin-bottom: 4px;
+        }
+
+        .learning-progress {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 16px;
+        }
+
+        .btn-learning {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            border: 1px solid #dbeafe;
+            border-radius: 12px;
+            padding: 10px 16px;
+            color: #3b82f6;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-learning:hover {
+            background: #f9fafb;
+        }
+
+        /* Funding card */
+        .funding-card {
+            background: white;
+            border: 1px solid #edf2f7;
+            border-radius: 24px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .funding-icon {
+            width: 48px;
+            height: 48px;
+            background: #f3e8ff;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .funding-content {
+            flex: 1;
+        }
+
+        .funding-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 2px;
+        }
+
+        .funding-status {
+            font-size: 11px;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+
+        .funding-progress {
+            height: 6px;
+            background: #f3f4f6;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .funding-progress-fill {
+            height: 100%;
+            background: #a855f7;
+            border-radius: 10px;
+            width: 60%;
+        }
+
+        .chevron {
+            color: #9ca3af;
+            font-size: 20px;
+        }
+
+        /* Alert card */
+        .alert-card {
+            background: #fff7ed;
+            border: 1px solid #fed7aa;
+            border-radius: 24px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .alert-icon {
+            width: 48px;
+            height: 48px;
+            background: #ffedd5;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .alert-icon svg {
+            width: 24px;
+            height: 24px;
+            color: #f97316;
+        }
+
+        .alert-content {
+            flex: 1;
+        }
+
+        .alert-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #9a3412;
+            margin-bottom: 2px;
+        }
+
+        .alert-message {
+            font-size: 12px;
+            color: #c2410c;
+        }
+
+        /* Bazaar card */
+        .bazaar-card {
+            background: white;
+            border: 1px solid #edf2f7;
+            border-radius: 24px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .bazaar-icon {
+            width: 48px;
+            height: 48px;
+            background: #fdf2f8;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .bazaar-icon svg {
+            width: 24px;
+            height: 24px;
+            color: #ec4899;
+        }
+
+        .bazaar-content {
+            flex: 1;
+        }
+
+        .bazaar-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 2px;
+        }
+
+        .bazaar-desc {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 24px;
+            padding: 24px;
+            width: 90%;
+            max-width: 360px;
+            text-align: center;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 32px;
+            height: 32px;
+            background: #f5f7fa;
+            border: none;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .modal-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+
+        .modal-desc {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 20px;
+        }
+
+        .modal-reward {
+            background: #f0fdf4;
+            border: 1px solid #d1fae5;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .reward-label {
+            font-size: 12px;
+            color: #10b981;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .reward-value {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+
+        .reward-value svg {
+            width: 24px;
+            height: 24px;
+            color: #fbbf24;
+        }
+
+        .reward-amount {
+            font-size: 24px;
+            font-weight: 800;
+            color: #1f2937;
+        }
+
+        .reward-total {
+            font-size: 11px;
+            color: #6b7280;
+        }
+
+        .btn-modal {
+            width: 100%;
+            background: #10b981;
+            border: none;
+            border-radius: 16px;
+            padding: 14px;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-modal:hover {
+            background: #059669;
+        }
+
+        /* Bottom navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
             left: 0;
             right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, transparent, #ef4444, transparent);
-            filter: blur(3px);
-            opacity: 0.8;
-            z-index: 5;
+            max-width: 480px;
+            margin: 0 auto;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 12px 16px 24px;
+            border-top: 1px solid #edf2f7;
+            border-radius: 30px 30px 0 0;
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.02);
+            z-index: 50;
         }
-        .tap-effect:active {
-            transform: scale(0.96);
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
         }
+
+        .nav-icon {
+            font-size: 22px;
+        }
+
+        .nav-label {
+            font-size: 10px;
+            color: #9ca3af;
+            font-weight: 500;
+        }
+
+        .nav-item.active .nav-label {
+            color: #10b981;
+        }
+
+        .fab {
+            width: 56px;
+            height: 56px;
+            background: #10b981;
+            border-radius: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            margin-top: -20px;
+        }
+
+        /* Hidden */
         .hidden {
-            display: none;
+            display: none !important;
+        }
+
+        /* SVG Icons */
+        .icon {
+            width: 20px;
+            height: 20px;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            fill: none;
         }
     </style>
 </head>
-<body class="p-4 w-full">
-    <div class="max-w-md mx-auto bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-200 w-full relative">
-
+<body>
+    <div class="app-container" id="app">
         <!-- Header -->
-        <div class="px-5 pt-8 pb-3 bg-white border-b border-gray-100">
-            <div class="flex items-center gap-2">
-                <button class="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center tap-effect">
-                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                    </svg>
-                </button>
-                <h1 class="text-xl font-bold text-gray-800">Scan OCR</h1>
-            </div>
-            <!-- step -->
-            <div class="flex items-center justify-between mt-4 px-1">
-                <div class="flex items-center gap-2">
-                    <div class="w-7 h-7 rounded-full bg-red-500 text-white flex items-center justify-center text-xs font-bold">1</div>
-                    <span class="text-xs font-medium text-gray-600">Ambil Foto</span>
+        <div class="header">
+            <div class="header-top">
+                <div class="brand">
+                    <div class="brand-icon">🌿</div>
+                    <span class="brand-name">UMKMate</span>
                 </div>
-                <div class="flex-1 h-0.5 bg-gray-200 mx-2"></div>
-                <div class="flex items-center gap-2">
-                    <div class="w-7 h-7 rounded-full bg-gray-300 text-gray-500 flex items-center justify-center text-xs font-bold">2</div>
-                    <span class="text-xs font-medium text-gray-400">Hasil</span>
+                <div class="header-actions">
+                    <button class="icon-button tap-effect" id="notificationBtn">
+                        <svg class="icon" viewBox="0 0 24 24">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                        </svg>
+                        <span class="notification-badge"></span>
+                    </button>
+                    <div class="avatar tap-effect" id="profileBtn">
+                        👤
+                    </div>
+                </div>
+            </div>
+
+            <div class="user-info">
+                <div>
+                    <p class="greeting" id="greeting">Selamat pagi, <span class="greeting-name" id="ownerName">Kak</span>!</p>
+                    <p class="business-name" id="businessName">Warung Kopi Nusantara</p>
+                </div>
+            </div>
+
+            <!-- Badges -->
+            <div class="badge-container">
+                <div class="badge">
+                    <span>🥉</span>
+                    <span>Perunggu</span>
+                </div>
+                <div class="badge">
+                    <svg class="icon" viewBox="0 0 24 24" style="width:14px; height:14px; color:#10b981;">
+                        <polyline points="23 6 13.5 15.5 8 10 1 18" />
+                        <polyline points="17 6 23 6 23 12" />
+                    </svg>
+                    <span>Score: <span id="userScore">84</span>/100</span>
+                </div>
+                <div class="badge">
+                    <span>🔥</span>
+                    <span id="streakDays">7</span> hari
                 </div>
             </div>
         </div>
 
-        <!-- Main Area -->
-        <div class="p-5 bg-gray-50">
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Balance Card -->
+            <div class="balance-card" id="balanceCard">
+                <p class="balance-label">Saldo Bulan Ini</p>
+                <h2 class="balance-amount" id="balanceAmount">Rp 12.450.000</h2>
+                <p class="balance-date" id="balanceDate">Diperbarui 22 Feb 2026</p>
 
-            <!-- ========== KONDISI GAGAL ========== -->
-            <div id="ocrGagalContainer" class="animate-fade-in">
-                <!-- Card kamera dengan efek gagal -->
-                <div class="bg-white rounded-2xl p-4 shadow-sm border border-red-200 relative overflow-hidden mb-4">
-                    
-                    <!-- label gagal -->
-                    <div class="flex items-center gap-2 mb-3">
-                        <div class="bg-red-100 p-1.5 rounded-full">
-                            <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-header">
+                            <div class="stat-icon">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="23 6 13.5 15.5 8 10 1 18" />
+                                    <polyline points="17 6 23 6 23 12" />
+                                </svg>
+                            </div>
+                            <p class="stat-label">Uang Masuk</p>
+                        </div>
+                        <p class="stat-value" id="incomeAmount">Rp 18.200.000</p>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-header">
+                            <div class="stat-icon">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="23 18 13.5 8.5 8 14 1 6" />
+                                    <polyline points="17 18 23 18 23 12" />
+                                </svg>
+                            </div>
+                            <p class="stat-label">Uang Keluar</p>
+                        </div>
+                        <p class="stat-value" id="expenseAmount">Rp 5.750.000</p>
+                    </div>
+                </div>
+
+                <button class="btn-primary tap-effect" id="recordBtn">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <line x1="12" y1="5" x2="12" y2="19" />
+                        <line x1="5" y1="12" x2="19" y2="12" />
+                    </svg>
+                    Catat Transaksi Baru
+                </button>
+            </div>
+
+            <!-- Quest Card -->
+            <div class="quest-card">
+                <div class="quest-header">
+                    <div class="quest-title-wrapper">
+                        <div class="quest-icon">
+                            <svg viewBox="0 0 24 24">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
                             </svg>
                         </div>
                         <div>
-                            <p class="text-red-600 font-bold text-base">OCR gagal membaca teks</p>
-                            <p class="text-xs text-gray-500">Gambar buram / pencahayaan kurang</p>
+                            <p class="quest-title">UMKM Quest</p>
+                            <p class="quest-subtitle" id="questProgress">0/3 misi selesai</p>
                         </div>
                     </div>
-
-                    <!-- area gambar preview dengan animasi error -->
-                    <div class="relative rounded-xl overflow-hidden bg-black mb-4" id="gambarPreview">
-                        <!-- gambar struk (simulasi buram) -->
-                        <img src="https://placehold.co/600x400/2d2d2d/aaaaaa?text=STRUK+TIDAK+TERBACA" alt="foto struk gagal" class="w-full h-44 object-cover opacity-70 blur-[1.5px] brightness-50" id="fotoStrukGagal">
-                        
-                        <!-- efek garis scan merah error -->
-                        <div class="scan-error-line animate-scan" style="animation: scanLine 1.2s linear infinite;"></div>
-                        
-                        <!-- overlay glitch -->
-                        <div class="absolute inset-0 bg-red-500/10 mix-blend-overlay animate-glitch pointer-events-none"></div>
-                        
-                        <!-- icon failed besar -->
-                        <div class="absolute inset-0 flex items-center justify-center">
-                            <div class="bg-black/50 backdrop-blur-sm p-3 rounded-full animate-shake">
-                                <svg class="w-10 h-10 text-red-400" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
-                                </svg>
-                            </div>
-                        </div>
-                        
-                        <!-- teks error berkedip -->
-                        <div class="absolute bottom-2 left-0 right-0 text-center">
-                            <span class="bg-red-600/80 text-white text-xs px-3 py-1.5 rounded-full font-medium blink-slow inline-flex items-center gap-1">
-                                <span class="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span>
-                                TIDAK DAPAT MEMBACA
-                            </span>
-                        </div>
-
-                        <!-- corner merah -->
-                        <div class="corner corner-tl border-red-400"></div>
-                        <div class="corner corner-tr border-red-400"></div>
-                        <div class="corner corner-bl border-red-400"></div>
-                        <div class="corner corner-br border-red-400"></div>
+                    <div class="quest-points">
+                        <svg viewBox="0 0 24 24">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                        </svg>
+                        <span id="totalPoints">+65 poin</span>
                     </div>
-
-                    <!-- === PERTANYAAN === -->
-                    <div class="bg-red-50 border border-red-200 rounded-xl p-5 mb-2 text-center animate-slide-up">
-                        <p class="text-gray-800 font-semibold text-base mb-5">📸 OCR gagal membaca gambar</p>
-                        <p class="text-red-700 font-medium text-sm mb-4">Mau pindah ke manual atau coba foto ulang?</p>
-                        
-                        <div class="flex flex-col sm:flex-row gap-3">
-                            <!-- tombol pindah manual -->
-                            <button id="btnManual" class="flex-1 bg-white border-2 border-emerald-500 text-emerald-700 font-bold py-3.5 px-3 rounded-xl tap-effect hover:bg-emerald-50 transition flex items-center justify-center gap-2 shadow-sm" onclick="pindahManual()">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                </svg>
-                                Pindah ke Manual
-                            </button>
-                            <!-- tombol foto ulang -->
-                            <button id="btnUlang" class="flex-1 bg-emerald-500 text-white font-bold py-3.5 px-3 rounded-xl tap-effect hover:bg-emerald-600 transition flex items-center justify-center gap-2 shadow-sm" onclick="fotoUlang()">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                                </svg>
-                                Coba Foto Ulang
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- catatan kecil -->
-                    <p class="text-xs text-gray-400 text-center mt-3">pastikan teks jelas dan tidak buram</p>
                 </div>
 
-                <!-- opsi upload dari galeri (pelengkap) -->
-                <div class="text-center">
-                    <p class="text-gray-400 text-xs">atau</p>
-                    <button class="mt-2 text-emerald-600 text-sm font-semibold flex items-center justify-center gap-1 mx-auto tap-effect">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                <!-- Progress -->
+                <div class="progress-container">
+                    <div class="progress-header">
+                        <span>Progress hari ini</span>
+                        <span class="progress-percent" id="progressPercent">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Quest List -->
+                <div class="quest-list" id="questList">
+                    <!-- Populated by JS -->
+                </div>
+
+                <!-- Claim Button -->
+                <button class="btn-claim tap-effect hidden" id="claimBtn">
+                    🎁 Klaim Reward Harian
+                </button>
+            </div>
+
+            <!-- Quick Access -->
+            <div>
+                <div class="section-header">
+                    <p class="section-title">AKSES CEPAT</p>
+                </div>
+                <div class="quick-grid">
+                    <a href="#" class="quick-item tap-effect" data-page="report">
+                        <span class="quick-emoji">📊</span>
+                        <span class="quick-label">Laporan</span>
+                    </a>
+                    <a href="#" class="quick-item tap-effect" data-page="funding">
+                        <span class="quick-emoji">💳</span>
+                        <span class="quick-label">Pendanaan</span>
+                    </a>
+                    <a href="#" class="quick-item tap-effect" data-page="inventory">
+                        <span class="quick-emoji">📦</span>
+                        <span class="quick-label">Stok</span>
+                    </a>
+                    <a href="#" class="quick-item tap-effect" data-page="bazaar">
+                        <span class="quick-emoji">🏪</span>
+                        <span class="quick-label">Bazaar</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Recent Transactions -->
+            <div class="card">
+                <div class="section-header">
+                    <p class="section-title">TRANSAKSI TERBARU</p>
+                    <a href="#" class="section-link tap-effect" id="viewAllLink">Lihat semua</a>
+                </div>
+                <div class="quest-list" id="recentTransactions">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <!-- Learning Card -->
+            <div class="learning-card">
+                <div class="learning-decoration"></div>
+                <div class="learning-content">
+                    <p class="learning-badge">REKOMENDASI</p>
+                    <h3 class="learning-title">Manajemen Keuangan Dasar UMKM</h3>
+                    <p class="learning-progress">Lanjutkan · 65% selesai</p>
+                    <button class="btn-learning tap-effect" id="learnBtn">
+                        <svg class="icon" viewBox="0 0 24 24">
+                            <polygon points="5 3 19 12 5 21 5 3" />
                         </svg>
-                        Upload dari galeri
+                        Lanjut Belajar
                     </button>
                 </div>
             </div>
 
-            <!-- ========== AREA MANUAL (disembunyikan awal) ========== -->
-            <div id="manualContainer" class="hidden animate-fade-in">
-                <div class="bg-white rounded-2xl p-5 shadow-sm border border-emerald-200">
-                    <div class="flex items-center gap-2 mb-4">
-                        <div class="bg-emerald-100 p-1.5 rounded-full">
-                            <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                            </svg>
-                        </div>
-                        <p class="font-bold text-gray-800">Input Manual Struk</p>
-                    </div>
-
-                    <!-- form manual sederhana -->
-                    <div class="space-y-3">
-                        <input type="text" placeholder="Nama toko / merchant" class="w-full border border-gray-200 rounded-xl p-3 text-sm">
-                        <input type="text" placeholder="Total belanja (Rp)" class="w-full border border-gray-200 rounded-xl p-3 text-sm">
-                        <input type="date" class="w-full border border-gray-200 rounded-xl p-3 text-sm">
-                        <textarea rows="2" placeholder="Catatan (opsional)" class="w-full border border-gray-200 rounded-xl p-3 text-sm"></textarea>
-                    </div>
-
-                    <div class="flex gap-3 mt-5">
-                        <button class="flex-1 py-3 border border-gray-300 rounded-xl text-gray-600 font-semibold tap-effect" onclick="kembaliKeGagal()">Batal</button>
-                        <button class="flex-1 py-3 bg-emerald-500 text-white rounded-xl font-bold tap-effect" onclick="simpanManual()">Simpan</button>
+            <!-- Funding Card -->
+            <a href="#" class="funding-card tap-effect" id="fundingLink">
+                <div class="funding-icon">
+                    <span>💳</span>
+                </div>
+                <div class="funding-content">
+                    <p class="funding-title">Pengajuan Pendanaan</p>
+                    <p class="funding-status">Review · Tahap 3/5</p>
+                    <div class="funding-progress">
+                        <div class="funding-progress-fill" style="width: 60%"></div>
                     </div>
                 </div>
-            </div>
+                <span class="chevron">›</span>
+            </a>
 
-            <!-- ========== AREA FOTO ULANG (simulasi) ========== -->
-            <div id="fotoUlangContainer" class="hidden animate-fade-in">
-                <div class="bg-white rounded-2xl p-5 shadow-sm border border-blue-200 text-center">
-                    <div class="camera-frame relative h-40 bg-gray-900 rounded-xl mb-4 flex items-center justify-center overflow-hidden">
-                        <svg class="w-12 h-12 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
-                        </svg>
-                        <!-- garis scan -->
-                        <div class="scan-line animate-scan"></div>
-                        <div class="absolute bottom-2 left-2 bg-black/50 text-white text-xs px-2 py-1 rounded-full">persiapkan kamera...</div>
-                    </div>
-                    <p class="text-blue-600 font-semibold">Silakan foto ulang struk</p>
-                    <p class="text-xs text-gray-500 mt-1">posisikan dalam bingkai</p>
-                    <div class="flex gap-2 mt-4">
-                        <button class="flex-1 py-3 border border-gray-300 rounded-xl text-sm tap-effect" onclick="kembaliKeGagal()">Batal</button>
-                        <button class="flex-1 py-3 bg-blue-500 text-white rounded-xl text-sm tap-effect" onclick="simulasiFotoUlang()">Ambil Foto</button>
-                    </div>
+            <!-- Alert Card -->
+            <a href="#" class="alert-card tap-effect" id="alertLink">
+                <div class="alert-icon">
+                    <svg viewBox="0 0 24 24">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                        <line x1="9" y1="9" x2="15" y2="15" />
+                        <line x1="15" y1="9" x2="9" y2="15" />
+                    </svg>
                 </div>
+                <div class="alert-content">
+                    <p class="alert-title">Stok Hampir Habis</p>
+                    <p class="alert-message">2 bahan baku perlu restok</p>
+                </div>
+                <span class="chevron">›</span>
+            </a>
+
+            <!-- Bazaar Card -->
+            <a href="#" class="bazaar-card tap-effect" id="bazaarLink">
+                <div class="bazaar-icon">
+                    <svg viewBox="0 0 24 24">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                        <line x1="16" y1="2" x2="16" y2="6" />
+                        <line x1="8" y1="2" x2="8" y2="6" />
+                        <line x1="3" y1="10" x2="21" y2="10" />
+                    </svg>
+                </div>
+                <div class="bazaar-content">
+                    <p class="bazaar-title">Jakarta Food Festival</p>
+                    <p class="bazaar-desc">25-27 Maret · Booth B-125</p>
+                </div>
+                <span class="chevron">›</span>
+            </a>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <div class="nav-item active" onclick="navigate('home')">
+                <span class="nav-icon">🏠</span>
+                <span class="nav-label">Beranda</span>
             </div>
-
-        </div> <!-- end p-5 -->
-
-        <!-- bottom note -->
-        <div class="bg-white px-5 py-3 border-t border-gray-100 flex justify-between text-xs text-gray-400">
-            <span>⏳ OCR gagal otomatis</span>
-            <span>v1.0</span>
+            <div class="nav-item" onclick="navigate('catat')">
+                <span class="nav-icon">📝</span>
+                <span class="nav-label">Catat</span>
+            </div>
+            <div class="nav-item fab-wrap" onclick="navigate('tambah')">
+                <div class="fab tap-effect">+</div>
+            </div>
+            <div class="nav-item" onclick="navigate('laporan')">
+                <span class="nav-icon">📊</span>
+                <span class="nav-label">Laporan</span>
+            </div>
+            <div class="nav-item" onclick="navigate('profil')">
+                <span class="nav-icon">👤</span>
+                <span class="nav-label">Profil</span>
+            </div>
         </div>
     </div>
 
-    <!-- toast sederhana -->
-    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-5 py-2.5 rounded-full text-sm shadow-lg hidden items-center gap-2 z-50">
-        <span id="toastMsg">oke</span>
+    <!-- Reward Modal -->
+    <div class="modal-overlay hidden" id="rewardModal">
+        <div class="modal-content animate-scale-in">
+            <button class="modal-close tap-effect" id="closeModal">
+                <svg viewBox="0 0 24 24" width="16" height="16">
+                    <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2"/>
+                    <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2"/>
+                </svg>
+            </button>
+            <div class="modal-icon">🎁</div>
+            <h3 class="modal-title">Quest Selesai!</h3>
+            <p class="modal-desc">Kamu menyelesaikan semua misi hari ini</p>
+            <div class="modal-reward">
+                <p class="reward-label">Reward</p>
+                <div class="reward-value">
+                    <svg viewBox="0 0 24 24">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                    </svg>
+                    <span class="reward-amount" id="rewardPoints">+65 Poin</span>
+                </div>
+                <p class="reward-total" id="rewardTotal">Total: 2.850 poin</p>
+            </div>
+            <button class="btn-modal tap-effect" id="claimRewardBtn">Ambil Reward</button>
+        </div>
     </div>
 
     <script>
-        // elemen
-        const ocrGagal = document.getElementById('ocrGagalContainer');
-        const manualDiv = document.getElementById('manualContainer');
-        const fotoUlangDiv = document.getElementById('fotoUlangContainer');
-        const toast = document.getElementById('toast');
-        const toastMsg = document.getElementById('toastMsg');
+        // Data
+        const quests = [
+            { id: 1, label: "Catat 3 transaksi hari ini", done: true, pts: 30 },
+            { id: 2, label: "Cek laporan minggu ini", done: true, pts: 20 },
+            { id: 3, label: "Baca 1 artikel bisnis", done: false, pts: 15 },
+        ];
 
-        // animasi tambahan scan line
-        const style = document.createElement('style');
-        style.innerHTML = `
-            @keyframes scanLine {
-                0% { transform: translateY(-100%); }
-                100% { transform: translateY(400%); }
+        const recentTransactions = [
+            { id: 1, label: "Penjualan Kopi", cat: "Penjualan", amount: 850000, type: "income", time: "09:15" },
+            { id: 2, label: "Beli Bahan Baku", cat: "Pembelian", amount: 320000, type: "expense", time: "11:30" },
+            { id: 3, label: "Penjualan Camilan", cat: "Penjualan", amount: 150000, type: "income", time: "13:00" },
+        ];
+
+        // DOM Elements
+        const ownerNameSpan = document.getElementById('ownerName');
+        const businessNameSpan = document.getElementById('businessName');
+        const greetingSpan = document.getElementById('greeting');
+        const userScoreSpan = document.getElementById('userScore');
+        const streakDaysSpan = document.getElementById('streakDays');
+        const questProgress = document.getElementById('questProgress');
+        const totalPoints = document.getElementById('totalPoints');
+        const progressPercent = document.getElementById('progressPercent');
+        const progressFill = document.getElementById('progressFill');
+        const questList = document.getElementById('questList');
+        const claimBtn = document.getElementById('claimBtn');
+        const recentTransactionsDiv = document.getElementById('recentTransactions');
+        const rewardModal = document.getElementById('rewardModal');
+        const closeModal = document.getElementById('closeModal');
+        const claimRewardBtn = document.getElementById('claimRewardBtn');
+        const rewardPoints = document.getElementById('rewardPoints');
+        const rewardTotal = document.getElementById('rewardTotal');
+        const recordBtn = document.getElementById('recordBtn');
+        const notificationBtn = document.getElementById('notificationBtn');
+        const profileBtn = document.getElementById('profileBtn');
+        const viewAllLink = document.getElementById('viewAllLink');
+        const learnBtn = document.getElementById('learnBtn');
+        const fundingLink = document.getElementById('fundingLink');
+        const alertLink = document.getElementById('alertLink');
+        const bazaarLink = document.getElementById('bazaarLink');
+        const quickItems = document.querySelectorAll('.quick-item');
+
+        // Helper Functions
+        function formatCurrency(amount) {
+            return 'Rp ' + amount.toLocaleString('id-ID');
+        }
+
+        function getGreeting() {
+            const h = new Date().getHours();
+            if (h < 12) return "Selamat pagi";
+            if (h < 15) return "Selamat siang";
+            if (h < 18) return "Selamat sore";
+            return "Selamat malam";
+        }
+
+        function updateGreeting() {
+            const greetingText = document.querySelector('.greeting');
+            if (greetingText) {
+                greetingText.innerHTML = `${getGreeting()}, <span class="greeting-name">${ownerNameSpan.textContent}</span>!`;
             }
-            .animate-scan {
-                animation: scanLine 1.5s linear infinite;
+        }
+
+        function updateQuestStats() {
+            const questDone = quests.filter(q => q.done).length;
+            const questTotal = quests.length;
+            const questPercent = Math.round((questDone / questTotal) * 100);
+            
+            questProgress.textContent = `${questDone}/${questTotal} misi selesai`;
+            progressPercent.textContent = questPercent + '%';
+            progressFill.style.width = questPercent + '%';
+            
+            const totalPts = quests.reduce((sum, q) => sum + q.pts, 0);
+            totalPoints.textContent = `+${totalPts} poin`;
+        }
+
+        function renderQuestList() {
+            questList.innerHTML = '';
+            
+            quests.forEach(q => {
+                const questItem = document.createElement('div');
+                questItem.className = `quest-item ${q.done ? 'completed' : ''}`;
+                
+                questItem.innerHTML = `
+                    <div class="quest-check ${q.done ? 'completed' : 'pending'}">
+                        ${q.done ? '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12" /></svg>' : ''}
+                    </div>
+                    <span class="quest-label ${q.done ? 'completed' : ''}">${q.label}</span>
+                    <span class="quest-point-value ${q.done ? 'completed' : 'pending'}">+${q.pts}</span>
+                `;
+                
+                questList.appendChild(questItem);
+            });
+            
+            const questDone = quests.filter(q => q.done).length;
+            const questTotal = quests.length;
+            
+            if (questDone === questTotal) {
+                claimBtn.classList.remove('hidden');
+            } else {
+                claimBtn.classList.add('hidden');
             }
-            .animate-fade-in { animation: fadeIn 0.2s ease; }
-            @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-            .animate-slide-up { animation: slideUp 0.25s ease; }
-            @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-        `;
-        document.head.appendChild(style);
-
-        // fungsi pindah manual
-        function pindahManual() {
-            ocrGagal.classList.add('hidden');
-            manualDiv.classList.remove('hidden');
-            showToast('✏️ Mode manual aktif');
         }
 
-        // fungsi foto ulang
-        function fotoUlang() {
-            ocrGagal.classList.add('hidden');
-            fotoUlangDiv.classList.remove('hidden');
-            showToast('📸 Buka kamera ulang');
+        function renderRecentTransactions() {
+            recentTransactionsDiv.innerHTML = '';
+            
+            recentTransactions.forEach(tx => {
+                const txItem = document.createElement('div');
+                txItem.className = 'transaction-item';
+                
+                txItem.innerHTML = `
+                    <div class="transaction-icon ${tx.type === 'income' ? 'income' : 'expense'}">
+                        ${tx.type === 'income' 
+                            ? '<svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8 10 1 18" /><polyline points="17 6 23 6 23 12" /></svg>'
+                            : '<svg viewBox="0 0 24 24"><polyline points="23 18 13.5 8.5 8 14 1 6" /><polyline points="17 18 23 18 23 12" /></svg>'
+                        }
+                    </div>
+                    <div class="transaction-info">
+                        <p class="transaction-title">${tx.label}</p>
+                        <p class="transaction-meta">${tx.cat} · ${tx.time}</p>
+                    </div>
+                    <p class="transaction-amount ${tx.type === 'income' ? 'income' : 'expense'}">
+                        ${tx.type === 'income' ? '+' : '-'}${formatCurrency(tx.amount)}
+                    </p>
+                `;
+                
+                recentTransactionsDiv.appendChild(txItem);
+            });
         }
 
-        // kembali ke halaman gagal dari manapun
-        function kembaliKeGagal() {
-            manualDiv.classList.add('hidden');
-            fotoUlangDiv.classList.add('hidden');
-            ocrGagal.classList.remove('hidden');
-            // tambahkan efek goyangan lagi (opsional)
-            document.getElementById('gambarPreview').classList.add('animate-shake');
-            setTimeout(() => {
-                document.getElementById('gambarPreview').classList.remove('animate-shake');
-            }, 500);
-            showToast('Kembali ke OCR gagal');
+        // Modal Functions
+        function showModal() {
+            rewardModal.classList.remove('hidden');
+            const totalPts = quests.reduce((sum, q) => sum + q.pts, 0);
+            rewardPoints.textContent = `+${totalPts} Poin`;
+            rewardTotal.textContent = `Total: 2.850 poin · Peringkat #1`;
         }
 
-        // simpan manual (hanya demo)
-        function simpanManual() {
-            showToast('✅ Data manual disimpan (demo)');
-            setTimeout(() => {
-                kembaliKeGagal();
-            }, 1000);
+        function hideModal() {
+            rewardModal.classList.add('hidden');
         }
 
-        // simulasi foto ulang -> kembali ke gagal (karena masih gagal)
-        function simulasiFotoUlang() {
-            showToast('📸 Memotret ulang...', 800);
-            setTimeout(() => {
-                // setelah foto, masih gagal (kondisi tetap gagal)
-                fotoUlangDiv.classList.add('hidden');
-                ocrGagal.classList.remove('hidden');
-                // tambahkan animasi glitch lagi untuk menunjukkan gagal
-                document.getElementById('fotoStrukGagal').classList.add('animate-glitch');
-                setTimeout(() => {
-                    document.getElementById('fotoStrukGagal').classList.remove('animate-glitch');
-                }, 600);
-                showToast('❌ OCR tetap gagal, coba lagi atau manual');
-            }, 1000);
+        // Navigation
+        function navigate(page) {
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => item.classList.remove('active'));
+            
+            if (page === 'home') {
+                event.currentTarget.classList.add('active');
+            }
+            
+            alert(`Membuka halaman: ${page}`);
         }
 
-        // toast helper
-        function showToast(msg, duration = 1500) {
-            toastMsg.innerText = msg;
-            toast.classList.remove('hidden');
-            toast.classList.add('animate-slide-up');
-            setTimeout(() => {
-                toast.classList.add('opacity-0', 'transition-opacity');
-                setTimeout(() => {
-                    toast.classList.add('hidden');
-                    toast.classList.remove('opacity-0', 'transition-opacity', 'animate-slide-up');
-                }, 300);
-            }, duration);
-        }
+        // Event Handlers
+        recordBtn.addEventListener('click', () => alert('Membuka form catat transaksi'));
+        notificationBtn.addEventListener('click', () => alert('Notifikasi'));
+        profileBtn.addEventListener('click', () => alert('Membuka profil'));
+        claimBtn.addEventListener('click', showModal);
+        closeModal.addEventListener('click', hideModal);
+        claimRewardBtn.addEventListener('click', () => {
+            alert('Reward diklaim! 🎉');
+            hideModal();
+        });
+        viewAllLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            alert('Melihat semua transaksi');
+        });
+        learnBtn.addEventListener('click', () => alert('Lanjut belajar'));
+        fundingLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            alert('Membuka pendanaan');
+        });
+        alertLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            alert('Membuka manajemen stok');
+        });
+        bazaarLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            alert('Membuka informasi bazaar');
+        });
 
-        // tambahan tap effect ke semua button
-        document.querySelectorAll('button').forEach(b => {
-            b.addEventListener('click', function(e) {
-                // mencegah efek ganda pada tombol dalam fungsi
+        quickItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                const page = item.dataset.page;
+                alert(`Membuka halaman: ${page}`);
             });
         });
 
-        // inisialisasi: animasi pertama
-        window.onload = function() {
-            // pastikan container gagal muncul dengan animasi
-            ocrGagal.classList.remove('hidden');
-            manualDiv.classList.add('hidden');
-            fotoUlangDiv.classList.add('hidden');
-        };
+        rewardModal.addEventListener('click', (e) => {
+            if (e.target === rewardModal) hideModal();
+        });
+
+        // Tap effect
+        document.querySelectorAll('.tap-effect').forEach(el => {
+            el.addEventListener('touchstart', () => el.style.transform = 'scale(0.97)');
+            el.addEventListener('touchend', () => el.style.transform = 'scale(1)');
+            el.addEventListener('touchcancel', () => el.style.transform = 'scale(1)');
+        });
+
+        // Initialize
+        function init() {
+            ownerNameSpan.textContent = 'Kak';
+            businessNameSpan.textContent = 'Warung Kopi Nusantara';
+            updateGreeting();
+            userScoreSpan.textContent = '84';
+            streakDaysSpan.textContent = '7';
+            
+            renderQuestList();
+            renderRecentTransactions();
+            updateQuestStats();
+        }
+
+        init();
     </script>
 </body>
 </html>
