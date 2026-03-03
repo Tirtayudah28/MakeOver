@@ -89,7 +89,7 @@
 
     // ---- state management - vanilla ----
     const state = {
-      activeTab: 'items', // 'items' | 'suppliers' | 'ai'
+      activeTab: 'suppliers', // 'items' | 'suppliers' | 'ai'
       search: '',
       showAddItem: false,
       lowStockCount: inventoryItems.filter(i => i.status === 'low' || i.status === 'critical').length,
