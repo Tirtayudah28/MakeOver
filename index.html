@@ -1052,17 +1052,41 @@
       }
     }
 
-// === KONFIGURASI AWAL - LANGSUNG KE RIWAYAT PESANAN ===
-// Set screen ke riwayat pesanan
-currentScreen = 'orderHistory';
+// === KONFIGURASI AWAL - LANGSUNG KE FORM TAMBAH PESANAN ===
+// Pilih supplier pertama (CV Kopi Nusantara)
+selectedSupplier = suppliers[0];
+
+// Pilih produk pertama dari supplier tersebut
+// Cari produk yang suppliernya sama dengan selectedSupplier
+const supplierProducts = inventoryItems.filter(item => {
+  const supplier = suppliers.find(s => s.name === item.supplier);
+  return supplier && supplier.id === selectedSupplier.id;
+});
+
+// Ambil produk pertama (Kopi Arabica Premium)
+if (supplierProducts.length > 0) {
+  selectedItem = supplierProducts[0];
+} else {
+  // Fallback ke produk dengan ID 1
+  selectedItem = inventoryItems.find(i => i.id === 1);
+}
+
+// Reset cart
+cart = [];
+
+// Set screen ke detail supplier
+currentScreen = 'supplierDetail';
+
+// Langsung tampilkan modal quantity
+showQuantityModal = true;
 
 // Render aplikasi
 render();
 
 // OPSIONAL: Tampilkan pesan selamat datang
 setTimeout(() => {
-  showToast('📋 Riwayat pesanan dengan supplier');
-}, 500);
+  showToast(`🛒 Tambah pesanan: ${selectedItem.name}`);
+}, 800);
   })();
 </script>
 </body>
