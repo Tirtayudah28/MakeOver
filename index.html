@@ -1052,11 +1052,17 @@
       }
     }
 
-  // PILIH SUPPLIER PERTAMA SECARA OTOMATIS
-selectedSupplier = suppliers[0]; // Supplier pertama (CV Kopi Nusantara)
-currentScreen = 'supplierDetail'; // Langsung ke halaman detail supplier
-cart = []; // Kosongkan keranjang
+// === KONFIGURASI AWAL - LANGSUNG KE RIWAYAT PESANAN ===
+// Set screen ke riwayat pesanan
+currentScreen = 'orderHistory';
+
+// Render aplikasi
 render();
+
+// OPSIONAL: Tampilkan pesan selamat datang
+setTimeout(() => {
+  showToast('📋 Riwayat pesanan dengan supplier');
+}, 500);
   })();
 </script>
 </body>
