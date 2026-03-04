@@ -2,8 +2,8 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>UMKM Naik Kelas • Tantangan 7 Hari</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Card Tantangan 7 Hari</title>
   <!-- Tailwind + Font -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&display=swap" rel="stylesheet">
@@ -13,528 +13,84 @@
     * { font-family: 'Inter', system-ui, sans-serif; }
     .scale-tap:active { transform: scale(0.97); transition: transform 0.1s; }
     .no-tap-highlight { -webkit-tap-highlight-color: transparent; }
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-    @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
-    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-    @keyframes slideDown { from { transform: translateY(0); } to { transform: translateY(100%); } }
-    .animate-fade-in { animation: fadeIn 0.2s ease forwards; }
-    .animate-fade-out { animation: fadeOut 0.2s ease forwards; }
-    .animate-slide-up { animation: slideUp 0.3s cubic-bezier(0.4,0,0.2,1) forwards; }
-    .animate-slide-down { animation: slideDown 0.3s cubic-bezier(0.4,0,0.2,1) forwards; }
-    .toast-container { position: fixed; top: 1rem; left: 50%; transform: translateX(-50%); z-index: 100; width: 100%; max-width: 20rem; pointer-events: none; }
-    .toast { background: white; border-radius: 1rem; padding: 0.75rem 1.25rem; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); font-weight: 500; font-size: 0.875rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; border: 1px solid #e5e7eb; animation: fadeIn 0.2s; }
   </style>
 </head>
-<body class="bg-gray-50 flex justify-center items-start min-h-screen">
+<body class="bg-gray-100 flex justify-center items-center min-h-screen p-4">
 
-<div id="app" class="w-full max-w-md mx-auto bg-gray-50 relative min-h-screen"></div>
-<div class="toast-container" id="toast-container"></div>
+<div class="w-full max-w-md mx-auto">
+  <!-- Card Tantangan 7 Hari - Component -->
+  <div id="challengeCard" class="bg-gradient-to-br from-purple-500 via-violet-600 to-indigo-700 rounded-3xl p-5 shadow-lg cursor-pointer overflow-hidden relative scale-tap no-tap-highlight">
+    <!-- Decorative circles -->
+    <div class="absolute -right-6 -top-6 w-24 h-24 bg-white/10 rounded-full"></div>
+    <div class="absolute -right-2 -bottom-8 w-32 h-32 bg-white/5 rounded-full"></div>
+    
+    <!-- Content -->
+    <div class="relative">
+      <!-- Header -->
+      <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 bg-white/20 rounded-xl flex items-center justify-center">
+            <i data-lucide="trophy" class="w-4 h-4 text-white"></i>
+          </div>
+          <div>
+            <p class="text-purple-200 text-xs font-semibold">#UMKMNAIKELAS</p>
+            <p class="text-white text-sm font-bold">Misi Hari ke-1</p>
+          </div>
+        </div>
+        <div class="text-right">
+          <p class="text-purple-200 text-xs">Progress</p>
+          <p class="text-white text-sm font-bold">0/7</p>
+        </div>
+      </div>
+
+      <!-- Progress bar -->
+      <div class="h-2 bg-white/20 rounded-full overflow-hidden mb-3">
+        <div class="h-full bg-white rounded-full" style="width: 0%"></div>
+      </div>
+
+      <!-- Today's mission -->
+      <div class="rounded-2xl p-3 mb-3 bg-white/15">
+        <p class="text-white text-xs mb-0.5 font-semibold">🎯 Misi Hari Ini</p>
+        <p class="text-white text-sm font-medium">Catat 3 transaksi hari ini</p>
+      </div>
+
+      <!-- Stats & Arrow -->
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <!-- Streak -->
+          <div class="flex items-center gap-1 bg-white/15 rounded-full px-3 py-1.5">
+            <i data-lucide="flame" class="w-3.5 h-3.5 text-orange-300"></i>
+            <span class="text-white text-xs font-semibold">Streak: 0 hari</span>
+          </div>
+          <!-- Grace day -->
+          <div class="flex items-center gap-1 bg-white/15 rounded-full px-3 py-1.5">
+            <i data-lucide="shield" class="w-3.5 h-3.5 text-blue-300"></i>
+            <span class="text-white text-xs font-semibold">Grace: 1x</span>
+          </div>
+        </div>
+        <!-- Arrow right -->
+        <div class="w-8 h-8 bg-white/20 rounded-xl flex items-center justify-center">
+          <i data-lucide="chevron-right" class="w-4 h-4 text-white"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Keterangan / Catatan Kecil -->
+  <p class="text-xs text-gray-500 text-center mt-6">
+    Card Tantangan 7 Hari - Desain siap pakai
+  </p>
+</div>
 
 <script>
-  (function() {
-    // ----- Data definitions (days) -----
-    const days = [
-      { day: 1, title: "Catat 3 transaksi", desc: "Rekam 3 transaksi apa saja hari ini", icon: "📝", pts: 30 },
-      { day: 2, title: "Catat Masuk & Keluar", desc: "1 pemasukan dan 1 pengeluaran", icon: "↕️", pts: 25 },
-      { day: 3, title: "Tandai Pribadi vs Usaha", desc: "Pisahkan 1 transaksi 'Pribadi' dari 'Usaha'", icon: "🏷️", pts: 35 },
-      { day: 4, title: "Upload Foto Struk", desc: "Scan 1 struk pembelian (opsional)", icon: "📸", pts: 40 },
-      { day: 5, title: "Catat Transaksi Supplier", desc: "Rekam 1 pembelian dari supplier", icon: "🤝", pts: 35 },
-      { day: 6, title: "Lengkapi Kategori", desc: "Lengkapi kategori 3 transaksi", icon: "📂", pts: 30 },
-      { day: 7, title: "Review Ringkasan", desc: "Cek ringkasan mingguan kamu", icon: "📊", pts: 50 },
-    ];
+  // Inisialisasi icon lucide
+  lucide.createIcons();
 
-    // ----- Simple toast -----
-    function showToast(message, type = 'success') {
-      const container = document.getElementById('toast-container');
-      const toast = document.createElement('div');
-      toast.className = 'toast';
-      toast.innerHTML = `<span class="w-5 h-5 bg-emerald-500 rounded-full flex items-center justify-center text-white text-xs">✓</span> ${message}`;
-      container.appendChild(toast);
-      setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transition = 'opacity 0.2s';
-        setTimeout(() => toast.remove(), 200);
-      }, 2500);
-    }
-
-    // ----- LocalStorage helpers -----
-    function getChallengeData() {
-      try {
-        return JSON.parse(localStorage.getItem('umkmmate_challenge') || '{}');
-      } catch {
-        return {};
-      }
-    }
-
-    function saveChallengeData(data) {
-      localStorage.setItem('umkmmate_challenge', JSON.stringify(data));
-    }
-
-    // ----- Navigation state -----
-    let currentScreen = 'intro'; // 'intro' (TantanganIntro), 'detail' (DailyMissionDetail), 'misiSelesaiModal'? we handle modals separately inside render.
-    let modals = {
-      misiSelesai: false,      // MisiSelesaiModal (after 3rd transaction)
-      tantanganSelesai: false, // TantanganSelesaiModal (after 7 days)
-    };
-    let detailBackTarget = 'intro'; // where to go back from detail
-
-    // ----- Helper to navigate -----
-    function navigateTo(screen, from = 'intro') {
-      currentScreen = screen;
-      if (screen === 'detail') detailBackTarget = from;
-      render();
-    }
-
-    // ----- HomeChallengeCard component (displayed in intro screen) -----
-    function HomeChallengeCard(onPress) {
-      const data = getChallengeData();
-      if (!data.started) return '';
-
-      const currentDay = data.currentDay || 1;
-      const streak = data.streak || 0;
-      const graceDays = data.graceDays ?? 1;
-      const completedDays = data.completedDays || [];
-      const todayDone = completedDays.includes(currentDay);
-      const dayData = days[currentDay - 1] || days[0];
-      const progress = ((currentDay - 1) / 7) * 100;
-
-      return `
-        <div id="homeChallengeCard" class="bg-gradient-to-br from-purple-500 via-violet-600 to-indigo-700 rounded-3xl p-5 shadow-lg cursor-pointer overflow-hidden relative scale-tap no-tap-highlight">
-          <div class="absolute -right-6 -top-6 w-24 h-24 bg-white/10 rounded-full"></div>
-          <div class="absolute -right-2 -bottom-8 w-32 h-32 bg-white/5 rounded-full"></div>
-          <div class="relative">
-            <div class="flex items-center justify-between mb-3">
-              <div class="flex items-center gap-2">
-                <div class="w-8 h-8 bg-white/20 rounded-xl flex items-center justify-center">
-                  <i data-lucide="trophy" class="w-4 h-4 text-white"></i>
-                </div>
-                <div>
-                  <p class="text-purple-200 text-xs font-semibold">#UMKMNAIKELAS</p>
-                  <p class="text-white text-sm font-bold">Misi Hari ke-${currentDay}</p>
-                </div>
-              </div>
-              <div class="text-right">
-                <p class="text-purple-200 text-xs">Progress</p>
-                <p class="text-white text-sm font-bold">${currentDay - 1}/7</p>
-              </div>
-            </div>
-            <div class="h-2 bg-white/20 rounded-full overflow-hidden mb-3">
-              <div class="h-full bg-white rounded-full" style="width: ${progress}%"></div>
-            </div>
-            <div class="rounded-2xl p-3 mb-3 ${todayDone ? 'bg-emerald-500/30' : 'bg-white/15'}">
-              <p class="text-white text-xs mb-0.5 font-semibold">${todayDone ? '✅ Selesai!' : '🎯 Misi Hari Ini'}</p>
-              <p class="text-white text-sm font-medium">${dayData?.title || 'Selesai semua misi!'}</p>
-            </div>
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-3">
-                <div class="flex items-center gap-1 bg-white/15 rounded-full px-3 py-1.5">
-                  <i data-lucide="flame" class="w-3.5 h-3.5 text-orange-300"></i>
-                  <span class="text-white text-xs font-semibold">Streak: ${streak} hari</span>
-                </div>
-                <div class="flex items-center gap-1 bg-white/15 rounded-full px-3 py-1.5">
-                  <i data-lucide="shield" class="w-3.5 h-3.5 text-blue-300"></i>
-                  <span class="text-white text-xs font-semibold">Grace: ${graceDays}x</span>
-                </div>
-              </div>
-              <div class="w-8 h-8 bg-white/20 rounded-xl flex items-center justify-center">
-                <i data-lucide="chevron-right" class="w-4 h-4 text-white"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
-    // ----- MisiSelesaiModal (A3.2) -----
-    function MisiSelesaiModal(onClose, onViewSummary, onStartChallenge) {
-      return `
-        <div class="fixed inset-0 bg-black/60 flex items-end justify-center z-50 animate-fade-in" id="misiSelesaiOverlay">
-          <div class="bg-white rounded-t-3xl p-6 w-full max-w-md animate-slide-up" id="misiSelesaiContent">
-            <div class="flex justify-between items-start mb-2">
-              <div></div>
-              <button id="closeMisiSelesai" class="p-2 hover:bg-gray-100 rounded-xl">
-                <i data-lucide="x" class="w-5 h-5 text-gray-400"></i>
-              </button>
-            </div>
-            <div class="text-center mb-6">
-              <div class="text-7xl mb-4 scale-in">🎯</div>
-              <h2 class="text-gray-900 mb-2 text-[22px] font-extrabold">Mantap! Misi selesai.</h2>
-              <p class="text-gray-500 text-sm">Kamu sudah catat 3 transaksi hari ini. Luar biasa!</p>
-            </div>
-            <div class="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl p-4 mb-5 border border-emerald-100">
-              <p class="text-emerald-700 text-xs mb-3 font-bold">🔓 YANG BARU TERBUKA</p>
-              <div class="space-y-2.5">
-                <div class="flex items-center gap-3">
-                  <div class="w-8 h-8 bg-emerald-500 rounded-xl flex items-center justify-center"><i data-lucide="check" class="w-4 h-4 text-white"></i></div>
-                  <span class="text-emerald-800 text-sm font-medium">Ringkasan Hari Ini terbuka</span>
-                </div>
-                <div class="flex items-center gap-3">
-                  <div class="w-8 h-8 bg-amber-400 rounded-xl flex items-center justify-center"><i data-lucide="star" class="w-4 h-4 text-white"></i></div>
-                  <span class="text-emerald-800 text-sm font-medium">Badge: Langkah Pertama 🥇</span>
-                </div>
-                <div class="flex items-center gap-3">
-                  <div class="w-8 h-8 bg-purple-500 rounded-xl flex items-center justify-center"><i data-lucide="zap" class="w-4 h-4 text-white"></i></div>
-                  <span class="text-emerald-800 text-sm font-medium">+30 Progress Points</span>
-                </div>
-              </div>
-            </div>
-            <p class="text-center text-gray-500 text-xs mb-5">
-              Lanjut 7 hari untuk membuka <span class="text-emerald-600 font-semibold">Pratinjau Laporan Mingguan</span>.
-            </p>
-            <div class="space-y-3">
-              <button id="viewSummaryBtn" class="w-full bg-emerald-500 text-white py-4 rounded-2xl flex items-center justify-center gap-2 font-bold scale-tap">
-                <span>Lihat Ringkasan Hari Ini</span>
-                <i data-lucide="arrow-right" class="w-5 h-5"></i>
-              </button>
-              <button id="startChallengeBtn" class="w-full border-2 border-emerald-500 text-emerald-600 py-4 rounded-2xl font-semibold scale-tap">
-                🏆 Mulai Tantangan 7 Hari
-              </button>
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
-    // ----- TantanganSelesaiModal (A3.6) -----
-    function TantanganSelesaiModal(onClose, onViewWeekly) {
-      return `
-        <div class="fixed inset-0 bg-black/60 flex items-end justify-center z-50 animate-fade-in" id="tantanganSelesaiOverlay">
-          <div class="bg-white rounded-t-3xl p-6 w-full max-w-md animate-slide-up" id="tantanganSelesaiContent">
-            <div class="text-center mb-6">
-              <div class="text-7xl mb-4">🏆</div>
-              <h2 class="text-gray-900 mb-2 text-[22px] font-extrabold">Tantangan 7 hari selesai!</h2>
-              <p class="text-gray-500 text-sm">Kamu luar biasa! Konsistensi adalah kunci #UMKMNaikKelas.</p>
-            </div>
-            <div class="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-4 mb-5 border border-amber-100">
-              <p class="text-amber-700 text-xs mb-3 font-bold">🏅 REWARD UNLOCKED</p>
-              <div class="space-y-3">
-                <div class="flex items-center gap-3"><div class="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center text-xl">📊</div><div><p class="text-gray-900 text-sm font-semibold">Pratinjau Laporan Mingguan</p><p class="text-amber-600 text-xs">Akses eksklusif!</p></div></div>
-                <div class="flex items-center gap-3"><div class="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center text-xl">🎖️</div><div><p class="text-gray-900 text-sm font-semibold">Badge: Konsisten</p><p class="text-amber-600 text-xs">Ditambah ke profil kamu</p></div></div>
-                <div class="flex items-center gap-3"><div class="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center text-xl">⚡</div><div><p class="text-gray-900 text-sm font-semibold">Prioritas FUND-Link</p><p class="text-amber-600 text-xs">Cek kesiapan lebih cepat</p></div></div>
-              </div>
-            </div>
-            <div class="bg-purple-50 rounded-xl p-3 mb-5 flex items-center gap-3">
-              <i data-lucide="star" class="w-5 h-5 text-purple-500"></i>
-              <p class="text-purple-700 text-sm">Total bonus: <span class="font-bold">+245 Progress Points</span></p>
-            </div>
-            <button id="weeklyPreviewBtn" class="w-full bg-gradient-to-r from-emerald-500 to-teal-600 text-white py-4 rounded-2xl flex items-center justify-center gap-2 shadow-lg font-bold scale-tap">
-              <span>Lihat Pratinjau Mingguan</span>
-              <i data-lucide="arrow-right" class="w-5 h-5"></i>
-            </button>
-          </div>
-        </div>
-      `;
-    }
-
-    // ----- TantanganIntro screen (A3.3) -----
-    function renderIntro() {
-      const data = getChallengeData();
-      const alreadyJoined = data.started;
-      let joined = false; // local for button disable
-
-      // handle join via event listener later
-      const introHtml = `
-        <div class="min-h-screen bg-gray-50">
-          <!-- Header -->
-          <div class="bg-white px-5 pt-12 pb-5 shadow-sm">
-            <div class="flex items-center gap-3 mb-4">
-              <button id="backFromIntro" class="w-9 h-9 bg-gray-100 rounded-xl flex items-center justify-center">
-                <i data-lucide="x" class="w-5 h-5 text-gray-600"></i>
-              </button>
-              <h1 class="text-gray-900 text-xl font-bold">Tantangan 7 Hari</h1>
-            </div>
-
-            <!-- Hero -->
-            <div class="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl p-5 text-center">
-              <div class="text-5xl mb-3">🏆</div>
-              <h2 class="text-white mb-1 text-xl font-extrabold">#UMKMNaikKelas 7 Hari</h2>
-              <p class="text-emerald-100 text-sm">Misi kecil, progres besar.</p>
-              <div class="flex justify-center gap-3 mt-4">
-                <div class="bg-white/20 rounded-xl px-4 py-2 text-center"><p class="text-white text-xs">Durasi</p><p class="text-white font-bold">7 Hari</p></div>
-                <div class="bg-white/20 rounded-xl px-4 py-2 text-center"><p class="text-white text-xs">Poin</p><p class="text-white font-bold">245+</p></div>
-                <div class="bg-white/20 rounded-xl px-4 py-2 text-center"><p class="text-white text-xs">Grace Day</p><p class="text-white font-bold">1x</p></div>
-              </div>
-            </div>
-          </div>
-
-          <div class="px-4 py-4 space-y-3 pb-32">
-            <!-- Description -->
-            <div class="bg-blue-50 rounded-2xl p-4 border border-blue-100">
-              <p class="text-blue-800 text-sm">Selesaikan misi harian selama 7 hari berturut-turut untuk unlock <span class="font-bold">Pratinjau Laporan Mingguan</span> dan badge eksklusif <span class="font-bold">Konsisten</span>.</p>
-            </div>
-
-            <!-- Day list -->
-            <p class="text-gray-500 text-xs px-1 font-semibold">RENCANA MISI</p>
-            <div class="space-y-2">
-              ${days.map(d => {
-                const isFirstAndNotJoined = d.day === 1 && !alreadyJoined;
-                return `
-                  <div class="bg-white rounded-2xl p-4 border border-gray-100 flex items-center gap-3 ${!isFirstAndNotJoined ? 'opacity-75' : ''}">
-                    <div class="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 ${isFirstAndNotJoined ? 'bg-emerald-100' : 'bg-gray-100'}">
-                      ${isFirstAndNotJoined ? `<span class="text-xl">${d.icon}</span>` : `<i data-lucide="lock" class="w-5 h-5 text-gray-400"></i>`}
-                    </div>
-                    <div class="flex-1">
-                      <p class="text-gray-900 text-sm font-semibold">Hari ${d.day}: ${d.title}</p>
-                      <p class="text-gray-500 text-xs">${d.desc}</p>
-                    </div>
-                    <div class="bg-purple-50 px-2.5 py-1 rounded-full"><span class="text-purple-600 text-xs font-semibold">+${d.pts}</span></div>
-                  </div>
-                `;
-              }).join('')}
-            </div>
-
-            <!-- Reward info -->
-            <div class="bg-amber-50 rounded-2xl p-4 border border-amber-100">
-              <p class="text-amber-800 text-xs mb-2 font-bold">🏅 REWARD SELESAI 7 HARI</p>
-              <div class="space-y-2">
-                ${['Pratinjau Laporan Mingguan', 'Badge: Konsisten', 'Prioritas cek kesiapan FUND-Link'].map(r => `
-                  <div class="flex items-center gap-2">
-                    <div class="w-5 h-5 bg-amber-400 rounded-full flex items-center justify-center"><i data-lucide="check" class="w-3 h-3 text-white"></i></div>
-                    <span class="text-amber-800 text-sm">${r}</span>
-                  </div>
-                `).join('')}
-              </div>
-            </div>
-
-            <!-- Home Challenge Card (if started) -->
-            ${alreadyJoined ? HomeChallengeCard(() => navigateTo('detail', 'intro')) : ''}
-          </div>
-
-          <!-- Bottom CTA -->
-          <div class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white border-t border-gray-100 px-4 py-4">
-            ${alreadyJoined ? `
-              <button id="alreadyJoinedBtn" class="w-full bg-emerald-500 text-white py-4 rounded-2xl flex items-center justify-center gap-2 font-bold scale-tap">
-                <i data-lucide="check" class="w-5 h-5"></i> Kamu Sudah Bergabung!
-              </button>
-            ` : `
-              <button id="joinChallengeBtn" class="w-full bg-gradient-to-r from-emerald-500 to-teal-600 text-white py-4 rounded-2xl flex items-center justify-center gap-2 shadow-lg font-bold scale-tap">
-                <i data-lucide="trophy" class="w-5 h-5"></i> Ikuti Tantangan
-              </button>
-            `}
-          </div>
-        </div>
-      `;
-      return introHtml;
-    }
-
-    // ----- DailyMissionDetail screen -----
-    function renderDetail() {
-      const data = getChallengeData();
-      const currentDay = data.currentDay || 1;
-      const completedDays = data.completedDays || [];
-      const todayDone = completedDays.includes(currentDay);
-      const dayData = days[currentDay - 1] || days[0];
-
-      return `
-        <div class="min-h-screen bg-gray-50">
-          <!-- Header -->
-          <div class="bg-white px-5 pt-12 pb-5 shadow-sm">
-            <div class="flex items-center gap-3 mb-4">
-              <button id="backFromDetail" class="w-9 h-9 bg-gray-100 rounded-xl flex items-center justify-center">
-                <i data-lucide="x" class="w-5 h-5 text-gray-600"></i>
-              </button>
-              <h1 class="text-gray-900 text-xl font-bold">Detail Misi</h1>
-            </div>
-            <div class="bg-gradient-to-r from-purple-500 to-violet-600 rounded-2xl p-4">
-              <p class="text-purple-200 text-xs mb-1 font-semibold">#UMKMNAIKELAS</p>
-              <p class="text-white mb-2 text-lg font-extrabold">Hari ${currentDay} dari 7</p>
-              <div class="h-2 bg-white/20 rounded-full overflow-hidden">
-                <div class="h-full bg-white rounded-full" style="width: ${(currentDay / 7) * 100}%"></div>
-              </div>
-            </div>
-          </div>
-
-          <div class="px-4 py-4 space-y-4 pb-32">
-            <!-- Today's mission -->
-            <div class="rounded-3xl p-5 border ${todayDone ? 'bg-emerald-50 border-emerald-200' : 'bg-white border-gray-100'} shadow-sm">
-              <div class="text-4xl mb-3">${dayData?.icon}</div>
-              <p class="text-gray-900 mb-1 text-lg font-bold">${dayData?.title}</p>
-              <p class="text-gray-500 text-sm mb-4">${dayData?.desc}</p>
-              ${todayDone ? `
-                <div class="flex items-center gap-2 bg-emerald-100 rounded-xl px-4 py-3">
-                  <i data-lucide="check" class="w-5 h-5 text-emerald-600"></i>
-                  <span class="text-emerald-700 text-sm font-semibold">Misi hari ini sudah selesai!</span>
-                </div>
-              ` : `
-                <div class="flex items-center gap-2 bg-purple-50 rounded-xl px-4 py-3">
-                  <i data-lucide="zap" class="w-5 h-5 text-purple-500"></i>
-                  <span class="text-purple-700 text-sm font-medium">+${dayData?.pts} poin setelah selesai</span>
-                </div>
-              `}
-            </div>
-
-            <!-- All days -->
-            <p class="text-gray-500 text-xs px-1 font-semibold">SEMUA HARI</p>
-            <div class="space-y-2">
-              ${days.map(d => {
-                const done = completedDays.includes(d.day);
-                const isToday = d.day === currentDay;
-                const isLocked = d.day > currentDay;
-                return `
-                  <div class="rounded-2xl p-4 border flex items-center gap-3 ${done ? 'bg-emerald-50 border-emerald-200' : isToday ? 'bg-purple-50 border-purple-200' : 'bg-white border-gray-100 opacity-60'}">
-                    <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${done ? 'bg-emerald-500' : isToday ? 'bg-purple-500' : 'bg-gray-200'}">
-                      ${done ? '<i data-lucide="check" class="w-5 h-5 text-white"></i>' : isLocked ? '<i data-lucide="lock" class="w-4 h-4 text-gray-400"></i>' : `<span class="text-lg">${d.icon}</span>`}
-                    </div>
-                    <div class="flex-1">
-                      <p class="text-sm ${done ? 'text-emerald-800' : isToday ? 'text-purple-800' : 'text-gray-500'} font-semibold">Hari ${d.day}: ${d.title}</p>
-                      ${isToday && !done ? '<p class="text-purple-600 text-xs">Sedang berlangsung</p>' : ''}
-                      ${done ? '<p class="text-emerald-600 text-xs">Selesai ✓</p>' : ''}
-                    </div>
-                    <span class="text-xs ${done ? 'text-emerald-600' : 'text-gray-400'} font-semibold">+${d.pts}</span>
-                  </div>
-                `;
-              }).join('')}
-            </div>
-          </div>
-
-          <!-- CTA if not done -->
-          ${!todayDone ? `
-            <div class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white border-t border-gray-100 px-4 py-4 space-y-2">
-              <button id="recordMissionBtn" class="w-full bg-emerald-500 text-white py-4 rounded-2xl flex items-center justify-center gap-2 shadow-md font-bold scale-tap">
-                <i data-lucide="zap" class="w-5 h-5"></i> Selesaikan Misi Hari Ini
-              </button>
-              <button id="markManualBtn" class="w-full border-2 border-gray-200 text-gray-600 py-3.5 rounded-2xl text-sm font-semibold scale-tap">
-                Tandai Selesai Manual
-              </button>
-            </div>
-          ` : ''}
-        </div>
-      `;
-    }
-
-    // ----- Main render -----
-    function render() {
-      const app = document.getElementById('app');
-      if (currentScreen === 'intro') {
-        app.innerHTML = renderIntro();
-      } else if (currentScreen === 'detail') {
-        app.innerHTML = renderDetail();
-      } else {
-        app.innerHTML = renderIntro(); // fallback
-      }
-
-      // re-attach icons
-      lucide.createIcons();
-
-      // ----- Attach global event listeners -----
-      // Back from intro
-      const backIntro = document.getElementById('backFromIntro');
-      if (backIntro) backIntro.addEventListener('click', () => { /* just close? actually we can go to root? but we have no root, so simulate home */ showToast('Kembali (simulasi)'); });
-
-      // Back from detail
-      const backDetail = document.getElementById('backFromDetail');
-      if (backDetail) backDetail.addEventListener('click', () => { currentScreen = detailBackTarget; render(); });
-
-      // Join challenge
-      const joinBtn = document.getElementById('joinChallengeBtn');
-      if (joinBtn) {
-        joinBtn.addEventListener('click', () => {
-          const challengeData = { started: true, startDate: new Date().toISOString(), currentDay: 1, streak: 0, graceDays: 1, completedDays: [] };
-          saveChallengeData(challengeData);
-          showToast('Tantangan dimulai! Selamat berjuang 💪');
-          currentScreen = 'intro'; // refresh intro (card muncul)
-          render();
-        });
-      }
-
-      // Already joined btn (navigate to detail)
-      const alreadyBtn = document.getElementById('alreadyJoinedBtn');
-      if (alreadyBtn) alreadyBtn.addEventListener('click', () => { navigateTo('detail', 'intro'); });
-
-      // Home challenge card click
-      const homeCard = document.getElementById('homeChallengeCard');
-      if (homeCard) homeCard.addEventListener('click', () => { navigateTo('detail', 'intro'); });
-
-      // Detail actions
-      const recordBtn = document.getElementById('recordMissionBtn');
-      if (recordBtn) recordBtn.addEventListener('click', () => { showToast('Arahkan ke pencatatan (simulasi)'); });
-
-      const markManual = document.getElementById('markManualBtn');
-      if (markManual) {
-        markManual.addEventListener('click', () => {
-          const data = getChallengeData();
-          const currentDay = data.currentDay || 1;
-          const completed = data.completedDays || [];
-          if (completed.includes(currentDay)) { showToast('Sudah selesai'); return; }
-          completed.push(currentDay);
-          const streak = (data.streak || 0) + 1;
-          let newCurrentDay = currentDay;
-          if (currentDay === 7) {
-            // show completion modal
-            modals.tantanganSelesai = true;
-          } else {
-            newCurrentDay = currentDay + 1;
-          }
-          const updated = { ...data, streak, completedDays: completed, currentDay: newCurrentDay };
-          saveChallengeData(updated);
-          showToast(`Misi hari ${currentDay} selesai. Streak lanjut! 🔥`);
-          if (currentDay === 7) {
-            modals.tantanganSelesai = true;
-            render();
-          } else {
-            render(); // refresh detail
-          }
-        });
-      }
-
-      // Modal handling: show TantanganSelesaiModal if flag set
-      if (modals.tantanganSelesai) {
-        const modalHtml = TantanganSelesaiModal(
-          () => { modals.tantanganSelesai = false; render(); },
-          () => { modals.tantanganSelesai = false; showToast('Buka laporan mingguan (simulasi)'); render(); }
-        );
-        app.insertAdjacentHTML('beforeend', modalHtml);
-        lucide.createIcons();
-
-        document.getElementById('tantanganSelesaiOverlay')?.addEventListener('click', function(e) {
-          if (e.target === this) { modals.tantanganSelesai = false; render(); }
-        });
-        document.getElementById('weeklyPreviewBtn')?.addEventListener('click', () => {
-          modals.tantanganSelesai = false;
-          showToast('Buka laporan mingguan (simulasi)');
-          render();
-        });
-        const closeModalBtn = document.querySelector('#tantanganSelesaiContent button');
-        if (closeModalBtn) closeModalBtn.addEventListener('click', () => { modals.tantanganSelesai = false; render(); });
-      }
-
-      // MisiSelesaiModal (A3.2) – kita bisa trigger dari luar, misal setelah 3 transaksi. Untuk demo, tambah tombuil pemicu? tapi biarkan tidak aktif dulu, tapi kita sertakan kodenya siap pakai.
-      // Agar tidak terlalu kompleks, modal ini bisa dipanggil dengan mengeset modals.misiSelesai = true; lalu render.
-      // Kita tambah contoh pemicu di detail? Tidak perlu. Tapi kita sertakan fungsionalitas.
-      if (modals.misiSelesai) {
-        const modalHtml = MisiSelesaiModal(
-          () => { modals.misiSelesai = false; render(); },
-          () => { modals.misiSelesai = false; showToast('Lihat Ringkasan Hari Ini'); },
-          () => { modals.misiSelesai = false; showToast('Mulai tantangan'); }
-        );
-        app.insertAdjacentHTML('beforeend', modalHtml);
-        lucide.createIcons();
-        document.getElementById('misiSelesaiOverlay')?.addEventListener('click', function(e) { if (e.target === this) { modals.misiSelesai = false; render(); } });
-        document.getElementById('closeMisiSelesai')?.addEventListener('click', () => { modals.misiSelesai = false; render(); });
-        document.getElementById('viewSummaryBtn')?.addEventListener('click', () => { modals.misiSelesai = false; showToast('Ringkasan'); render(); });
-        document.getElementById('startChallengeBtn')?.addEventListener('click', () => { modals.misiSelesai = false; showToast('Mulai tantangan 7 hari'); });
-      }
-    }
-
-    // initial render: intro screen
-   const completedChallenge = {
-  started: true,
-  startDate: new Date().toISOString(),
-  currentDay: 7, // hari ke-7
-  streak: 7,
-  graceDays: 1,
-  completedDays: [1, 2, 3, 4, 5, 6, 7] // semua hari selesai
-};
-localStorage.setItem('umkmmate_challenge', JSON.stringify(completedChallenge));
-
-// Set screen ke detail (atau intro, terserah)
-currentScreen = 'detail'; // atau 'intro', modal akan muncul di atasnya
-
-// Aktifkan modal tantangan selesai
-modals.tantanganSelesai = true;
-
-render();
-  })();
+  // Optional: Tambahkan event klik untuk preview
+  document.getElementById('challengeCard')?.addEventListener('click', () => {
+    alert('Card diklik! (Navigasi ke halaman detail misi)');
+  });
 </script>
+
 </body>
 </html>
