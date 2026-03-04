@@ -517,21 +517,22 @@
     }
 
     // initial render: intro screen
-    if (!localStorage.getItem('umkmmate_challenge')) {
-  const defaultChallenge = {
-    started: true,
-    startDate: new Date().toISOString(),
-    currentDay: 1,
-    streak: 0,
-    graceDays: 1,
-    completedDays: []
-  };
-  localStorage.setItem('umkmmate_challenge', JSON.stringify(defaultChallenge));
-}
+   const completedChallenge = {
+  started: true,
+  startDate: new Date().toISOString(),
+  currentDay: 7, // hari ke-7
+  streak: 7,
+  graceDays: 1,
+  completedDays: [1, 2, 3, 4, 5, 6, 7] // semua hari selesai
+};
+localStorage.setItem('umkmmate_challenge', JSON.stringify(completedChallenge));
 
-// Paksa ke halaman detail, meskipun data sudah ada
-currentScreen = 'detail';
-detailBackTarget = 'intro';
+// Set screen ke detail (atau intro, terserah)
+currentScreen = 'detail'; // atau 'intro', modal akan muncul di atasnya
+
+// Aktifkan modal tantangan selesai
+modals.tantanganSelesai = true;
+
 render();
   })();
 </script>
