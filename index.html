@@ -517,8 +517,22 @@
     }
 
     // initial render: intro screen
-    currentScreen = 'intro';
-    render();
+    if (!localStorage.getItem('umkmmate_challenge')) {
+  const defaultChallenge = {
+    started: true,
+    startDate: new Date().toISOString(),
+    currentDay: 1,
+    streak: 0,
+    graceDays: 1,
+    completedDays: []
+  };
+  localStorage.setItem('umkmmate_challenge', JSON.stringify(defaultChallenge));
+}
+
+// Paksa ke halaman detail, meskipun data sudah ada
+currentScreen = 'detail';
+detailBackTarget = 'intro';
+render();
   })();
 </script>
 </body>
