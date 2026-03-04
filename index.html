@@ -2,8 +2,8 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Card Tantangan 7 Hari</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Manajemen Stok • Form Tambah Pesanan</title>
   <!-- Tailwind + Font -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&display=swap" rel="stylesheet">
@@ -13,84 +13,1051 @@
     * { font-family: 'Inter', system-ui, sans-serif; }
     .scale-tap:active { transform: scale(0.97); transition: transform 0.1s; }
     .no-tap-highlight { -webkit-tap-highlight-color: transparent; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    @keyframes slideDown { from { transform: translateY(0); } to { transform: translateY(100%); } }
+    .animate-fade-in { animation: fadeIn 0.2s ease forwards; }
+    .animate-slide-up { animation: slideUp 0.3s cubic-bezier(0.4,0,0.2,1) forwards; }
+    .animate-slide-down { animation: slideDown 0.3s cubic-bezier(0.4,0,0.2,1) forwards; }
+    .toast-container { position: fixed; top: 1rem; left: 50%; transform: translateX(-50%); z-index: 100; width: 100%; max-width: 20rem; pointer-events: none; }
+    .toast { background: white; border-radius: 1rem; padding: 0.75rem 1.25rem; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); font-weight: 500; font-size: 0.875rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; border: 1px solid #e5e7eb; animation: fadeIn 0.2s; }
+    .form-input:focus { outline: none; border-color: #10b981; ring: 2px solid #10b981; }
+    .quantity-btn { transition: all 0.1s ease; }
+    .quantity-btn:active { background-color: #e5e7eb; transform: scale(0.95); }
   </style>
 </head>
-<body class="bg-gray-100 flex justify-center items-center min-h-screen p-4">
+<body class="bg-gray-50 flex justify-center items-start min-h-screen">
 
-<div class="w-full max-w-md mx-auto">
-  <!-- Card Tantangan 7 Hari - Component -->
-  <div id="challengeCard" class="bg-gradient-to-br from-purple-500 via-violet-600 to-indigo-700 rounded-3xl p-5 shadow-lg cursor-pointer overflow-hidden relative scale-tap no-tap-highlight">
-    <!-- Decorative circles -->
-    <div class="absolute -right-6 -top-6 w-24 h-24 bg-white/10 rounded-full"></div>
-    <div class="absolute -right-2 -bottom-8 w-32 h-32 bg-white/5 rounded-full"></div>
-    
-    <!-- Content -->
-    <div class="relative">
-      <!-- Header -->
-      <div class="flex items-center justify-between mb-3">
-        <div class="flex items-center gap-2">
-          <div class="w-8 h-8 bg-white/20 rounded-xl flex items-center justify-center">
-            <i data-lucide="trophy" class="w-4 h-4 text-white"></i>
-          </div>
-          <div>
-            <p class="text-purple-200 text-xs font-semibold">#UMKMNAIKELAS</p>
-            <p class="text-white text-sm font-bold">Misi Hari ke-1</p>
-          </div>
-        </div>
-        <div class="text-right">
-          <p class="text-purple-200 text-xs">Progress</p>
-          <p class="text-white text-sm font-bold">0/7</p>
-        </div>
-      </div>
-
-      <!-- Progress bar -->
-      <div class="h-2 bg-white/20 rounded-full overflow-hidden mb-3">
-        <div class="h-full bg-white rounded-full" style="width: 0%"></div>
-      </div>
-
-      <!-- Today's mission -->
-      <div class="rounded-2xl p-3 mb-3 bg-white/15">
-        <p class="text-white text-xs mb-0.5 font-semibold">🎯 Misi Hari Ini</p>
-        <p class="text-white text-sm font-medium">Catat 3 transaksi hari ini</p>
-      </div>
-
-      <!-- Stats & Arrow -->
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-3">
-          <!-- Streak -->
-          <div class="flex items-center gap-1 bg-white/15 rounded-full px-3 py-1.5">
-            <i data-lucide="flame" class="w-3.5 h-3.5 text-orange-300"></i>
-            <span class="text-white text-xs font-semibold">Streak: 0 hari</span>
-          </div>
-          <!-- Grace day -->
-          <div class="flex items-center gap-1 bg-white/15 rounded-full px-3 py-1.5">
-            <i data-lucide="shield" class="w-3.5 h-3.5 text-blue-300"></i>
-            <span class="text-white text-xs font-semibold">Grace: 1x</span>
-          </div>
-        </div>
-        <!-- Arrow right -->
-        <div class="w-8 h-8 bg-white/20 rounded-xl flex items-center justify-center">
-          <i data-lucide="chevron-right" class="w-4 h-4 text-white"></i>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Keterangan / Catatan Kecil -->
-  <p class="text-xs text-gray-500 text-center mt-6">
-    Card Tantangan 7 Hari - Desain siap pakai
-  </p>
-</div>
+<div id="app" class="w-full max-w-md mx-auto bg-gray-50 relative min-h-screen"></div>
+<div class="toast-container" id="toast-container"></div>
 
 <script>
-  // Inisialisasi icon lucide
-  lucide.createIcons();
+  (function() {
+    // ----- Data Definitions -----
+    const inventoryItems = [
+      { id: 1, name: "Kopi Arabica Premium", category: "Bahan Baku", stock: 45, unit: "kg", minStock: 20, price: 85000, status: "good", supplier: "CV Kopi Nusantara" },
+      { id: 2, name: "Gula Pasir", category: "Bahan Baku", stock: 12, unit: "kg", minStock: 15, price: 15000, status: "low", supplier: "Toko Berkah Jaya" },
+      { id: 3, name: "Kemasan Paper Cup", category: "Kemasan", stock: 350, unit: "pcs", minStock: 100, price: 1500, status: "good", supplier: "PT Kemasan Modern" },
+      { id: 4, name: "Susu UHT", category: "Bahan Baku", stock: 5, unit: "liter", minStock: 10, price: 18000, status: "critical", supplier: "Toko Berkah Jaya" },
+      { id: 5, name: "Sedotan Ramah Lingkungan", category: "Kemasan", stock: 280, unit: "pcs", minStock: 150, price: 500, status: "good", supplier: "PT Kemasan Modern" },
+      { id: 6, name: "Sirup Vanilla", category: "Bahan Baku", stock: 3, unit: "botol", minStock: 5, price: 35000, status: "critical", supplier: "Toko Berkah Jaya" },
+    ];
 
-  // Optional: Tambahkan event klik untuk preview
-  document.getElementById('challengeCard')?.addEventListener('click', () => {
-    alert('Card diklik! (Navigasi ke halaman detail misi)');
-  });
+    // Data suppliers
+    let suppliers = [
+      { id: 1, name: "CV Kopi Nusantara", category: "Supplier Kopi", items: 3, contact: "0812-1111-2222", rating: 4.9, address: "Jl. Kopi No. 123, Bandung" },
+      { id: 2, name: "Toko Berkah Jaya", category: "Kebutuhan Umum", items: 5, contact: "0813-3333-4444", rating: 4.6, address: "Jl. Pasar Baru No. 45, Jakarta" },
+      { id: 3, name: "PT Kemasan Modern", category: "Kemasan & Packaging", items: 2, contact: "021-5678-9012", rating: 4.8, address: "Kawasan Industri MM2100, Bekasi" },
+    ];
+
+    // Riwayat transaksi supplier
+    let supplierTransactions = [
+      { id: 1, supplierId: 1, date: "2026-03-01", items: [{ name: "Kopi Arabica Premium", qty: 10, unit: "kg", price: 85000 }], total: 850000, status: "delivered" },
+      { id: 2, supplierId: 2, date: "2026-02-28", items: [{ name: "Gula Pasir", qty: 20, unit: "kg", price: 15000 }, { name: "Susu UHT", qty: 10, unit: "liter", price: 18000 }], total: 480000, status: "delivered" },
+      { id: 3, supplierId: 3, date: "2026-02-25", items: [{ name: "Kemasan Paper Cup", qty: 500, unit: "pcs", price: 1500 }], total: 750000, status: "delivered" },
+      { id: 4, supplierId: 1, date: "2026-03-02", items: [{ name: "Kopi Arabica Premium", qty: 5, unit: "kg", price: 85000 }], total: 425000, status: "processing" },
+    ];
+
+    // State management
+    let currentScreen = 'suppliers';
+    let selectedSupplier = null;
+    let selectedItem = null;
+    let showOrderModal = false;
+    let showQuantityModal = false;
+    let cart = [];
+    let nextSupplierId = 4;
+
+    // Simple toast
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.innerHTML = `<span class="w-5 h-5 bg-emerald-500 rounded-full flex items-center justify-center text-white text-xs">✓</span> ${message}`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.2s';
+        setTimeout(() => toast.remove(), 200);
+      }, 2500);
+    }
+
+    // Format currency
+    function formatRupiah(amount) {
+      return 'Rp ' + amount.toLocaleString('id-ID');
+    }
+
+    // Format date
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+
+    // Get supplier by id
+    function getSupplierById(id) {
+      return suppliers.find(s => s.id === id) || null;
+    }
+
+    // Get items from supplier
+    function getSupplierItems(supplierId) {
+      return inventoryItems.filter(item => {
+        const supplier = suppliers.find(s => s.name === item.supplier);
+        return supplier && supplier.id === supplierId;
+      });
+    }
+
+    // Add new supplier
+    function addSupplier(supplierData) {
+      const newSupplier = {
+        id: nextSupplierId++,
+        name: supplierData.name,
+        category: supplierData.category,
+        items: 0,
+        contact: supplierData.contact,
+        rating: parseFloat(supplierData.rating) || 4.0,
+        address: supplierData.address
+      };
+      suppliers.push(newSupplier);
+      return newSupplier;
+    }
+
+    // Add to cart with quantity
+    function addToCart(item, qty) {
+      const existing = cart.find(i => i.id === item.id);
+      if (existing) {
+        existing.qty += qty;
+      } else {
+        cart.push({
+          id: item.id,
+          name: item.name,
+          price: item.price,
+          unit: item.unit,
+          qty: qty,
+          supplierId: selectedSupplier.id,
+          category: item.category
+        });
+      }
+    }
+
+    // Remove from cart
+    function removeFromCart(itemId) {
+      cart = cart.filter(i => i.id !== itemId);
+    }
+
+    // Calculate cart total
+    function getCartTotal() {
+      return cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+    }
+
+    // Submit order
+    function submitOrder() {
+      if (cart.length === 0) {
+        showToast("Keranjang belanja masih kosong", "error");
+        return;
+      }
+
+      const newOrder = {
+        id: supplierTransactions.length + 1,
+        supplierId: selectedSupplier.id,
+        date: new Date().toISOString().split('T')[0],
+        items: cart.map(item => ({
+          name: item.name,
+          qty: item.qty,
+          unit: item.unit,
+          price: item.price
+        })),
+        total: getCartTotal(),
+        status: "processing"
+      };
+
+      supplierTransactions.push(newOrder);
+      
+      // Update stok
+      cart.forEach(item => {
+        const invItem = inventoryItems.find(i => i.id === item.id);
+        if (invItem) {
+          invItem.stock += item.qty;
+          // Update status
+          if (invItem.stock >= invItem.minStock * 2) {
+            invItem.status = "good";
+          } else if (invItem.stock >= invItem.minStock) {
+            invItem.status = "good";
+          } else if (invItem.stock > 0) {
+            invItem.status = invItem.stock < invItem.minStock ? "low" : "good";
+          }
+        }
+      });
+
+      cart = [];
+      showOrderModal = false;
+      showToast("Pesanan berhasil dibuat! Stok akan segera ditambahkan.");
+      currentScreen = 'orderHistory';
+      render();
+    }
+
+    // ----- QUANTITY MODAL FORM (NEW) -----
+    function renderQuantityModal() {
+      if (!selectedItem) return '';
+
+      const recommendedQty = Math.max(selectedItem.minStock - selectedItem.stock + 5, 10);
+      const maxRecommended = selectedItem.minStock * 2;
+
+      return `
+        <div class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 animate-fade-in p-4" id="quantityModalOverlay">
+          <div class="bg-white rounded-3xl w-full max-w-sm p-6 animate-slide-up">
+            <!-- Header -->
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-gray-900 text-lg font-bold">Tambah ke Pesanan</h3>
+              <button id="closeQuantityModal" class="w-8 h-8 bg-gray-100 rounded-xl flex items-center justify-center">
+                <i data-lucide="x" class="w-4 h-4 text-gray-500"></i>
+              </button>
+            </div>
+
+            <!-- Item Info -->
+            <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-4 mb-5 border border-blue-100">
+              <div class="flex items-start gap-3">
+                <div class="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center">
+                  <i data-lucide="package" class="w-6 h-6 text-white"></i>
+                </div>
+                <div class="flex-1">
+                  <p class="text-gray-900 font-bold">${selectedItem.name}</p>
+                  <p class="text-gray-500 text-xs">${selectedItem.category}</p>
+                  <div class="flex items-center gap-2 mt-1">
+                    <span class="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">Stok: ${selectedItem.stock} ${selectedItem.unit}</span>
+                    <span class="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">Min: ${selectedItem.minStock}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quantity Selector Form -->
+            <div class="mb-5">
+              <label class="text-gray-700 text-sm font-semibold mb-2 block">Jumlah Pesanan (${selectedItem.unit})</label>
+              
+              <!-- Quick Select Buttons -->
+              <div class="grid grid-cols-3 gap-2 mb-4">
+                <button class="quick-qty py-2 border-2 border-gray-200 rounded-xl text-sm font-medium hover:border-emerald-500 transition-all" data-qty="${recommendedQty}">
+                  ⚡ Rekomendasi
+                </button>
+                <button class="quick-qty py-2 border-2 border-gray-200 rounded-xl text-sm font-medium hover:border-emerald-500 transition-all" data-qty="${selectedItem.minStock}">
+                  Min Stock
+                </button>
+                <button class="quick-qty py-2 border-2 border-gray-200 rounded-xl text-sm font-medium hover:border-emerald-500 transition-all" data-qty="${maxRecommended}">
+                  Max Aman
+                </button>
+              </div>
+
+              <!-- Manual Input with +/- Buttons -->
+              <div class="flex items-center gap-2">
+                <button id="decreaseQty" class="quantity-btn w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center">
+                  <i data-lucide="minus" class="w-5 h-5 text-gray-600"></i>
+                </button>
+                <input type="number" id="itemQuantity" min="1" max="1000" value="${recommendedQty}" 
+                  class="flex-1 text-center px-4 py-3 border-2 border-gray-200 rounded-xl text-lg font-bold focus:border-emerald-500 transition-all">
+                <button id="increaseQty" class="quantity-btn w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center">
+                  <i data-lucide="plus" class="w-5 h-5 text-gray-600"></i>
+                </button>
+              </div>
+
+              <!-- Price Calculation -->
+              <div class="mt-4 bg-gray-50 rounded-xl p-3">
+                <div class="flex justify-between text-sm mb-1">
+                  <span class="text-gray-600">Harga satuan:</span>
+                  <span class="text-gray-800 font-semibold">${formatRupiah(selectedItem.price)}</span>
+                </div>
+                <div class="flex justify-between text-sm mb-1">
+                  <span class="text-gray-600">Jumlah:</span>
+                  <span class="text-gray-800 font-semibold"><span id="qtyDisplay">${recommendedQty}</span> ${selectedItem.unit}</span>
+                </div>
+                <div class="flex justify-between text-base font-bold mt-2 pt-2 border-t border-gray-200">
+                  <span class="text-gray-700">Total:</span>
+                  <span class="text-emerald-600" id="totalPrice">${formatRupiah(selectedItem.price * recommendedQty)}</span>
+                </div>
+              </div>
+
+              <!-- Notes (Optional) -->
+              <div class="mt-4">
+                <label class="text-gray-600 text-xs mb-1 block">Catatan (opsional)</label>
+                <textarea id="orderNotes" rows="2" class="w-full px-4 py-2 border-2 border-gray-200 rounded-xl text-sm focus:border-emerald-500 transition-all" placeholder="Contoh: Kirim hari Senin, minta invoice..."></textarea>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex gap-3">
+              <button id="cancelQuantity" class="flex-1 border-2 border-gray-200 text-gray-600 py-3.5 rounded-xl text-sm font-semibold scale-tap">
+                Batal
+              </button>
+              <button id="addToCartConfirm" class="flex-1 bg-emerald-500 text-white py-3.5 rounded-xl text-sm font-semibold scale-tap">
+                Tambah ke Keranjang
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Render add supplier form
+    function renderAddSupplier() {
+      return `
+        <div class="min-h-screen bg-gray-50">
+          <!-- Header -->
+          <div class="bg-white px-5 pt-12 pb-5 shadow-sm">
+            <div class="flex items-center gap-3 mb-4">
+              <button id="backFromAddSupplier" class="w-9 h-9 bg-gray-100 rounded-xl flex items-center justify-center scale-tap">
+                <i data-lucide="arrow-left" class="w-5 h-5 text-gray-600"></i>
+              </button>
+              <h1 class="text-gray-900 text-xl font-bold">Tambah Supplier Baru</h1>
+            </div>
+          </div>
+
+          <!-- Form -->
+          <div class="px-4 py-4">
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+              <form id="addSupplierForm" class="space-y-4">
+                <div>
+                  <label class="text-gray-700 text-xs font-semibold mb-1 block">Nama Supplier *</label>
+                  <input type="text" id="supplierName" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-sm focus:border-emerald-500 transition-all" placeholder="Contoh: CV Maju Jaya">
+                </div>
+
+                <div>
+                  <label class="text-gray-700 text-xs font-semibold mb-1 block">Kategori *</label>
+                  <select id="supplierCategory" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-sm focus:border-emerald-500 transition-all">
+                    <option value="">Pilih kategori</option>
+                    <option value="Supplier Kopi">Supplier Kopi</option>
+                    <option value="Kebutuhan Umum">Kebutuhan Umum</option>
+                    <option value="Kemasan & Packaging">Kemasan & Packaging</option>
+                    <option value="Bahan Baku">Bahan Baku</option>
+                    <option value="Peralatan">Peralatan</option>
+                    <option value="Lainnya">Lainnya</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label class="text-gray-700 text-xs font-semibold mb-1 block">Nomor Telepon *</label>
+                  <input type="tel" id="supplierContact" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-sm focus:border-emerald-500 transition-all" placeholder="0812-3456-7890">
+                </div>
+
+                <div>
+                  <label class="text-gray-700 text-xs font-semibold mb-1 block">Alamat *</label>
+                  <textarea id="supplierAddress" required rows="2" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-sm focus:border-emerald-500 transition-all" placeholder="Jl. Contoh No. 123, Kota"></textarea>
+                </div>
+
+                <div>
+                  <label class="text-gray-700 text-xs font-semibold mb-1 block">Rating (1-5)</label>
+                  <input type="number" id="supplierRating" min="1" max="5" step="0.1" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-sm focus:border-emerald-500 transition-all" placeholder="4.5">
+                </div>
+
+                <div class="flex gap-3 pt-3">
+                  <button type="button" id="cancelAddSupplier" class="flex-1 border-2 border-gray-200 text-gray-600 py-3.5 rounded-xl text-sm font-semibold scale-tap">
+                    Batal
+                  </button>
+                  <button type="submit" id="submitAddSupplier" class="flex-1 bg-emerald-500 text-white py-3.5 rounded-xl text-sm font-semibold scale-tap">
+                    Simpan Supplier
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Render suppliers list
+    function renderSuppliers() {
+      return `
+        <div class="min-h-screen bg-gray-50">
+          <!-- Header -->
+          <div class="bg-white px-5 pt-12 pb-5 shadow-sm">
+            <div class="flex items-center gap-3 mb-4">
+              <button id="backBtn" class="w-9 h-9 bg-gray-100 rounded-xl flex items-center justify-center scale-tap">
+                <i data-lucide="arrow-left" class="w-5 h-5 text-gray-600"></i>
+              </button>
+              <h1 class="text-gray-900 text-xl font-bold">Supplier</h1>
+            </div>
+
+            <!-- Stats -->
+            <div class="grid grid-cols-2 gap-3 mb-4">
+              <div class="bg-blue-50 rounded-2xl p-3 border border-blue-100">
+                <p class="text-blue-600 text-xs mb-0.5">Total Supplier</p>
+                <p class="text-blue-900 font-bold text-[15px]">${suppliers.length} aktif</p>
+              </div>
+              <div class="bg-emerald-50 rounded-2xl p-3 border border-emerald-100">
+                <p class="text-emerald-600 text-xs mb-0.5">Pesanan Diproses</p>
+                <p class="text-emerald-900 font-bold text-[15px]">${supplierTransactions.filter(t => t.status === 'processing').length}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Content -->
+          <div class="px-4 py-4 space-y-3">
+            <!-- Search -->
+            <div class="flex gap-2 mb-2">
+              <div class="flex-1 flex items-center gap-2 bg-white rounded-2xl px-4 py-3 border border-gray-200">
+                <i data-lucide="search" class="w-4 h-4 text-gray-400"></i>
+                <input type="text" placeholder="Cari supplier..." class="flex-1 outline-none text-sm" id="searchInput">
+              </div>
+              <button class="bg-white p-3 rounded-2xl border border-gray-200">
+                <i data-lucide="filter" class="w-5 h-5 text-gray-600"></i>
+              </button>
+            </div>
+
+            <!-- Suppliers List -->
+            ${suppliers.map(s => {
+              const pendingOrders = supplierTransactions.filter(t => t.supplierId === s.id && t.status === 'processing').length;
+              return `
+                <div data-supplier-id="${s.id}" class="supplier-card bg-white rounded-2xl p-5 shadow-sm border border-gray-100 scale-tap">
+                  <div class="flex items-start gap-3 mb-3">
+                    <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                      <i data-lucide="package" class="w-6 h-6 text-blue-600"></i>
+                    </div>
+                    <div class="flex-1">
+                      <p class="text-gray-900 text-sm font-semibold">${s.name}</p>
+                      <p class="text-gray-500 text-xs">${s.category}</p>
+                    </div>
+                    <div class="flex items-center gap-1">
+                      <span class="text-yellow-500 text-sm">★</span>
+                      <span class="text-gray-700 text-xs font-semibold">${s.rating}</span>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                    <div class="flex-1">
+                      <p class="text-gray-400 text-xs">Item disuplai</p>
+                      <p class="text-gray-800 text-sm font-semibold">${s.items} produk</p>
+                    </div>
+                    <div class="flex-1">
+                      <p class="text-gray-400 text-xs">Kontak</p>
+                      <p class="text-gray-800 text-sm font-semibold">${s.contact}</p>
+                    </div>
+                    <button data-supplier-id="${s.id}" class="order-btn px-3 py-2 bg-emerald-500 text-white rounded-xl text-xs font-semibold scale-tap">
+                      Order
+                    </button>
+                  </div>
+                  ${pendingOrders > 0 ? `
+                    <div class="mt-3 bg-orange-50 rounded-xl px-3 py-2 flex items-center gap-2">
+                      <div class="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
+                      <span class="text-orange-700 text-xs font-medium">${pendingOrders} pesanan sedang diproses</span>
+                    </div>
+                  ` : ''}
+                </div>
+              `;
+            }).join('')}
+
+            <!-- Add Supplier Button -->
+            <button id="addSupplierBtn" class="w-full bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-2xl p-5 flex items-center justify-center gap-3 shadow-md scale-tap">
+              <i data-lucide="plus" class="w-5 h-5"></i>
+              <span class="text-sm font-bold">Tambah Supplier Baru</span>
+            </button>
+
+            <!-- Riwayat Pesanan Button -->
+            <button id="viewHistoryBtn" class="w-full bg-white rounded-2xl p-4 border border-gray-200 flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
+                  <i data-lucide="clock" class="w-5 h-5 text-purple-600"></i>
+                </div>
+                <div class="text-left">
+                  <p class="text-gray-900 text-sm font-semibold">Riwayat Pesanan</p>
+                  <p class="text-gray-500 text-xs">${supplierTransactions.length} transaksi</p>
+                </div>
+              </div>
+              <i data-lucide="chevron-right" class="w-5 h-5 text-gray-400"></i>
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    // Render supplier detail
+    function renderSupplierDetail() {
+      if (!selectedSupplier) return '';
+
+      const supplierItems = getSupplierItems(selectedSupplier.id);
+      const pendingOrders = supplierTransactions.filter(t => t.supplierId === selectedSupplier.id && t.status === 'processing');
+
+      return `
+        <div class="min-h-screen bg-gray-50">
+          <!-- Header -->
+          <div class="bg-white px-5 pt-12 pb-5 shadow-sm">
+            <div class="flex items-center gap-3 mb-4">
+              <button id="backToSuppliers" class="w-9 h-9 bg-gray-100 rounded-xl flex items-center justify-center scale-tap">
+                <i data-lucide="arrow-left" class="w-5 h-5 text-gray-600"></i>
+              </button>
+              <h1 class="text-gray-900 text-xl font-bold">${selectedSupplier.name}</h1>
+            </div>
+          </div>
+
+          <!-- Content -->
+          <div class="px-4 py-4 space-y-4 pb-32">
+            <!-- Supplier Info -->
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+              <div class="flex items-start gap-3">
+                <div class="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center">
+                  <i data-lucide="building" class="w-7 h-7 text-blue-600"></i>
+                </div>
+                <div class="flex-1">
+                  <p class="text-gray-900 text-base font-bold">${selectedSupplier.name}</p>
+                  <p class="text-gray-500 text-sm">${selectedSupplier.category}</p>
+                  <div class="flex items-center gap-1 mt-1">
+                    <span class="text-yellow-500 text-sm">★</span>
+                    <span class="text-gray-700 text-xs font-semibold">${selectedSupplier.rating}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="mt-4 space-y-2">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="phone" class="w-4 h-4 text-gray-400"></i>
+                  <span class="text-gray-600 text-sm">${selectedSupplier.contact}</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <i data-lucide="map-pin" class="w-4 h-4 text-gray-400"></i>
+                  <span class="text-gray-600 text-sm">${selectedSupplier.address}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Pending Orders -->
+            ${pendingOrders.length > 0 ? `
+              <div class="bg-orange-50 rounded-2xl p-4 border border-orange-200">
+                <div class="flex items-center gap-2 mb-3">
+                  <div class="w-6 h-6 bg-orange-500 rounded-lg flex items-center justify-center">
+                    <i data-lucide="clock" class="w-4 h-4 text-white"></i>
+                  </div>
+                  <p class="text-orange-900 text-sm font-semibold">Pesanan Diproses (${pendingOrders.length})</p>
+                </div>
+                ${pendingOrders.map(order => `
+                  <div class="bg-white rounded-xl p-3 mb-2 last:mb-0">
+                    <div class="flex justify-between items-center mb-2">
+                      <span class="text-xs text-gray-500">${formatDate(order.date)}</span>
+                      <span class="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full">Diproses</span>
+                    </div>
+                    <p class="text-gray-800 text-sm font-medium">${order.items.length} item</p>
+                    <p class="text-gray-900 text-sm font-bold mt-1">${formatRupiah(order.total)}</p>
+                  </div>
+                `).join('')}
+              </div>
+            ` : ''}
+
+            <!-- Items from this supplier -->
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <p class="text-gray-500 text-xs font-semibold">PRODUK DARI SUPPLIER INI</p>
+                <p class="text-xs text-gray-400">${supplierItems.length} item</p>
+              </div>
+              <div class="space-y-3">
+                ${supplierItems.map(item => {
+                  const stockStatus = item.stock < item.minStock ? 'bg-red-100 text-red-700' : 'bg-emerald-100 text-emerald-700';
+                  const stockText = item.stock < item.minStock ? 'Stok Menipis' : 'Stok Aman';
+                  return `
+                    <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+                      <div class="flex items-start justify-between mb-2">
+                        <div>
+                          <p class="text-gray-900 text-sm font-semibold">${item.name}</p>
+                          <p class="text-gray-500 text-xs">${item.category}</p>
+                        </div>
+                        <div class="px-2.5 py-1 rounded-full text-xs font-semibold ${stockStatus}">
+                          ${stockText}
+                        </div>
+                      </div>
+                      <div class="flex items-center justify-between mb-3">
+                        <p class="text-xs text-gray-600">
+                          Stok: <span class="font-bold">${item.stock} ${item.unit}</span>
+                          <span class="text-gray-400"> / min ${item.minStock}</span>
+                        </p>
+                        <p class="text-xs text-gray-700 font-semibold">${formatRupiah(item.price)} / ${item.unit}</p>
+                      </div>
+                      <div class="flex gap-2">
+                        <button data-item-id="${item.id}" class="add-to-cart-btn flex-1 bg-emerald-500 text-white py-2.5 rounded-xl text-xs font-semibold scale-tap">
+                          + Tambah ke Pesanan
+                        </button>
+                        <button class="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center scale-tap">
+                          <i data-lucide="info" class="w-4 h-4 text-gray-600"></i>
+                        </button>
+                      </div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+
+            <!-- View History Button -->
+            <button id="viewSupplierHistory" class="w-full bg-white rounded-2xl p-4 border border-gray-200 flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
+                  <i data-lucide="history" class="w-5 h-5 text-purple-600"></i>
+                </div>
+                <div class="text-left">
+                  <p class="text-gray-900 text-sm font-semibold">Riwayat Pesanan</p>
+                  <p class="text-gray-500 text-xs">Lihat semua transaksi dengan supplier ini</p>
+                </div>
+              </div>
+              <i data-lucide="chevron-right" class="w-5 h-5 text-gray-400"></i>
+            </button>
+          </div>
+
+          <!-- Cart Summary -->
+          ${cart.length > 0 ? `
+            <div class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white border-t border-gray-200 px-4 py-3 shadow-lg">
+              <div class="flex items-center justify-between mb-2">
+                <p class="text-gray-700 text-sm font-semibold">Keranjang Pesanan</p>
+                <p class="text-emerald-600 text-sm font-bold">${formatRupiah(getCartTotal())}</p>
+              </div>
+              <div class="flex gap-2">
+                <button id="viewCartBtn" class="flex-1 bg-emerald-500 text-white py-3 rounded-xl font-semibold scale-tap">
+                  Lihat Keranjang (${cart.length})
+                </button>
+                <button id="clearCartBtn" class="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center scale-tap">
+                  <i data-lucide="trash-2" class="w-5 h-5 text-gray-600"></i>
+                </button>
+              </div>
+            </div>
+          ` : ''}
+        </div>
+      `;
+    }
+
+    // Render order modal
+    function renderOrderModal() {
+      if (!showOrderModal) return '';
+
+      return `
+        <div class="fixed inset-0 bg-black/60 flex items-end justify-center z-50 animate-fade-in" id="orderModalOverlay">
+          <div class="bg-white rounded-t-3xl w-full max-w-md p-6 animate-slide-up" style="max-height: 80vh; overflow-y: auto;">
+            <div class="flex items-center justify-between mb-5">
+              <h3 class="text-gray-900 text-lg font-bold">Keranjang Pesanan</h3>
+              <button id="closeOrderModal" class="w-8 h-8 bg-gray-100 rounded-xl flex items-center justify-center">
+                <i data-lucide="x" class="w-4 h-4 text-gray-500"></i>
+              </button>
+            </div>
+
+            ${cart.length === 0 ? `
+              <div class="text-center py-10">
+                <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <i data-lucide="shopping-cart" class="w-8 h-8 text-gray-400"></i>
+                </div>
+                <p class="text-gray-500 text-sm mb-4">Keranjang masih kosong</p>
+                <button id="continueShoppingBtn" class="bg-emerald-500 text-white px-6 py-3 rounded-xl font-semibold scale-tap">
+                  Lanjut Belanja
+                </button>
+              </div>
+            ` : `
+              <div class="space-y-3 mb-5">
+                ${cart.map((item, index) => `
+                  <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                    <div class="flex-1">
+                      <p class="text-gray-900 text-sm font-semibold">${item.name}</p>
+                      <p class="text-gray-500 text-xs">${item.qty} ${item.unit} x ${formatRupiah(item.price)}</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <span class="font-bold text-emerald-600">${formatRupiah(item.price * item.qty)}</span>
+                      <button data-item-id="${item.id}" class="remove-item w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                        <i data-lucide="trash-2" class="w-4 h-4 text-red-500"></i>
+                      </button>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+
+              <div class="bg-emerald-50 rounded-xl p-4 mb-5">
+                <div class="flex justify-between items-center">
+                  <p class="text-emerald-700 text-sm font-semibold">Total Pesanan</p>
+                  <p class="text-emerald-900 text-lg font-bold">${formatRupiah(getCartTotal())}</p>
+                </div>
+              </div>
+
+              <div class="space-y-3">
+                <button id="submitOrderBtn" class="w-full bg-emerald-500 text-white py-4 rounded-2xl font-bold scale-tap">
+                  Buat Pesanan
+                </button>
+                <button id="continueShoppingBtn2" class="w-full border-2 border-gray-200 text-gray-600 py-3.5 rounded-2xl text-sm font-semibold scale-tap">
+                  Tambah Item Lagi
+                </button>
+              </div>
+            `}
+          </div>
+        </div>
+      `;
+    }
+
+    // Render order history
+    function renderOrderHistory() {
+      const allTransactions = [...supplierTransactions].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      return `
+        <div class="min-h-screen bg-gray-50">
+          <!-- Header -->
+          <div class="bg-white px-5 pt-12 pb-5 shadow-sm">
+            <div class="flex items-center gap-3 mb-4">
+              <button id="backFromHistory" class="w-9 h-9 bg-gray-100 rounded-xl flex items-center justify-center scale-tap">
+                <i data-lucide="arrow-left" class="w-5 h-5 text-gray-600"></i>
+              </button>
+              <h1 class="text-gray-900 text-xl font-bold">Riwayat Pesanan</h1>
+            </div>
+
+            <!-- Filter tabs -->
+            <div class="flex gap-2">
+              <button class="filter-btn flex-1 py-2.5 text-xs font-semibold bg-emerald-500 text-white rounded-xl" data-filter="all">Semua</button>
+              <button class="filter-btn flex-1 py-2.5 text-xs font-semibold bg-gray-100 text-gray-600 rounded-xl" data-filter="processing">Diproses</button>
+              <button class="filter-btn flex-1 py-2.5 text-xs font-semibold bg-gray-100 text-gray-600 rounded-xl" data-filter="delivered">Selesai</button>
+            </div>
+          </div>
+
+          <!-- Content -->
+          <div class="px-4 py-4 space-y-3" id="historyContainer">
+            ${allTransactions.map(t => {
+              const supplier = getSupplierById(t.supplierId);
+              const statusColor = t.status === 'delivered' ? 'bg-emerald-100 text-emerald-700' : 'bg-orange-100 text-orange-700';
+              const statusText = t.status === 'delivered' ? 'Selesai' : 'Diproses';
+              
+              return `
+                <div class="history-item bg-white rounded-2xl p-4 shadow-sm border border-gray-100" data-status="${t.status}">
+                  <div class="flex items-start justify-between mb-2">
+                    <div>
+                      <p class="text-gray-900 text-sm font-semibold">${supplier?.name || 'Supplier'}</p>
+                      <p class="text-gray-500 text-xs">${formatDate(t.date)}</p>
+                    </div>
+                    <div class="px-2.5 py-1 rounded-full text-xs font-semibold ${statusColor}">
+                      ${statusText}
+                    </div>
+                  </div>
+                  <div class="space-y-1 mb-3">
+                    ${t.items.map(item => `
+                      <div class="flex justify-between text-xs">
+                        <span class="text-gray-600">${item.name} (${item.qty} ${item.unit})</span>
+                        <span class="text-gray-800 font-medium">${formatRupiah(item.price * item.qty)}</span>
+                      </div>
+                    `).join('')}
+                  </div>
+                  <div class="flex justify-between items-center pt-2 border-t border-gray-100">
+                    <span class="text-gray-500 text-xs">Total</span>
+                    <span class="text-gray-900 text-sm font-bold">${formatRupiah(t.total)}</span>
+                  </div>
+                  ${t.status === 'processing' ? `
+                    <button data-order-id="${t.id}" class="confirm-order-btn w-full mt-3 bg-emerald-500 text-white py-2.5 rounded-xl text-xs font-semibold scale-tap">
+                      Tandai Selesai
+                    </button>
+                  ` : ''}
+                </div>
+              `;
+            }).join('')}
+
+            ${allTransactions.length === 0 ? `
+              <div class="text-center py-10">
+                <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <i data-lucide="package" class="w-8 h-8 text-gray-400"></i>
+                </div>
+                <p class="text-gray-500 text-sm">Belum ada transaksi dengan supplier</p>
+              </div>
+            ` : ''}
+          </div>
+        </div>
+      `;
+    }
+
+    // Main render function
+    function render() {
+      const app = document.getElementById('app');
+      
+      if (currentScreen === 'suppliers') {
+        app.innerHTML = renderSuppliers();
+      } else if (currentScreen === 'supplierDetail') {
+        app.innerHTML = renderSupplierDetail();
+      } else if (currentScreen === 'orderHistory') {
+        app.innerHTML = renderOrderHistory();
+      } else if (currentScreen === 'addSupplier') {
+        app.innerHTML = renderAddSupplier();
+      }
+
+      // Icons
+      lucide.createIcons();
+
+      // Event listeners
+      if (currentScreen === 'suppliers') {
+        document.getElementById('backBtn')?.addEventListener('click', () => {
+          showToast("Kembali ke dashboard");
+        });
+
+        document.querySelectorAll('.order-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const supplierId = parseInt(btn.getAttribute('data-supplier-id'));
+            selectedSupplier = suppliers.find(s => s.id === supplierId);
+            currentScreen = 'supplierDetail';
+            render();
+          });
+        });
+
+        document.querySelectorAll('.supplier-card').forEach(card => {
+          card.addEventListener('click', (e) => {
+            if (e.target.classList.contains('order-btn') || e.target.closest('.order-btn')) return;
+            const supplierId = parseInt(card.getAttribute('data-supplier-id'));
+            selectedSupplier = suppliers.find(s => s.id === supplierId);
+            currentScreen = 'supplierDetail';
+            render();
+          });
+        });
+
+        document.getElementById('viewHistoryBtn')?.addEventListener('click', () => {
+          currentScreen = 'orderHistory';
+          render();
+        });
+
+        document.getElementById('addSupplierBtn')?.addEventListener('click', () => {
+          currentScreen = 'addSupplier';
+          render();
+        });
+      }
+
+      if (currentScreen === 'supplierDetail') {
+        document.getElementById('backToSuppliers')?.addEventListener('click', () => {
+          currentScreen = 'suppliers';
+          cart = [];
+          render();
+        });
+
+        // MODIFIED: Add to cart buttons now show quantity modal
+        document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const itemId = parseInt(btn.getAttribute('data-item-id'));
+            selectedItem = inventoryItems.find(i => i.id === itemId);
+            showQuantityModal = true;
+            render(); // Show quantity modal
+          });
+        });
+
+        document.getElementById('viewCartBtn')?.addEventListener('click', () => {
+          showOrderModal = true;
+          render();
+        });
+
+        document.getElementById('clearCartBtn')?.addEventListener('click', () => {
+          if (cart.length > 0 && confirm('Kosongkan keranjang?')) {
+            cart = [];
+            render();
+            showToast('Keranjang dikosongkan');
+          }
+        });
+
+        document.getElementById('viewSupplierHistory')?.addEventListener('click', () => {
+          currentScreen = 'orderHistory';
+          render();
+        });
+      }
+
+      if (currentScreen === 'orderHistory') {
+        document.getElementById('backFromHistory')?.addEventListener('click', () => {
+          if (selectedSupplier) {
+            currentScreen = 'supplierDetail';
+          } else {
+            currentScreen = 'suppliers';
+          }
+          render();
+        });
+
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const filter = btn.getAttribute('data-filter');
+            
+            document.querySelectorAll('.filter-btn').forEach(b => {
+              b.classList.remove('bg-emerald-500', 'text-white');
+              b.classList.add('bg-gray-100', 'text-gray-600');
+            });
+            btn.classList.remove('bg-gray-100', 'text-gray-600');
+            btn.classList.add('bg-emerald-500', 'text-white');
+
+            document.querySelectorAll('.history-item').forEach(item => {
+              if (filter === 'all' || item.getAttribute('data-status') === filter) {
+                item.style.display = 'block';
+              } else {
+                item.style.display = 'none';
+              }
+            });
+          });
+        });
+
+        document.querySelectorAll('.confirm-order-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const orderId = parseInt(btn.getAttribute('data-order-id'));
+            const order = supplierTransactions.find(t => t.id === orderId);
+            if (order) {
+              order.status = 'delivered';
+              showToast('Pesanan selesai! Stok sudah ditambahkan');
+              render();
+            }
+          });
+        });
+      }
+
+      if (currentScreen === 'addSupplier') {
+        document.getElementById('backFromAddSupplier')?.addEventListener('click', () => {
+          currentScreen = 'suppliers';
+          render();
+        });
+
+        document.getElementById('cancelAddSupplier')?.addEventListener('click', () => {
+          currentScreen = 'suppliers';
+          render();
+        });
+
+        document.getElementById('addSupplierForm')?.addEventListener('submit', (e) => {
+          e.preventDefault();
+          
+          const name = document.getElementById('supplierName').value.trim();
+          const category = document.getElementById('supplierCategory').value;
+          const contact = document.getElementById('supplierContact').value.trim();
+          const address = document.getElementById('supplierAddress').value.trim();
+          const rating = document.getElementById('supplierRating').value;
+
+          if (!name || !category || !contact || !address) {
+            showToast('Harap isi semua field yang wajib', 'error');
+            return;
+          }
+
+          const newSupplier = addSupplier({
+            name,
+            category,
+            contact,
+            address,
+            rating: rating || '4.0'
+          });
+
+          showToast(`Supplier ${newSupplier.name} berhasil ditambahkan!`);
+          currentScreen = 'suppliers';
+          render();
+        });
+      }
+
+      // Quantity Modal
+      if (showQuantityModal && selectedItem) {
+        const modalHtml = renderQuantityModal();
+        app.insertAdjacentHTML('beforeend', modalHtml);
+        lucide.createIcons();
+
+        const qtyInput = document.getElementById('itemQuantity');
+        const qtyDisplay = document.getElementById('qtyDisplay');
+        const totalSpan = document.getElementById('totalPrice');
+        const price = selectedItem.price;
+
+        function updateTotal() {
+          const qty = parseInt(qtyInput.value) || 1;
+          qtyDisplay.textContent = qty;
+          totalSpan.textContent = formatRupiah(price * qty);
+        }
+
+        // Close modal
+        document.getElementById('closeQuantityModal')?.addEventListener('click', () => {
+          showQuantityModal = false;
+          selectedItem = null;
+          render();
+        });
+
+        document.getElementById('cancelQuantity')?.addEventListener('click', () => {
+          showQuantityModal = false;
+          selectedItem = null;
+          render();
+        });
+
+        document.getElementById('quantityModalOverlay')?.addEventListener('click', (e) => {
+          if (e.target === document.getElementById('quantityModalOverlay')) {
+            showQuantityModal = false;
+            selectedItem = null;
+            render();
+          }
+        });
+
+        // Quantity buttons
+        document.getElementById('decreaseQty')?.addEventListener('click', () => {
+          let val = parseInt(qtyInput.value) || 1;
+          if (val > 1) {
+            qtyInput.value = val - 1;
+            updateTotal();
+          }
+        });
+
+        document.getElementById('increaseQty')?.addEventListener('click', () => {
+          let val = parseInt(qtyInput.value) || 1;
+          qtyInput.value = val + 1;
+          updateTotal();
+        });
+
+        qtyInput.addEventListener('input', updateTotal);
+
+        // Quick quantity buttons
+        document.querySelectorAll('.quick-qty').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const qty = parseInt(btn.getAttribute('data-qty'));
+            qtyInput.value = qty;
+            updateTotal();
+          });
+        });
+
+        // Add to cart confirm
+        document.getElementById('addToCartConfirm')?.addEventListener('click', () => {
+          const qty = parseInt(qtyInput.value) || 1;
+          const notes = document.getElementById('orderNotes')?.value;
+          
+          addToCart(selectedItem, qty);
+          
+          if (notes) {
+            showToast(`${selectedItem.name} (${qty} ${selectedItem.unit}) ditambahkan ke keranjang. Catatan: ${notes}`);
+          } else {
+            showToast(`${selectedItem.name} (${qty} ${selectedItem.unit}) ditambahkan ke keranjang`);
+          }
+          
+          showQuantityModal = false;
+          selectedItem = null;
+          render();
+        });
+      }
+
+      // Order Modal
+      if (showOrderModal) {
+        const modalHtml = renderOrderModal();
+        app.insertAdjacentHTML('beforeend', modalHtml);
+        lucide.createIcons();
+
+        document.getElementById('orderModalOverlay')?.addEventListener('click', (e) => {
+          if (e.target === document.getElementById('orderModalOverlay')) {
+            showOrderModal = false;
+            render();
+          }
+        });
+
+        document.getElementById('closeOrderModal')?.addEventListener('click', () => {
+          showOrderModal = false;
+          render();
+        });
+
+        document.getElementById('continueShoppingBtn')?.addEventListener('click', () => {
+          showOrderModal = false;
+          render();
+        });
+
+        document.getElementById('continueShoppingBtn2')?.addEventListener('click', () => {
+          showOrderModal = false;
+          render();
+        });
+
+        document.getElementById('submitOrderBtn')?.addEventListener('click', submitOrder);
+
+        document.querySelectorAll('.remove-item').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const itemId = parseInt(btn.getAttribute('data-item-id'));
+            removeFromCart(itemId);
+            if (cart.length === 0) {
+              showOrderModal = false;
+            }
+            render();
+          });
+        });
+      }
+    }
+
+  // PILIH SUPPLIER PERTAMA SECARA OTOMATIS
+selectedSupplier = suppliers[0]; // Supplier pertama (CV Kopi Nusantara)
+currentScreen = 'supplierDetail'; // Langsung ke halaman detail supplier
+cart = []; // Kosongkan keranjang
+render();
+  })();
 </script>
-
 </body>
 </html>
