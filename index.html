@@ -2,33 +2,51 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-  <title>Event Bazaar · UMKMate</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pendaftaran Event · UMKMate</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
     * { font-family: 'Plus Jakarta Sans', sans-serif; }
-    html, body { max-width: 430px; margin: 0 auto; background: #f9fafb; }
-
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
-
-    /* Modal */
-    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 50; max-width: 430px; margin: 0 auto; }
-    .modal-overlay.active { display: flex; align-items: flex-end; }
-    .modal-center { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 50; max-width: 430px; margin: 0 auto; align-items: center; justify-content: center; padding: 24px; }
-    .modal-center.active { display: flex; }
-
-    /* Animations */
-    @keyframes slideUp   { from { transform: translateY(100%); } to { transform: translateY(0); } }
-    @keyframes fadeIn    { from { opacity: 0; } to { opacity: 1; } }
-    @keyframes scaleIn   { from { opacity: 0; transform: scale(0.85); } to { opacity: 1; transform: scale(1); } }
-    .anim-slide-up  { animation: slideUp .3s cubic-bezier(0.32,0.72,0,1) forwards; }
-    .anim-fade-in   { animation: fadeIn .25s ease forwards; }
-    .anim-scale-in  { animation: scaleIn .25s ease forwards; }
-
+    
+    /* Container untuk preview - dipertahankan minimal, namun TANPA tombol pemicu */
+    .demo-container {
+      max-width: 430px;
+      margin: 0 auto;
+      background: #f9fafb;
+      min-height: 100vh;
+      padding: 20px;
+      display: flex;
+      align-items: flex-end;
+    }
+    
+    /* Modal styles */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 50;
+      max-width: 430px;
+      margin: 0 auto;
+      display: flex;
+      align-items: flex-end;
+    }
+    
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+    
+    .anim-slide-up {
+      animation: slideUp .3s cubic-bezier(0.32,0.72,0,1) forwards;
+    }
+    
     button:active { transform: scale(0.97); }
-
+    textarea:focus, input:focus, select:focus { border-color: #10b981 !important; outline: none; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    select { appearance: none; }
+    
     .toast {
       position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%);
       background: #1f2937; color: #fff; padding: 10px 20px;
@@ -37,342 +55,25 @@
       white-space: nowrap;
     }
     .toast.show { opacity: 1; }
-    select { appearance: none; }
-    textarea, input, select { transition: border-color .2s; }
-    textarea:focus, input:focus, select:focus { border-color: #10b981 !important; outline: none; }
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* Hilangkan tombol yang ada di container demo */
+    .demo-container button {
+      display: none;
+    }
   </style>
 </head>
-<body class="bg-gray-50 min-h-screen">
+<body>
 
-<!-- Toast -->
+<!-- Toast (tetap ada untuk feedback) -->
 <div id="toast" class="toast"></div>
 
-<!-- ═══════════════════ HEADER ═══════════════════ -->
-<div class="bg-white px-4 pt-10 pb-0 sticky top-0 z-10 shadow-sm">
-  <div class="flex items-center gap-3 mb-4">
-    <button onclick="history.back()" class="p-2 hover:bg-gray-100 rounded-xl">
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-    </button>
-    <div class="flex-1">
-      <h1 class="text-gray-900 text-xl font-bold">Event Bazaar</h1>
-      <p class="text-gray-500 text-xs">Perluas jangkauan pasarmu</p>
-    </div>
-    <button onclick="openQrModal()" class="w-9 h-9 bg-emerald-100 rounded-xl flex items-center justify-center">
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/><path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/><path d="M3 12h.01"/><path d="M12 3h.01"/><path d="M12 16v.01"/><path d="M16 12h1"/><path d="M21 12v.01"/><path d="M12 21v-1"/></svg>
-    </button>
-  </div>
-
-  <!-- Tabs -->
-  <div class="flex border-b border-gray-100">
-    <button onclick="setTab('my')" id="tab-btn-my" class="flex-1 py-2.5 text-sm font-semibold border-b-2 border-emerald-500 text-emerald-600 transition-colors">Eventku</button>
-    <button onclick="setTab('available')" id="tab-btn-available" class="flex-1 py-2.5 text-sm text-gray-400 border-b-2 border-transparent transition-colors">Tersedia</button>
-    <button onclick="setTab('history')" id="tab-btn-history" class="flex-1 py-2.5 text-sm text-gray-400 border-b-2 border-transparent transition-colors">Riwayat</button>
-  </div>
+<!-- Demo container: HANYA sebagai latar/ruang kosong, tombol di dalamnya sudah disembunyikan via CSS -->
+<div class="demo-container">
+  <!-- Tombol sengaja disembunyikan dengan CSS .demo-container button { display:none; } -->
+  <button style="display:none;">Tersembunyi</button>
 </div>
 
-<!-- ═══════════════════ TAB: EVENTKU ═══════════════════ -->
-<div id="tab-my" class="tab-content active px-4 py-4 space-y-4 anim-fade-in">
-
-  <!-- Event 1: Confirmed -->
-  <div class="bg-white rounded-3xl p-5 shadow-sm border border-gray-100">
-    <div class="flex items-start gap-3 mb-4">
-      <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 bg-emerald-100">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-      </div>
-      <div class="flex-1">
-        <div class="flex items-start justify-between">
-          <div>
-            <p class="text-gray-900 text-sm font-bold">Jakarta Food Festival 2026</p>
-            <div class="space-y-1 mt-1">
-              <div class="flex items-center gap-1.5 text-xs text-gray-500">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                <span>25-27 Maret 2026</span>
-              </div>
-              <div class="flex items-center gap-1.5 text-xs text-gray-500">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-                <span>JCC Senayan, Jakarta</span>
-              </div>
-            </div>
-          </div>
-          <span class="px-2.5 py-1 rounded-full text-xs bg-emerald-100 text-emerald-700 font-semibold flex-shrink-0">✅ Confirmed</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="grid grid-cols-3 gap-2 p-3 bg-gray-50 rounded-2xl mb-3">
-      <div><p class="text-gray-400 text-xs mb-0.5">Booth</p><p class="text-gray-900 text-sm font-bold">B-125</p></div>
-      <div><p class="text-gray-400 text-xs mb-0.5">Biaya</p><p class="text-gray-900 text-sm font-bold">Rp 2.5jt</p></div>
-      <div><p class="text-gray-400 text-xs mb-0.5">Pengunjung</p><p class="text-gray-900 text-sm font-bold">50.000+</p></div>
-    </div>
-
-    <div class="flex items-center gap-2 text-xs text-gray-500 mb-3">
-      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-      <span>Setup deadline: 20 Maret 2026 (3 hari lagi)</span>
-    </div>
-
-    <button onclick="openQrModal()" class="w-full py-3 bg-emerald-500 text-white rounded-xl flex items-center justify-center gap-2 text-sm font-semibold">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/><path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/><path d="M3 12h.01"/><path d="M12 3h.01"/><path d="M12 16v.01"/><path d="M16 12h1"/><path d="M21 12v.01"/><path d="M12 21v-1"/></svg>
-      Lihat Event Pass & QR
-    </button>
-  </div>
-
-  <!-- Event 2: Pending -->
-  <div class="bg-white rounded-3xl p-5 shadow-sm border border-gray-100">
-    <div class="flex items-start gap-3 mb-4">
-      <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 bg-orange-100">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-      </div>
-      <div class="flex-1">
-        <div class="flex items-start justify-between">
-          <div>
-            <p class="text-gray-900 text-sm font-bold">UMKM Expo Bandung</p>
-            <div class="space-y-1 mt-1">
-              <div class="flex items-center gap-1.5 text-xs text-gray-500">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                <span>10-12 April 2026</span>
-              </div>
-              <div class="flex items-center gap-1.5 text-xs text-gray-500">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-                <span>Trans Studio Mall, Bandung</span>
-              </div>
-            </div>
-          </div>
-          <span class="px-2.5 py-1 rounded-full text-xs bg-orange-100 text-orange-700 font-semibold flex-shrink-0">⏳ Pending</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="grid grid-cols-3 gap-2 p-3 bg-gray-50 rounded-2xl mb-3">
-      <div><p class="text-gray-400 text-xs mb-0.5">Booth</p><p class="text-gray-900 text-sm font-bold">Menunggu</p></div>
-      <div><p class="text-gray-400 text-xs mb-0.5">Biaya</p><p class="text-gray-900 text-sm font-bold">Rp 1.8jt</p></div>
-      <div><p class="text-gray-400 text-xs mb-0.5">Pengunjung</p><p class="text-gray-900 text-sm font-bold">30.000+</p></div>
-    </div>
-
-    <div class="flex items-center gap-2 text-xs text-gray-500">
-      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-      <span>Setup deadline: 30 Maret 2026 (13 hari lagi)</span>
-    </div>
-  </div>
-</div>
-
-<!-- ═══════════════════ TAB: TERSEDIA ═══════════════════ -->
-<div id="tab-available" class="tab-content px-4 py-4 space-y-4">
-
-  <!-- Featured Banner -->
-  <div class="bg-gradient-to-br from-pink-500 to-rose-600 rounded-3xl p-5 relative overflow-hidden">
-    <div class="absolute -right-8 -top-6 w-24 h-24 bg-white/10 rounded-full"></div>
-    <div class="absolute right-6 bottom-6 w-16 h-16 bg-white/10 rounded-full"></div>
-    <p class="text-pink-200 text-xs font-semibold mb-1">🔥 EVENT UNGGULAN</p>
-    <h3 class="text-white font-bold text-lg mb-2">Street Food Carnival</h3>
-    <div class="space-y-1 mb-4">
-      <div class="flex items-center gap-1.5 text-pink-200 text-xs">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-        <span>5-7 Mei 2026</span>
-      </div>
-      <div class="flex items-center gap-1.5 text-pink-200 text-xs">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-        <span>GBK, Jakarta</span>
-      </div>
-      <div class="flex items-center gap-1.5 text-pink-200 text-xs">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        <span>100.000+ pengunjung</span>
-      </div>
-    </div>
-    <div class="flex items-center gap-3">
-      <button onclick="openRegisterModal('street-food')" class="flex-1 bg-white text-pink-600 py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-1.5">
-        Daftar Sekarang
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-      </button>
-      <div class="bg-white/20 px-3 py-3 rounded-xl text-white text-xs font-semibold">Rp 3.5jt</div>
-    </div>
-  </div>
-
-  <!-- Event Card 1 -->
-  <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-    <div class="flex items-start justify-between mb-3">
-      <div class="flex-1">
-        <p class="text-gray-900 text-sm font-bold mb-1">Street Food Carnival</p>
-        <div class="inline-flex items-center bg-blue-50 px-2 py-1 rounded-lg mb-2">
-          <span class="text-blue-600 text-xs font-medium">Makanan & Minuman</span>
-        </div>
-        <div class="space-y-1">
-          <div class="flex items-center gap-1.5 text-xs text-gray-500">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            <span>5-7 Mei 2026</span>
-          </div>
-          <div class="flex items-center gap-1.5 text-xs text-gray-500">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-            <span>GBK, Jakarta</span>
-          </div>
-          <div class="flex items-center gap-1.5 text-xs text-gray-500">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-            <span>100.000+ pengunjung</span>
-          </div>
-        </div>
-      </div>
-      <span class="px-2.5 py-1 rounded-full text-xs bg-blue-100 text-blue-700 font-semibold ml-3">12 spot</span>
-    </div>
-    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl mb-3">
-      <div><p class="text-gray-400 text-xs mb-0.5">Biaya Pendaftaran</p><p class="text-gray-900 font-bold text-base">Rp 3.5jt</p></div>
-      <div class="text-right"><p class="text-gray-400 text-xs mb-0.5">Deadline</p><p class="text-gray-900 text-sm font-semibold">15 April 2026</p></div>
-    </div>
-    <button onclick="openRegisterModal('street-food')" class="w-full bg-emerald-500 text-white py-3 rounded-xl text-sm font-semibold">Daftar Sekarang</button>
-  </div>
-
-  <!-- Event Card 2 -->
-  <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-    <div class="flex items-start justify-between mb-3">
-      <div class="flex-1">
-        <p class="text-gray-900 text-sm font-bold mb-1">Artisan Market Kemang</p>
-        <div class="inline-flex items-center bg-blue-50 px-2 py-1 rounded-lg mb-2">
-          <span class="text-blue-600 text-xs font-medium">Kerajinan & Fashion</span>
-        </div>
-        <div class="space-y-1">
-          <div class="flex items-center gap-1.5 text-xs text-gray-500">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            <span>28-30 April 2026</span>
-          </div>
-          <div class="flex items-center gap-1.5 text-xs text-gray-500">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-            <span>Kemang Village, Jakarta</span>
-          </div>
-          <div class="flex items-center gap-1.5 text-xs text-gray-500">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-            <span>20.000+ pengunjung</span>
-          </div>
-        </div>
-      </div>
-      <span class="px-2.5 py-1 rounded-full text-xs bg-red-100 text-red-700 font-semibold ml-3">5 spot</span>
-    </div>
-    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl mb-3">
-      <div><p class="text-gray-400 text-xs mb-0.5">Biaya Pendaftaran</p><p class="text-gray-900 font-bold text-base">Rp 1.5jt</p></div>
-      <div class="text-right"><p class="text-gray-400 text-xs mb-0.5">Deadline</p><p class="text-gray-900 text-sm font-semibold">20 April 2026</p></div>
-    </div>
-    <button onclick="openRegisterModal('artisan')" class="w-full bg-emerald-500 text-white py-3 rounded-xl text-sm font-semibold">Daftar Sekarang</button>
-  </div>
-
-  <!-- Event Card 3 -->
-  <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-    <div class="flex items-start justify-between mb-3">
-      <div class="flex-1">
-        <p class="text-gray-900 text-sm font-bold mb-1">UMKM Digital Expo</p>
-        <div class="inline-flex items-center bg-blue-50 px-2 py-1 rounded-lg mb-2">
-          <span class="text-blue-600 text-xs font-medium">Digital & Teknologi</span>
-        </div>
-        <div class="space-y-1">
-          <div class="flex items-center gap-1.5 text-xs text-gray-500">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            <span>15-17 Mei 2026</span>
-          </div>
-          <div class="flex items-center gap-1.5 text-xs text-gray-500">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-            <span>ICE BSD, Tangerang</span>
-          </div>
-          <div class="flex items-center gap-1.5 text-xs text-gray-500">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-            <span>40.000+ pengunjung</span>
-          </div>
-        </div>
-      </div>
-      <span class="px-2.5 py-1 rounded-full text-xs bg-blue-100 text-blue-700 font-semibold ml-3">30 spot</span>
-    </div>
-    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl mb-3">
-      <div><p class="text-gray-400 text-xs mb-0.5">Biaya Pendaftaran</p><p class="text-gray-900 font-bold text-base">Rp 2.0jt</p></div>
-      <div class="text-right"><p class="text-gray-400 text-xs mb-0.5">Deadline</p><p class="text-gray-900 text-sm font-semibold">5 Mei 2026</p></div>
-    </div>
-    <button onclick="openRegisterModal('digital')" class="w-full bg-emerald-500 text-white py-3 rounded-xl text-sm font-semibold">Daftar Sekarang</button>
-  </div>
-</div>
-
-<!-- ═══════════════════ TAB: RIWAYAT ═══════════════════ -->
-<div id="tab-history" class="tab-content px-4 py-4 space-y-3">
-
-  <!-- Summary Stats -->
-  <div class="grid grid-cols-2 gap-3 mb-2">
-    <div class="bg-emerald-50 rounded-2xl p-4 border border-emerald-100">
-      <p class="text-emerald-600 text-xs mb-1">Total Penjualan</p>
-      <p class="text-emerald-900 font-bold text-lg">Rp 28jt</p>
-      <p class="text-emerald-600 text-xs">dari 2 event</p>
-    </div>
-    <div class="bg-blue-50 rounded-2xl p-4 border border-blue-100">
-      <p class="text-blue-600 text-xs mb-1">Total Pengunjung</p>
-      <p class="text-blue-900 font-bold text-lg">4.230</p>
-      <p class="text-blue-600 text-xs">ke booth kamu</p>
-    </div>
-  </div>
-
-  <!-- Past Event 1 -->
-  <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-    <div class="flex items-start gap-3 mb-4">
-      <div class="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-      </div>
-      <div class="flex-1">
-        <p class="text-gray-900 text-sm font-semibold">Ramadan Market 2026</p>
-        <div class="flex items-center gap-1.5 text-xs text-gray-500 mt-0.5">
-          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-          <span>15-16 Feb 2026</span>
-        </div>
-        <div class="flex items-center gap-1.5 text-xs text-gray-500 mt-0.5">
-          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-          <span>Grand Indonesia</span>
-        </div>
-        <div class="flex items-center gap-1 mt-1">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#facc15" stroke="#facc15" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-          <span class="text-gray-700 text-xs font-semibold">4.5</span>
-        </div>
-      </div>
-    </div>
-    <div class="grid grid-cols-2 gap-3">
-      <div class="bg-emerald-50 rounded-xl p-3 border border-emerald-100">
-        <p class="text-emerald-600 text-xs mb-0.5">Total Penjualan</p>
-        <p class="text-emerald-900 font-bold text-sm">Rp 15.75jt</p>
-      </div>
-      <div class="bg-blue-50 rounded-xl p-3 border border-blue-100">
-        <p class="text-blue-600 text-xs mb-0.5">Pengunjung Booth</p>
-        <p class="text-blue-900 font-bold text-sm">2.340</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Past Event 2 -->
-  <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-    <div class="flex items-start gap-3 mb-4">
-      <div class="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-      </div>
-      <div class="flex-1">
-        <p class="text-gray-900 text-sm font-semibold">Coffee & Culinary Fair</p>
-        <div class="flex items-center gap-1.5 text-xs text-gray-500 mt-0.5">
-          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-          <span>20-22 Jan 2026</span>
-        </div>
-        <div class="flex items-center gap-1.5 text-xs text-gray-500 mt-0.5">
-          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-          <span>Balai Kartini</span>
-        </div>
-        <div class="flex items-center gap-1 mt-1">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#facc15" stroke="#facc15" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-          <span class="text-gray-700 text-xs font-semibold">4.7</span>
-        </div>
-      </div>
-    </div>
-    <div class="grid grid-cols-2 gap-3">
-      <div class="bg-emerald-50 rounded-xl p-3 border border-emerald-100">
-        <p class="text-emerald-600 text-xs mb-0.5">Total Penjualan</p>
-        <p class="text-emerald-900 font-bold text-sm">Rp 12.3jt</p>
-      </div>
-      <div class="bg-blue-50 rounded-xl p-3 border border-blue-100">
-        <p class="text-blue-600 text-xs mb-0.5">Pengunjung Booth</p>
-        <p class="text-blue-900 font-bold text-sm">1.890</p>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ═══════════════════ MODAL: REGISTRASI ═══════════════════ -->
+<!-- ═══════════════════ MODAL REGISTRASI (DESAIN MURNI) LANGSUNG TAMPIL ═══════════════════ -->
 <div id="register-modal" class="modal-overlay" onclick="closeRegisterModal()">
   <div class="bg-white rounded-t-3xl w-full p-6 no-scrollbar anim-slide-up" style="max-height:90vh;overflow-y:auto" onclick="event.stopPropagation()">
 
@@ -410,35 +111,30 @@
   </div>
 </div>
 
-<!-- ═══════════════════ MODAL: QR PASS ═══════════════════ -->
-<div id="qr-modal" class="modal-center" onclick="closeQrModal()">
-  <div class="bg-white rounded-3xl p-6 w-full anim-scale-in" onclick="event.stopPropagation()">
-    <div class="text-center mb-4">
-      <p class="text-gray-900 font-bold text-lg">Event Pass</p>
-      <p class="text-gray-500 text-sm">Jakarta Food Festival 2026</p>
-    </div>
-    <div class="bg-gray-50 rounded-2xl p-6 flex flex-col items-center gap-3 mb-4">
-      <!-- QR Code SVG simulation -->
-      <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24" fill="none" stroke="#1f2937" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/><path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/><path d="M3 12h.01"/><path d="M12 3h.01"/><path d="M12 16v.01"/><path d="M16 12h1"/><path d="M21 12v.01"/><path d="M12 21v-1"/></svg>
-      <div class="text-center">
-        <p class="text-gray-900 text-sm font-bold">Warung Kopi Nusantara</p>
-        <p class="text-gray-500 text-xs">Booth B-125 · 25-27 Mar 2026</p>
-      </div>
-      <div class="bg-emerald-100 px-4 py-2 rounded-xl">
-        <p class="text-emerald-700 text-xs font-bold">ID: JFF2026-B125-001</p>
-      </div>
-    </div>
-    <button onclick="savePass()" class="w-full py-4 bg-emerald-500 text-white rounded-2xl font-bold">Simpan Event Pass</button>
-  </div>
-</div>
-
-<!-- ═══════════════════ SCRIPT ═══════════════════ -->
 <script>
-// ── Data ──────────────────────────────────────────────────────────────────
+// ── Data Events ──────────────────────────────────────────────────────────
 const EVENTS = {
-  'street-food': { name: 'Street Food Carnival', date: '5-7 Mei 2026', location: 'GBK, Jakarta', fee: 'Rp 3.5 juta', deadline: '15 April 2026' },
-  'artisan':     { name: 'Artisan Market Kemang', date: '28-30 April 2026', location: 'Kemang Village, Jakarta', fee: 'Rp 1.5 juta', deadline: '20 April 2026' },
-  'digital':     { name: 'UMKM Digital Expo', date: '15-17 Mei 2026', location: 'ICE BSD, Tangerang', fee: 'Rp 2.0 juta', deadline: '5 Mei 2026' },
+  'street-food': { 
+    name: 'Street Food Carnival', 
+    date: '5-7 Mei 2026', 
+    location: 'GBK, Jakarta', 
+    fee: 'Rp 3.5 juta', 
+    deadline: '15 April 2026' 
+  },
+  'artisan': { 
+    name: 'Artisan Market Kemang', 
+    date: '28-30 April 2026', 
+    location: 'Kemang Village, Jakarta', 
+    fee: 'Rp 1.5 juta', 
+    deadline: '20 April 2026' 
+  },
+  'digital': { 
+    name: 'UMKM Digital Expo', 
+    date: '15-17 Mei 2026', 
+    location: 'ICE BSD, Tangerang', 
+    fee: 'Rp 2.0 juta', 
+    deadline: '5 Mei 2026' 
+  },
 };
 
 // ── Toast ─────────────────────────────────────────────────────────────────
@@ -449,104 +145,9 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 2500);
 }
 
-// ── Hash Router ───────────────────────────────────────────────────────────
-// Skema hash:
-//   #my                        → Tab Eventku
-//   #available                 → Tab Tersedia
-//   #history                   → Tab Riwayat
-//   #register/{eventKey}/{step} → Modal registrasi, step 0–3
-//   #qr                        → Modal QR Pass
-
-function setHash(hash) {
-  history.pushState(null, '', '#' + hash);
-  routeHash(hash);
-}
-
-function replaceHash(hash) {
-  history.replaceState(null, '', '#' + hash);
-  routeHash(hash);
-}
-
-function routeHash(hash) {
-  const parts = (hash || 'my').split('/');
-  const section = parts[0];
-
-  // Tutup semua modal dulu
-  _closeAllModals();
-
-  // Tab
-  if (['my', 'available', 'history'].includes(section)) {
-    _applyTab(section);
-    return;
-  }
-
-  // Modal registrasi: #register/{eventKey}/{step}
-  if (section === 'register') {
-    const eventKey = parts[1] || 'street-food';
-    const step     = parseInt(parts[2]) || 0;
-    if (!EVENTS[eventKey]) { replaceHash('available'); return; }
-    _applyTab('available');          // tab tetap di Tersedia
-    currentEvent = EVENTS[eventKey];
-    regStep = Math.min(step, 3);
-    document.getElementById('modal-event-name').textContent = currentEvent.name;
-    updateRegModal();
-    document.getElementById('register-modal').classList.add('active');
-    return;
-  }
-
-  // Modal QR: #qr
-  if (section === 'qr') {
-    _applyTab('my');                 // tab tetap di Eventku
-    const modal = document.getElementById('qr-modal');
-    modal.classList.add('active');
-    const box = modal.querySelector('.bg-white');
-    box.classList.remove('anim-scale-in');
-    void box.offsetWidth;
-    box.classList.add('anim-scale-in');
-    return;
-  }
-
-  // fallback
-  replaceHash('my');
-}
-
-function _applyTab(tab) {
-  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-  const el = document.getElementById('tab-' + tab);
-  el.classList.add('active', 'anim-fade-in');
-  ['my','available','history'].forEach(t => {
-    const btn = document.getElementById('tab-btn-' + t);
-    btn.className = t === tab
-      ? 'flex-1 py-2.5 text-sm font-semibold border-b-2 border-emerald-500 text-emerald-600 transition-colors'
-      : 'flex-1 py-2.5 text-sm text-gray-400 border-b-2 border-transparent transition-colors';
-  });
-}
-
-function _closeAllModals() {
-  document.getElementById('register-modal').classList.remove('active');
-  document.getElementById('qr-modal').classList.remove('active');
-}
-
-// Listen browser back/forward
-window.addEventListener('popstate', () => {
-  routeHash(location.hash.replace('#', '') || 'my');
-});
-
-// ── Tabs (dipanggil dari onclick di HTML) ─────────────────────────────────
-function setTab(tab) { setHash(tab); }
-
-// ── QR Modal ──────────────────────────────────────────────────────────────
-function openQrModal()  { setHash('qr'); }
-function closeQrModal() { history.back(); }
-
-function savePass() {
-  history.back();
-  showToast('Event pass disimpan ke galeri! 🎉');
-}
-
-// ── Register Modal ────────────────────────────────────────────────────────
+// ── Modal State ──────────────────────────────────────────────────────────
 let regStep = 0;
-let currentEvent = null;
+let currentEvent = EVENTS['street-food']; // Default event
 
 const stepContent = [
   // Step 0: Info Booth
@@ -554,18 +155,34 @@ const stepContent = [
     <div class="space-y-4">
       <div class="bg-gray-50 rounded-2xl p-4">
         <div class="space-y-2 text-sm">
-          ${[['Event', ev.name],['Tanggal', ev.date],['Lokasi', ev.location],['Biaya', ev.fee],['Deadline', ev.deadline]]
-            .map(([l,v]) => `<div class="flex justify-between"><span class="text-gray-500">${l}</span><span class="text-gray-900 font-semibold">${v}</span></div>`).join('')}
+          ${[
+            ['Event', ev.name],
+            ['Tanggal', ev.date],
+            ['Lokasi', ev.location],
+            ['Biaya', ev.fee],
+            ['Deadline', ev.deadline]
+          ].map(([l,v]) => `
+            <div class="flex justify-between">
+              <span class="text-gray-500">${l}</span>
+              <span class="text-gray-900 font-semibold">${v}</span>
+            </div>
+          `).join('')}
         </div>
       </div>
+      
       <div>
         <label class="text-xs text-gray-500 mb-2 block font-semibold">Nama Brand / Toko</label>
         <input value="Warung Kopi Nusantara" class="w-full px-4 py-3.5 border-2 border-gray-200 rounded-2xl text-sm" />
       </div>
+      
       <div>
         <label class="text-xs text-gray-500 mb-2 block font-semibold">Kategori Produk</label>
         <select class="w-full px-4 py-3.5 border-2 border-gray-200 rounded-2xl text-sm bg-white">
-          <option>Minuman Kopi</option><option>Makanan Ringan</option><option>Makanan Berat</option>
+          <option>Minuman Kopi</option>
+          <option>Makanan Ringan</option>
+          <option>Makanan Berat</option>
+          <option>Kerajinan Tangan</option>
+          <option>Fashion</option>
         </select>
       </div>
     </div>`,
@@ -574,12 +191,20 @@ const stepContent = [
   () => `
     <div class="space-y-4">
       <p class="text-gray-500 text-sm">Upload foto produk yang akan dijual di booth</p>
+      
       <div class="border-2 border-dashed border-gray-200 rounded-2xl p-8 flex flex-col items-center gap-3 bg-gray-50">
-        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="17 8 12 3 7 8"/>
+          <line x1="12" y1="3" x2="12" y2="15"/>
+        </svg>
         <p class="text-gray-500 text-sm">Upload foto produk</p>
         <p class="text-gray-400 text-xs">JPG, PNG, maks 5MB per foto</p>
-        <button onclick="showToast('Fitur upload akan segera hadir!')" class="px-4 py-2 bg-emerald-100 text-emerald-600 rounded-xl text-sm font-semibold">Pilih File</button>
+        <button onclick="showToast('Fitur upload akan segera hadir!')" class="px-4 py-2 bg-emerald-100 text-emerald-600 rounded-xl text-sm font-semibold">
+          Pilih File
+        </button>
       </div>
+      
       <div>
         <label class="text-xs text-gray-500 mb-2 block font-semibold">Deskripsi Produk</label>
         <textarea placeholder="Ceritakan produk unggulanmu..." class="w-full px-4 py-3.5 border-2 border-gray-200 rounded-2xl text-sm" rows="3"></textarea>
@@ -592,20 +217,31 @@ const stepContent = [
       <div class="bg-gray-50 rounded-2xl p-4">
         <p class="text-gray-500 text-xs font-semibold mb-3">RINGKASAN PEMBAYARAN</p>
         <div class="space-y-2 text-sm">
-          <div class="flex justify-between"><span class="text-gray-500">Biaya pendaftaran</span><span class="text-gray-900 font-semibold">${ev.fee}</span></div>
-          <div class="flex justify-between"><span class="text-gray-500">Pajak</span><span class="text-gray-900 font-semibold">Rp 0</span></div>
-          <div class="border-t border-gray-200 pt-2 flex justify-between"><span class="text-gray-900 font-semibold">Total</span><span class="text-emerald-600 font-bold">${ev.fee}</span></div>
+          <div class="flex justify-between">
+            <span class="text-gray-500">Biaya pendaftaran</span>
+            <span class="text-gray-900 font-semibold">${ev.fee}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-500">Pajak</span>
+            <span class="text-gray-900 font-semibold">Rp 0</span>
+          </div>
+          <div class="border-t border-gray-200 pt-2 flex justify-between">
+            <span class="text-gray-900 font-semibold">Total</span>
+            <span class="text-emerald-600 font-bold">${ev.fee}</span>
+          </div>
         </div>
       </div>
+      
       <div>
         <p class="text-gray-500 text-xs font-semibold mb-3">METODE PEMBAYARAN</p>
-        ${['Transfer Bank BCA','GoPay','OVO','QRIS'].map((m, i) => `
-          <div onclick="selectPayment(this)" class="flex items-center gap-3 p-3 mb-2 rounded-xl border-2 cursor-pointer ${i===0 ? 'border-emerald-500 bg-emerald-50' : 'border-gray-200'}">
-            <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center ${i===0 ? 'border-emerald-500 bg-emerald-500' : 'border-gray-300'}">
-              ${i===0 ? '<div class="w-2 h-2 bg-white rounded-full"></div>' : ''}
+        ${['Transfer Bank BCA', 'GoPay', 'OVO', 'QRIS'].map((m, i) => `
+          <div onclick="selectPayment(this)" class="flex items-center gap-3 p-3 mb-2 rounded-xl border-2 cursor-pointer ${i === 0 ? 'border-emerald-500 bg-emerald-50' : 'border-gray-200'}">
+            <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center ${i === 0 ? 'border-emerald-500 bg-emerald-500' : 'border-gray-300'}">
+              ${i === 0 ? '<div class="w-2 h-2 bg-white rounded-full"></div>' : ''}
             </div>
-            <span class="text-sm ${i===0 ? 'text-emerald-700 font-semibold' : 'text-gray-600'}">${m}</span>
-          </div>`).join('')}
+            <span class="text-sm ${i === 0 ? 'text-emerald-700 font-semibold' : 'text-gray-600'}">${m}</span>
+          </div>
+        `).join('')}
       </div>
     </div>`,
 
@@ -613,73 +249,139 @@ const stepContent = [
   (ev) => `
     <div class="text-center py-6">
       <div class="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+          <polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
       </div>
       <h3 class="text-gray-900 font-bold text-xl mb-2">Pendaftaran Berhasil!</h3>
       <p class="text-gray-500 text-sm mb-4">Kamu sudah terdaftar di ${ev.name}. Event pass akan segera dikirim.</p>
+      
       <div class="bg-gray-50 rounded-2xl p-5 border-2 border-dashed border-gray-200">
-        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-2"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/><path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/><path d="M3 12h.01"/><path d="M12 3h.01"/><path d="M12 16v.01"/><path d="M16 12h1"/><path d="M21 12v.01"/><path d="M12 21v-1"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-2">
+          <rect width="5" height="5" x="3" y="3" rx="1"/>
+          <rect width="5" height="5" x="16" y="3" rx="1"/>
+          <rect width="5" height="5" x="3" y="16" rx="1"/>
+          <path d="M21 16h-3a2 2 0 0 0-2 2v3"/>
+          <path d="M21 21v.01"/>
+          <path d="M12 7v3a2 2 0 0 1-2 2H7"/>
+          <path d="M3 12h.01"/>
+          <path d="M12 3h.01"/>
+          <path d="M12 16v.01"/>
+          <path d="M16 12h1"/>
+          <path d="M21 12v.01"/>
+          <path d="M12 21v-1"/>
+        </svg>
         <p class="text-gray-500 text-xs">Event Pass akan tersedia setelah pembayaran dikonfirmasi</p>
       </div>
     </div>`,
 ];
 
-function openRegisterModal(eventKey) {
-  setHash('register/' + eventKey + '/0');
+// ── Modal Functions ──────────────────────────────────────────────────────
+function openRegisterModal(eventKey = 'street-food') {
+  currentEvent = EVENTS[eventKey] || EVENTS['street-food'];
+  document.getElementById('modal-event-name').textContent = currentEvent.name;
+  regStep = 0;
+  updateRegModal();
+  
+  const modal = document.getElementById('register-modal');
+  modal.classList.remove('hidden');
+  
+  // Trigger animation
+  const content = modal.querySelector('.bg-white');
+  content.classList.remove('anim-slide-up');
+  void content.offsetWidth;
+  content.classList.add('anim-slide-up');
 }
 
-function closeRegisterModal() { history.back(); }
+function closeRegisterModal() {
+  document.getElementById('register-modal').classList.add('hidden');
+}
 
 function updateRegModal() {
-  // Step bars
+  // Update step bars
   document.querySelectorAll('#step-bars div').forEach((b, i) => {
     b.className = 'h-1.5 flex-1 rounded-full ' + (i <= regStep ? 'bg-emerald-500' : 'bg-gray-200');
   });
 
-  // Content
+  // Update content
   document.getElementById('reg-step-content').innerHTML = stepContent[regStep](currentEvent);
 
-  // Back button
+  // Update back button visibility
   document.getElementById('reg-back-btn').classList.toggle('hidden', regStep === 0 || regStep === 3);
 
-  // Next button label
+  // Update next button label
   const nextBtn = document.getElementById('reg-next-btn');
-  const labels  = ['Lanjut', 'Lanjut', 'Bayar Sekarang', 'Selesai'];
+  const labels = ['Lanjut', 'Lanjut', 'Bayar Sekarang', 'Selesai'];
   const showArrow = regStep < 3;
+  
   nextBtn.innerHTML = labels[regStep] + (showArrow
-    ? `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>`
+    ? `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="5" y1="12" x2="19" y2="12"/>
+        <polyline points="12 5 19 12 12 19"/>
+       </svg>`
     : '');
 }
 
 function regNext() {
   if (regStep < 3) {
-    // Ganti hash ke step berikutnya — history.back() akan kembali ke step sebelumnya
-    const key = Object.keys(EVENTS).find(k => EVENTS[k] === currentEvent) || 'street-food';
-    setHash('register/' + key + '/' + (regStep + 1));
+    regStep++;
+    updateRegModal();
   } else {
-    // Step selesai: tutup modal dan kembali ke tab available
-    replaceHash('available');
+    // Step selesai
+    closeRegisterModal();
     showToast('Pendaftaran bazaar berhasil! 🎉');
+    // Reset ke step 0 untuk next time
+    regStep = 0;
   }
 }
 
-function regPrev() { history.back(); }
-
-function selectPayment(el) {
-  document.querySelectorAll('#reg-step-content [onclick="selectPayment(this)"]').forEach(item => {
-    item.className = 'flex items-center gap-3 p-3 mb-2 rounded-xl border-2 cursor-pointer border-gray-200';
-    item.querySelector('.rounded-full').className = 'w-5 h-5 rounded-full border-2 flex items-center justify-center border-gray-300';
-    item.querySelector('.rounded-full').innerHTML = '';
-    item.querySelector('span').className = 'text-sm text-gray-600';
-  });
-  el.className = 'flex items-center gap-3 p-3 mb-2 rounded-xl border-2 cursor-pointer border-emerald-500 bg-emerald-50';
-  el.querySelector('.rounded-full').className = 'w-5 h-5 rounded-full border-2 flex items-center justify-center border-emerald-500 bg-emerald-500';
-  el.querySelector('.rounded-full').innerHTML = '<div class="w-2 h-2 bg-white rounded-full"></div>';
-  el.querySelector('span').className = 'text-sm text-emerald-700 font-semibold';
+function regPrev() {
+  if (regStep > 0) {
+    regStep--;
+    updateRegModal();
+  }
 }
 
-// ── Init ──────────────────────────────────────────────────────────────────
-routeHash(location.hash.replace('#', '') || 'my');
+function selectPayment(el) {
+  // Reset semua
+  document.querySelectorAll('#reg-step-content [onclick="selectPayment(this)"]').forEach(item => {
+    item.className = 'flex items-center gap-3 p-3 mb-2 rounded-xl border-2 cursor-pointer border-gray-200';
+    const circle = item.querySelector('.rounded-full');
+    if (circle) {
+      circle.className = 'w-5 h-5 rounded-full border-2 flex items-center justify-center border-gray-300';
+      circle.innerHTML = '';
+    }
+    const span = item.querySelector('span');
+    if (span) span.className = 'text-sm text-gray-600';
+  });
+  
+  // Set yang dipilih
+  el.className = 'flex items-center gap-3 p-3 mb-2 rounded-xl border-2 cursor-pointer border-emerald-500 bg-emerald-50';
+  const circle = el.querySelector('.rounded-full');
+  if (circle) {
+    circle.className = 'w-5 h-5 rounded-full border-2 flex items-center justify-center border-emerald-500 bg-emerald-500';
+    circle.innerHTML = '<div class="w-2 h-2 bg-white rounded-full"></div>';
+  }
+  const span = el.querySelector('span');
+  if (span) span.className = 'text-sm text-emerald-700 font-semibold';
+}
+
+// ── TAMPILKAN MODAL LANGSUNG SETELAH HALAMAN DIMUAT ─────────────────────
+window.addEventListener('load', function() {
+  // Pastikan modal dalam keadaan siap, lalu buka dengan event default (street-food)
+  openRegisterModal('street-food');
+});
 </script>
+
+<!-- Optional: Contoh tombol kecil untuk membuka modal dengan event berbeda -->
+<!-- Bisa dihapus jika tidak diperlukan. TAPI di sini tetap saya beri agar kamu bisa ganti-ganti event -->
+<div style="max-width:430px; margin:20px auto; padding:0 20px; display:flex; gap:10px; flex-wrap:wrap;">
+  <button onclick="openRegisterModal('street-food')" class="px-4 py-2 bg-emerald-100 text-emerald-700 rounded-xl text-sm">Street Food</button>
+  <button onclick="openRegisterModal('artisan')" class="px-4 py-2 bg-emerald-100 text-emerald-700 rounded-xl text-sm">Artisan Market</button>
+  <button onclick="openRegisterModal('digital')" class="px-4 py-2 bg-emerald-100 text-emerald-700 rounded-xl text-sm">Digital Expo</button>
+  <p class="text-xs text-gray-500 mt-4">Klik tombol di atas untuk buka modal dengan data event berbeda (jika diperlukan)</p>
+</div>
+
 </body>
 </html>
