@@ -3,43 +3,45 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-  <title>Learning Hub · UMKMate</title>
+  <title>Event Bazaar · UMKMate</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
     * { font-family: 'Plus Jakarta Sans', sans-serif; }
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    .screen { display: none; }
-    .screen.active { display: block; }
+    html, body { max-width: 430px; margin: 0 auto; background: #f9fafb; }
+
     .tab-content { display: none; }
     .tab-content.active { display: block; }
-    @keyframes slideInRight { from { opacity:0; transform:translateX(30px); } to { opacity:1; transform:translateX(0); } }
-    @keyframes slideInLeft  { from { opacity:0; transform:translateX(-30px); } to { opacity:1; transform:translateX(0); } }
-    @keyframes scaleIn      { from { opacity:0; transform:scale(0.9); } to { opacity:1; transform:scale(1); } }
-    @keyframes fadeIn       { from { opacity:0; } to { opacity:1; } }
-    @keyframes popIn        { from { opacity:0; transform:scale(0.5) rotate(-10deg); } to { opacity:1; transform:scale(1) rotate(0deg); } }
-    @keyframes fillBar      { from { width:0%; } to { width:var(--target-w); } }
-    @keyframes slideUp      { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
-    .anim-slide-right { animation: slideInRight .25s ease forwards; }
-    .anim-slide-left  { animation: slideInLeft  .25s ease forwards; }
-    .anim-scale-in    { animation: scaleIn      .3s  ease forwards; }
-    .anim-fade-in     { animation: fadeIn        .3s  ease forwards; }
-    .anim-pop-in      { animation: popIn         .4s  cubic-bezier(0.34,1.56,0.64,1) .3s both; }
-    .anim-slide-up    { animation: slideUp       .4s  ease forwards; }
-    .fill-bar         { animation: fillBar 1s ease forwards; }
+
+    /* Modal */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 50; max-width: 430px; margin: 0 auto; }
+    .modal-overlay.active { display: flex; align-items: flex-end; }
+    .modal-center { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 50; max-width: 430px; margin: 0 auto; align-items: center; justify-content: center; padding: 24px; }
+    .modal-center.active { display: flex; }
+
+    /* Animations */
+    @keyframes slideUp   { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    @keyframes fadeIn    { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes scaleIn   { from { opacity: 0; transform: scale(0.85); } to { opacity: 1; transform: scale(1); } }
+    .anim-slide-up  { animation: slideUp .3s cubic-bezier(0.32,0.72,0,1) forwards; }
+    .anim-fade-in   { animation: fadeIn .25s ease forwards; }
+    .anim-scale-in  { animation: scaleIn .25s ease forwards; }
+
     button:active { transform: scale(0.97); }
+
     .toast {
       position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%);
       background: #1f2937; color: #fff; padding: 10px 20px;
       border-radius: 99px; font-size: 13px; font-weight: 600;
-      z-index: 9999; opacity: 0; pointer-events: none;
-      transition: opacity .3s;
+      z-index: 9999; opacity: 0; pointer-events: none; transition: opacity .3s;
       white-space: nowrap;
     }
     .toast.show { opacity: 1; }
-    .progress-bar { transition: width 1s ease; }
-    html, body { max-width: 430px; margin: 0 auto; background: #f9fafb; }
+    select { appearance: none; }
+    textarea, input, select { transition: border-color .2s; }
+    textarea:focus, input:focus, select:focus { border-color: #10b981 !important; outline: none; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
@@ -47,576 +49,413 @@
 <!-- Toast -->
 <div id="toast" class="toast"></div>
 
-<!-- ════════════════════════════════════════════
-     SCREEN 1: LANDING
-════════════════════════════════════════════ -->
-<div id="screen-landing" class="screen active pb-8">
-
-  <!-- Header -->
-  <div class="bg-white px-5 pt-12 pb-0">
-    <div class="mb-4">
-      <h1 class="text-gray-900 text-[22px] font-extrabold">Learning Hub</h1>
-      <p class="text-gray-500 text-sm">Belajar, tumbuh, dan bersaing</p>
-    </div>
-
-    <!-- Points Banner -->
-    <div class="bg-gradient-to-r from-yellow-400 to-amber-500 rounded-2xl p-4 mb-4 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-2xl">🏆</div>
-        <div>
-          <p class="text-yellow-100 text-xs font-medium">Peringkatmu</p>
-          <p class="text-white font-extrabold text-xl">#1 · 2.850 poin</p>
-        </div>
-      </div>
-      <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 9.898A2 2 0 0 1 17.22 17.5H6.78a2 2 0 0 1-1.928-1.583L2.02 6.019a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294z"/></svg>
-    </div>
-
-    <!-- Tabs -->
-    <div class="flex border-b border-gray-100">
-      <button onclick="setLandingTab('belajar')" id="tab-btn-belajar" class="flex-1 py-3 text-sm font-semibold border-b-2 border-emerald-500 text-emerald-600 transition-colors">Kelas</button>
-      <button onclick="setLandingTab('tantangan')" id="tab-btn-tantangan" class="flex-1 py-3 text-sm text-gray-400 border-b-2 border-transparent transition-colors">Tantangan</button>
-      <button onclick="setLandingTab('leaderboard')" id="tab-btn-leaderboard" class="flex-1 py-3 text-sm text-gray-400 border-b-2 border-transparent transition-colors">Leaderboard</button>
-    </div>
-  </div>
-
-  <!-- Tab: Kelas -->
-  <div id="tab-belajar" class="tab-content active px-5 py-5 space-y-5">
-
-    <!-- Recommended Path Card -->
-    <div class="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-3xl p-5 text-white">
-      <div class="flex items-center justify-between mb-1">
-        <div class="flex items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(167,243,208,1)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="10" r="3"/><path d="M7 20.662V19a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1.662"/></svg>
-          <p class="text-emerald-100 text-xs font-semibold">PATH UNTUK TIER KAMU · STABILIZATION</p>
-        </div>
-        <span class="bg-white/20 text-white text-xs px-2.5 py-1 rounded-full font-semibold">1/3 Selesai</span>
-      </div>
-      <p class="text-white font-bold text-base mb-1">Yang paling berdampak untuk naik kelas minggu ini</p>
-      <p class="text-emerald-100 text-xs mb-4">Selesaikan path ini untuk unlock tier Grow dan plafon lebih besar</p>
-      <div class="mb-4">
-        <div class="flex justify-between text-xs text-emerald-100 mb-1.5">
-          <span>Progress Belajar</span><span class="font-bold">33%</span>
-        </div>
-        <div class="h-2 bg-white/30 rounded-full overflow-hidden">
-          <div class="h-full bg-white rounded-full progress-bar" style="width:33%"></div>
-        </div>
-      </div>
-      <!-- Path Steps -->
-      <div class="space-y-2">
-        <button onclick="openCourse('konsistensi-catat')" class="w-full flex items-center gap-3 p-3 rounded-2xl bg-white/10">
-          <div class="w-8 h-8 rounded-full bg-emerald-300 flex items-center justify-center flex-shrink-0">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#065f46" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          <div class="flex-1 text-left">
-            <p class="text-white text-sm font-medium">Konsistensi Catat Transaksi</p>
-            <p class="text-emerald-200 text-xs">7 menit · Checklist</p>
-          </div>
-        </button>
-        <button onclick="openCourse('arus-kas')" class="w-full flex items-center gap-3 p-3 rounded-2xl bg-white/25 ring-2 ring-white/50">
-          <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center flex-shrink-0">
-            <span class="text-sm text-emerald-600 font-bold">2</span>
-          </div>
-          <div class="flex-1 text-left">
-            <p class="text-white text-sm font-bold">Arus Kas & Biaya Usaha</p>
-            <p class="text-emerald-200 text-xs">8 menit · Template</p>
-          </div>
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-        </button>
-        <button onclick="openCourse('dokumen-pinjaman')" class="w-full flex items-center gap-3 p-3 rounded-2xl bg-white/10 opacity-60">
-          <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
-            <span class="text-sm text-white/60 font-bold">3</span>
-          </div>
-          <div class="flex-1 text-left">
-            <p class="text-white text-sm font-medium">Dokumen & Persiapan Pinjaman</p>
-            <p class="text-emerald-200 text-xs">10 menit · Checklist</p>
-          </div>
-        </button>
-      </div>
-    </div>
-
-    <!-- Quick Goals -->
-    <div>
-      <p class="text-gray-500 text-xs mb-3 px-1 font-semibold">QUICK GOALS</p>
-      <div class="grid grid-cols-3 gap-2">
-        <button onclick="filterByGoal('basic-keuangan')" class="flex flex-col items-center gap-1.5 p-3 rounded-2xl border-2 bg-blue-100 border-blue-300">
-          <span class="text-xl">📝</span>
-          <span class="text-xs text-center leading-tight text-blue-600 font-semibold">Rapihin<br>Catatan</span>
-        </button>
-        <button onclick="filterByGoal('cashflow')" class="flex flex-col items-center gap-1.5 p-3 rounded-2xl border-2 bg-emerald-100 border-emerald-300">
-          <span class="text-xl">📈</span>
-          <span class="text-xs text-center leading-tight text-emerald-600 font-semibold">Naikin<br>Growth Score</span>
-        </button>
-        <button onclick="filterByGoal('siap-modal')" class="flex flex-col items-center gap-1.5 p-3 rounded-2xl border-2 bg-violet-100 border-violet-300">
-          <span class="text-xl">🏦</span>
-          <span class="text-xs text-center leading-tight text-violet-600 font-semibold">Siap Ajukan<br>Modal</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- Category Chips -->
-    <div>
-      <p class="text-gray-500 text-xs mb-3 px-1 font-semibold">KATEGORI</p>
-      <div class="flex gap-2 overflow-x-auto pb-1 no-scrollbar" id="landing-cats">
-        <button onclick="setLandingCat('all',this)" class="flex-shrink-0 px-4 py-2 rounded-xl text-xs bg-emerald-500 text-white shadow-sm font-semibold">Semua</button>
-        <button onclick="setLandingCat('basic-keuangan',this)" class="flex-shrink-0 px-4 py-2 rounded-xl text-xs bg-white text-gray-600 border border-gray-200">Basic Keuangan</button>
-        <button onclick="setLandingCat('cashflow',this)" class="flex-shrink-0 px-4 py-2 rounded-xl text-xs bg-white text-gray-600 border border-gray-200">Cashflow</button>
-        <button onclick="setLandingCat('siap-modal',this)" class="flex-shrink-0 px-4 py-2 rounded-xl text-xs bg-white text-gray-600 border border-gray-200">Siap Ajukan Modal</button>
-        <button onclick="setLandingCat('digital-ops',this)" class="flex-shrink-0 px-4 py-2 rounded-xl text-xs bg-white text-gray-600 border border-gray-200">Digital Ops</button>
-      </div>
-    </div>
-
-    <!-- Gap Recommendation -->
-    <div class="bg-amber-50 rounded-2xl p-4 border border-amber-200">
-      <div class="flex items-start gap-2.5 mb-3">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 flex-shrink-0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        <div>
-          <p class="text-amber-800 text-sm font-bold">Rekomendasi berdasarkan gap kamu</p>
-          <p class="text-amber-700 text-xs">Cashflow kamu minus 2 bulan terakhir</p>
-        </div>
-      </div>
-      <button onclick="openCourse('arus-kas')" class="w-full flex items-center gap-3 bg-white rounded-xl p-3 border border-amber-200">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center text-lg flex-shrink-0">💵</div>
-        <div class="flex-1 text-left">
-          <p class="text-gray-900 text-sm font-bold">Arus Kas & Biaya Usaha</p>
-          <p class="text-gray-500 text-xs">8 menit · Template siap pakai</p>
-        </div>
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-      </button>
-    </div>
-
-    <!-- Course List -->
-    <div>
-      <div class="flex items-center justify-between mb-3">
-        <p class="text-gray-500 text-xs px-1 font-semibold" id="landing-cat-label">SEMUA KELAS</p>
-        <button onclick="showScreen('screen-course-list')" class="text-emerald-600 text-xs font-semibold">Lihat Semua →</button>
-      </div>
-      <div class="space-y-3" id="landing-course-list"></div>
-      <button onclick="showScreen('screen-course-list')" class="w-full mt-3 py-3 border-2 border-emerald-500 text-emerald-600 rounded-2xl font-bold">Lihat Semua Kelas</button>
-    </div>
-  </div>
-
-  <!-- Tab: Tantangan -->
-  <div id="tab-tantangan" class="tab-content px-5 py-5 space-y-4">
-    <div class="bg-gradient-to-br from-orange-400 to-rose-500 rounded-3xl p-5 flex items-center gap-4">
-      <div class="text-4xl">🔥</div>
-      <div>
-        <p class="text-orange-100 text-xs font-semibold">STREAK AKTIF</p>
-        <p class="text-white font-extrabold text-2xl">7 Hari Berturut-turut!</p>
-        <p class="text-orange-100 text-xs">Luar biasa, terus pertahankan!</p>
-      </div>
-    </div>
-    <p class="text-gray-500 text-xs px-1 font-semibold">TANTANGAN AKTIF</p>
-    <!-- Challenge 1 -->
-    <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-      <div class="flex items-start gap-3 mb-4">
-        <div class="w-12 h-12 rounded-xl flex items-center justify-center bg-emerald-100 flex-shrink-0">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-        </div>
-        <div class="flex-1">
-          <h4 class="text-gray-900 text-sm font-semibold">Streak Pencatatan</h4>
-          <p class="text-gray-500 text-xs">Catat transaksi 7 hari berturut-turut</p>
-          <p class="text-gray-400 text-xs">⏰ 2 hari lagi</p>
-        </div>
-        <div class="bg-yellow-100 px-3 py-1.5 rounded-full flex-shrink-0">
-          <p class="text-yellow-700 text-xs font-semibold">+100 poin</p>
-        </div>
-      </div>
-      <div class="flex justify-between text-xs mb-1.5"><span class="text-gray-500">Progress</span><span class="text-gray-900 font-semibold">5 / 7</span></div>
-      <div class="h-2 bg-gray-100 rounded-full overflow-hidden"><div class="h-full bg-emerald-500 rounded-full progress-bar" style="width:71%"></div></div>
-    </div>
-    <!-- Challenge 2 -->
-    <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-      <div class="flex items-start gap-3 mb-4">
-        <div class="w-12 h-12 rounded-xl flex items-center justify-center bg-blue-100 flex-shrink-0">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-        </div>
-        <div class="flex-1">
-          <h4 class="text-gray-900 text-sm font-semibold">Selesaikan 3 Kelas</h4>
-          <p class="text-gray-500 text-xs">Tamatkan 3 kelas bulan ini</p>
-          <p class="text-gray-400 text-xs">⏰ 8 hari lagi</p>
-        </div>
-        <div class="bg-yellow-100 px-3 py-1.5 rounded-full flex-shrink-0">
-          <p class="text-yellow-700 text-xs font-semibold">+250 poin</p>
-        </div>
-      </div>
-      <div class="flex justify-between text-xs mb-1.5"><span class="text-gray-500">Progress</span><span class="text-gray-900 font-semibold">2 / 3</span></div>
-      <div class="h-2 bg-gray-100 rounded-full overflow-hidden"><div class="h-full bg-blue-500 rounded-full progress-bar" style="width:67%"></div></div>
-    </div>
-    <!-- Challenge 3 -->
-    <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-      <div class="flex items-start gap-3 mb-4">
-        <div class="w-12 h-12 rounded-xl flex items-center justify-center bg-purple-100 flex-shrink-0">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
-        </div>
-        <div class="flex-1">
-          <h4 class="text-gray-900 text-sm font-semibold">Growth Score Master</h4>
-          <p class="text-gray-500 text-xs">Raih score di atas 90</p>
-          <p class="text-gray-400 text-xs">⏰ Akhir bulan</p>
-        </div>
-        <div class="bg-yellow-100 px-3 py-1.5 rounded-full flex-shrink-0">
-          <p class="text-yellow-700 text-xs font-semibold">+500 poin</p>
-        </div>
-      </div>
-      <div class="flex justify-between text-xs mb-1.5"><span class="text-gray-500">Progress</span><span class="text-gray-900 font-semibold">84 / 90</span></div>
-      <div class="h-2 bg-gray-100 rounded-full overflow-hidden"><div class="h-full bg-purple-500 rounded-full progress-bar" style="width:93%"></div></div>
-    </div>
-    <!-- Badges -->
-    <div class="bg-white rounded-3xl p-5 shadow-sm border border-gray-100">
-      <h3 class="text-gray-900 font-semibold mb-4">Lencana Kamu</h3>
-      <div class="grid grid-cols-5 gap-3">
-        <div class="flex flex-col items-center text-center">
-          <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-xl border-2 mb-1 bg-gradient-to-br from-yellow-100 to-amber-100 border-yellow-300">📒</div>
-          <p class="text-gray-800 font-medium text-center leading-tight" style="font-size:9px">Pencatat Rajin</p>
-        </div>
-        <div class="flex flex-col items-center text-center">
-          <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-xl border-2 mb-1 bg-gradient-to-br from-yellow-100 to-amber-100 border-yellow-300">💰</div>
-          <p class="text-gray-800 font-medium text-center leading-tight" style="font-size:9px">Cashflow Pro</p>
-        </div>
-        <div class="flex flex-col items-center text-center">
-          <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-xl border-2 mb-1 bg-gradient-to-br from-yellow-100 to-amber-100 border-yellow-300">⚡</div>
-          <p class="text-gray-800 font-medium text-center leading-tight" style="font-size:9px">Pelajar Cepat</p>
-        </div>
-        <div class="flex flex-col items-center text-center">
-          <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-xl border-2 mb-1 bg-gray-100 border-gray-200 grayscale opacity-40">📋</div>
-          <p class="text-gray-400 text-center leading-tight" style="font-size:9px">Siap Modal</p>
-        </div>
-        <div class="flex flex-col items-center text-center">
-          <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-xl border-2 mb-1 bg-gray-100 border-gray-200 grayscale opacity-40">👑</div>
-          <p class="text-gray-400 text-center leading-tight" style="font-size:9px">Legenda</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Tab: Leaderboard -->
-  <div id="tab-leaderboard" class="tab-content px-5 py-5 space-y-4">
-    <div class="flex gap-2">
-      <button class="flex-1 py-2.5 rounded-xl text-sm bg-emerald-500 text-white shadow-sm font-semibold">Provinsi</button>
-      <button class="flex-1 py-2.5 rounded-xl text-sm bg-white text-gray-600 border border-gray-200">Nasional</button>
-    </div>
-    <div class="bg-gradient-to-br from-yellow-400 to-amber-500 rounded-3xl p-5">
-      <p class="text-yellow-100 text-xs mb-4 text-center font-semibold">TOP 3 BULAN INI</p>
-      <div class="flex items-end justify-center gap-3">
-        <!-- Rank 2 -->
-        <div class="flex flex-col items-center">
-          <div class="w-12 h-12 bg-white/30 rounded-full flex items-center justify-center text-xl mb-2">👨</div>
-          <div class="bg-white/30 rounded-t-xl px-3 pb-2 pt-4 text-center" style="height:60px">
-            <p class="text-white text-xs font-bold">Budi</p>
-            <p class="text-yellow-100 text-xs">2.720</p>
-          </div>
-          <div class="bg-gray-400 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold">2</div>
-        </div>
-        <!-- Rank 1 -->
-        <div class="flex flex-col items-center">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(167,243,208,1)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mb-1"><path d="M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 9.898A2 2 0 0 1 17.22 17.5H6.78a2 2 0 0 1-1.928-1.583L2.02 6.019a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294z"/></svg>
-          <div class="w-16 h-16 bg-white/30 rounded-full flex items-center justify-center text-2xl mb-2">👤</div>
-          <div class="bg-white/30 rounded-t-xl px-3 pb-2 pt-4 text-center" style="height:80px">
-            <p class="text-white text-xs font-bold">Kamu!</p>
-            <p class="text-yellow-100 text-xs">2.850</p>
-          </div>
-          <div class="bg-yellow-600 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold">1</div>
-        </div>
-        <!-- Rank 3 -->
-        <div class="flex flex-col items-center">
-          <div class="w-12 h-12 bg-white/30 rounded-full flex items-center justify-center text-xl mb-2">👩</div>
-          <div class="bg-white/30 rounded-t-xl px-3 pb-2 pt-4 text-center" style="height:45px">
-            <p class="text-white text-xs font-bold">Siti</p>
-            <p class="text-yellow-100 text-xs">2.680</p>
-          </div>
-          <div class="bg-orange-400 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold">3</div>
-        </div>
-      </div>
-    </div>
-    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
-      <div class="flex items-center gap-4 px-5 py-4 bg-emerald-50 border-b border-gray-100">
-        <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm bg-yellow-400 text-white font-bold">1</div>
-        <div class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-xl">👤</div>
-        <div class="flex-1"><p class="text-sm text-emerald-900 font-bold">Kamu ⭐</p><p class="text-gray-500 text-xs">2.850 poin</p></div>
-        <span class="text-xs text-emerald-600 font-semibold">+2</span>
-      </div>
-      <div class="flex items-center gap-4 px-5 py-4 border-b border-gray-100">
-        <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm bg-gray-300 text-white font-bold">2</div>
-        <div class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-xl">👨</div>
-        <div class="flex-1"><p class="text-sm text-gray-900 font-medium">Budi Santoso</p><p class="text-gray-500 text-xs">2.720 poin</p></div>
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c0c0c0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.21 15 2 9.5 7.21 4"/><path d="M15.79 15 21 9.5l-5.21-5.5"/><path d="M8.5 19h7"/></svg>
-        <span class="text-xs text-red-500 font-semibold">-1</span>
-      </div>
-      <div class="flex items-center gap-4 px-5 py-4 border-b border-gray-100">
-        <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm bg-orange-400 text-white font-bold">3</div>
-        <div class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-xl">👩</div>
-        <div class="flex-1"><p class="text-sm text-gray-900 font-medium">Siti Aminah</p><p class="text-gray-500 text-xs">2.680 poin</p></div>
-        <span class="text-xs text-emerald-600 font-semibold">+1</span>
-      </div>
-      <div class="flex items-center gap-4 px-5 py-4 border-b border-gray-100">
-        <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm bg-gray-100 text-gray-600 font-bold">4</div>
-        <div class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-xl">👩</div>
-        <div class="flex-1"><p class="text-sm text-gray-900 font-medium">Dewi Lestari</p><p class="text-gray-500 text-xs">2.450 poin</p></div>
-        <span class="text-xs text-gray-400 font-semibold">—</span>
-      </div>
-      <div class="flex items-center gap-4 px-5 py-4">
-        <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm bg-gray-100 text-gray-600 font-bold">5</div>
-        <div class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-xl">👨</div>
-        <div class="flex-1"><p class="text-sm text-gray-900 font-medium">Eko Prasetyo</p><p class="text-gray-500 text-xs">2.340 poin</p></div>
-        <span class="text-xs text-red-500 font-semibold">-1</span>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ════════════════════════════════════════════
-     SCREEN 2: COURSE LIST
-════════════════════════════════════════════ -->
-<div id="screen-course-list" class="screen min-h-screen bg-gray-50 pb-8">
-  <div class="bg-white px-5 pt-12 pb-4 border-b border-gray-100 sticky top-0 z-10">
-    <div class="flex items-center gap-3 mb-4">
-      <button onclick="goBack()" class="p-2 hover:bg-gray-100 rounded-xl">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-      </button>
-      <h1 class="text-gray-900 text-xl font-bold">Semua Kelas</h1>
-    </div>
-    <!-- Search -->
-    <div class="flex items-center gap-3 bg-gray-50 rounded-2xl px-4 py-3 border border-gray-200 mb-3">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <input id="search-input" type="text" placeholder="Cari kelas..." oninput="filterCourseList()" class="flex-1 outline-none text-sm bg-transparent" />
-      <button onclick="clearSearch()" class="hidden" id="clear-search-btn">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-    </div>
-    <!-- Category chips -->
-    <div class="flex gap-2 overflow-x-auto pb-1 no-scrollbar mb-2" id="list-cats">
-      <button onclick="setListCat('all',this)" class="flex-shrink-0 px-3.5 py-1.5 rounded-xl text-xs bg-emerald-500 text-white font-semibold">Semua</button>
-      <button onclick="setListCat('basic-keuangan',this)" class="flex-shrink-0 px-3.5 py-1.5 rounded-xl text-xs bg-gray-100 text-gray-600">Basic Keuangan</button>
-      <button onclick="setListCat('cashflow',this)" class="flex-shrink-0 px-3.5 py-1.5 rounded-xl text-xs bg-gray-100 text-gray-600">Cashflow</button>
-      <button onclick="setListCat('siap-modal',this)" class="flex-shrink-0 px-3.5 py-1.5 rounded-xl text-xs bg-gray-100 text-gray-600">Siap Modal</button>
-      <button onclick="setListCat('digital-ops',this)" class="flex-shrink-0 px-3.5 py-1.5 rounded-xl text-xs bg-gray-100 text-gray-600">Digital Ops</button>
-    </div>
-    <!-- Duration filters -->
-    <div class="flex items-center gap-2">
-      <div class="flex gap-2" id="dur-filters">
-        <button onclick="setDuration('Semua',this)" class="flex-shrink-0 px-3 py-1.5 rounded-xl text-xs bg-gray-800 text-white border border-gray-800 font-semibold">Semua</button>
-        <button onclick="setDuration('5-7',this)" class="flex-shrink-0 px-3 py-1.5 rounded-xl text-xs bg-white text-gray-600 border border-gray-200">5–7 menit</button>
-        <button onclick="setDuration('8-10',this)" class="flex-shrink-0 px-3 py-1.5 rounded-xl text-xs bg-white text-gray-600 border border-gray-200">8–10 menit</button>
-      </div>
-    </div>
-  </div>
-  <div class="px-5 py-4">
-    <p class="text-gray-500 text-xs mb-3 font-semibold" id="results-count">6 KELAS DITEMUKAN</p>
-    <div class="space-y-3" id="course-list-container"></div>
-  </div>
-</div>
-
-<!-- ════════════════════════════════════════════
-     SCREEN 3: COURSE DETAIL
-════════════════════════════════════════════ -->
-<div id="screen-course-detail" class="screen min-h-screen bg-gray-50 pb-8">
-  <div id="detail-hero" class="h-52 flex items-center justify-between px-6 pt-12 relative">
-    <button onclick="goBack()" class="absolute top-12 left-5 w-10 h-10 bg-black/20 rounded-xl flex items-center justify-center">
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+<!-- ═══════════════════ HEADER ═══════════════════ -->
+<div class="bg-white px-4 pt-10 pb-0 sticky top-0 z-10 shadow-sm">
+  <div class="flex items-center gap-3 mb-4">
+    <button onclick="history.back()" class="p-2 hover:bg-gray-100 rounded-xl">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
     </button>
-    <div class="flex-1"></div>
-    <span id="detail-hero-emoji" class="text-7xl">📝</span>
-  </div>
-  <div class="px-5 -mt-6 relative z-10" id="detail-body"></div>
-</div>
-
-<!-- ════════════════════════════════════════════
-     SCREEN 4: LESSON
-════════════════════════════════════════════ -->
-<div id="screen-lesson" class="screen min-h-screen bg-gray-50 pb-8">
-  <div class="bg-white px-5 pt-12 pb-4 border-b border-gray-100">
-    <div class="flex items-center gap-3 mb-4">
-      <button onclick="goBack()" class="p-2 hover:bg-gray-100 rounded-xl">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-      </button>
-      <div class="flex-1">
-        <p class="text-gray-500 text-xs" id="lesson-course-title"></p>
-        <p class="text-gray-900 text-sm font-bold" id="lesson-slide-counter"></p>
-      </div>
-      <div class="text-xs text-gray-500 bg-gray-100 px-3 py-1.5 rounded-full font-semibold" id="lesson-duration"></div>
+    <div class="flex-1">
+      <h1 class="text-gray-900 text-xl font-bold">Event Bazaar</h1>
+      <p class="text-gray-500 text-xs">Perluas jangkauan pasarmu</p>
     </div>
-    <div class="flex gap-1.5" id="lesson-progress-dots"></div>
+    <button onclick="openQrModal()" class="w-9 h-9 bg-emerald-100 rounded-xl flex items-center justify-center">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/><path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/><path d="M3 12h.01"/><path d="M12 3h.01"/><path d="M12 16v.01"/><path d="M16 12h1"/><path d="M21 12v.01"/><path d="M12 21v-1"/></svg>
+    </button>
   </div>
-  <div class="px-5 py-5 space-y-5" id="lesson-content"></div>
+
+  <!-- Tabs -->
+  <div class="flex border-b border-gray-100">
+    <button onclick="setTab('my')" id="tab-btn-my" class="flex-1 py-2.5 text-sm font-semibold border-b-2 border-emerald-500 text-emerald-600 transition-colors">Eventku</button>
+    <button onclick="setTab('available')" id="tab-btn-available" class="flex-1 py-2.5 text-sm text-gray-400 border-b-2 border-transparent transition-colors">Tersedia</button>
+    <button onclick="setTab('history')" id="tab-btn-history" class="flex-1 py-2.5 text-sm text-gray-400 border-b-2 border-transparent transition-colors">Riwayat</button>
+  </div>
 </div>
 
-<!-- ════════════════════════════════════════════
-     SCREEN 5: QUIZ
-════════════════════════════════════════════ -->
-<div id="screen-quiz" class="screen min-h-screen bg-gray-50 pb-8">
-  <div class="bg-white px-5 pt-12 pb-4 border-b border-gray-100">
-    <div class="flex items-center gap-3 mb-4">
-      <button onclick="goBack()" class="p-2 hover:bg-gray-100 rounded-xl">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-      </button>
-      <div class="flex-1">
-        <p class="text-gray-500 text-xs" id="quiz-subtitle"></p>
-        <p class="text-gray-900 text-sm font-bold" id="quiz-counter"></p>
+<!-- ═══════════════════ TAB: EVENTKU ═══════════════════ -->
+<div id="tab-my" class="tab-content active px-4 py-4 space-y-4 anim-fade-in">
+
+  <!-- Event 1: Confirmed -->
+  <div class="bg-white rounded-3xl p-5 shadow-sm border border-gray-100">
+    <div class="flex items-start gap-3 mb-4">
+      <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 bg-emerald-100">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
       </div>
-      <div class="text-xs bg-blue-100 text-blue-700 px-3 py-1.5 rounded-full font-semibold">Min. 60% lulus</div>
+      <div class="flex-1">
+        <div class="flex items-start justify-between">
+          <div>
+            <p class="text-gray-900 text-sm font-bold">Jakarta Food Festival 2026</p>
+            <div class="space-y-1 mt-1">
+              <div class="flex items-center gap-1.5 text-xs text-gray-500">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                <span>25-27 Maret 2026</span>
+              </div>
+              <div class="flex items-center gap-1.5 text-xs text-gray-500">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                <span>JCC Senayan, Jakarta</span>
+              </div>
+            </div>
+          </div>
+          <span class="px-2.5 py-1 rounded-full text-xs bg-emerald-100 text-emerald-700 font-semibold flex-shrink-0">✅ Confirmed</span>
+        </div>
+      </div>
     </div>
-    <div class="flex gap-1.5" id="quiz-progress-dots"></div>
+
+    <div class="grid grid-cols-3 gap-2 p-3 bg-gray-50 rounded-2xl mb-3">
+      <div><p class="text-gray-400 text-xs mb-0.5">Booth</p><p class="text-gray-900 text-sm font-bold">B-125</p></div>
+      <div><p class="text-gray-400 text-xs mb-0.5">Biaya</p><p class="text-gray-900 text-sm font-bold">Rp 2.5jt</p></div>
+      <div><p class="text-gray-400 text-xs mb-0.5">Pengunjung</p><p class="text-gray-900 text-sm font-bold">50.000+</p></div>
+    </div>
+
+    <div class="flex items-center gap-2 text-xs text-gray-500 mb-3">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <span>Setup deadline: 20 Maret 2026 (3 hari lagi)</span>
+    </div>
+
+    <button onclick="openQrModal()" class="w-full py-3 bg-emerald-500 text-white rounded-xl flex items-center justify-center gap-2 text-sm font-semibold">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/><path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/><path d="M3 12h.01"/><path d="M12 3h.01"/><path d="M12 16v.01"/><path d="M16 12h1"/><path d="M21 12v.01"/><path d="M12 21v-1"/></svg>
+      Lihat Event Pass & QR
+    </button>
   </div>
-  <div class="px-5 py-5 space-y-5" id="quiz-content"></div>
+
+  <!-- Event 2: Pending -->
+  <div class="bg-white rounded-3xl p-5 shadow-sm border border-gray-100">
+    <div class="flex items-start gap-3 mb-4">
+      <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 bg-orange-100">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </div>
+      <div class="flex-1">
+        <div class="flex items-start justify-between">
+          <div>
+            <p class="text-gray-900 text-sm font-bold">UMKM Expo Bandung</p>
+            <div class="space-y-1 mt-1">
+              <div class="flex items-center gap-1.5 text-xs text-gray-500">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                <span>10-12 April 2026</span>
+              </div>
+              <div class="flex items-center gap-1.5 text-xs text-gray-500">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                <span>Trans Studio Mall, Bandung</span>
+              </div>
+            </div>
+          </div>
+          <span class="px-2.5 py-1 rounded-full text-xs bg-orange-100 text-orange-700 font-semibold flex-shrink-0">⏳ Pending</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-3 gap-2 p-3 bg-gray-50 rounded-2xl mb-3">
+      <div><p class="text-gray-400 text-xs mb-0.5">Booth</p><p class="text-gray-900 text-sm font-bold">Menunggu</p></div>
+      <div><p class="text-gray-400 text-xs mb-0.5">Biaya</p><p class="text-gray-900 text-sm font-bold">Rp 1.8jt</p></div>
+      <div><p class="text-gray-400 text-xs mb-0.5">Pengunjung</p><p class="text-gray-900 text-sm font-bold">30.000+</p></div>
+    </div>
+
+    <div class="flex items-center gap-2 text-xs text-gray-500">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <span>Setup deadline: 30 Maret 2026 (13 hari lagi)</span>
+    </div>
+  </div>
 </div>
 
-<!-- ════════════════════════════════════════════
-     SCREEN 6: COMPLETION
-════════════════════════════════════════════ -->
-<div id="screen-completion" class="screen min-h-screen bg-gray-50 pb-8">
-  <div class="px-5 pt-12 pb-5 space-y-5" id="completion-content"></div>
+<!-- ═══════════════════ TAB: TERSEDIA ═══════════════════ -->
+<div id="tab-available" class="tab-content px-4 py-4 space-y-4">
+
+  <!-- Featured Banner -->
+  <div class="bg-gradient-to-br from-pink-500 to-rose-600 rounded-3xl p-5 relative overflow-hidden">
+    <div class="absolute -right-8 -top-6 w-24 h-24 bg-white/10 rounded-full"></div>
+    <div class="absolute right-6 bottom-6 w-16 h-16 bg-white/10 rounded-full"></div>
+    <p class="text-pink-200 text-xs font-semibold mb-1">🔥 EVENT UNGGULAN</p>
+    <h3 class="text-white font-bold text-lg mb-2">Street Food Carnival</h3>
+    <div class="space-y-1 mb-4">
+      <div class="flex items-center gap-1.5 text-pink-200 text-xs">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        <span>5-7 Mei 2026</span>
+      </div>
+      <div class="flex items-center gap-1.5 text-pink-200 text-xs">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+        <span>GBK, Jakarta</span>
+      </div>
+      <div class="flex items-center gap-1.5 text-pink-200 text-xs">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span>100.000+ pengunjung</span>
+      </div>
+    </div>
+    <div class="flex items-center gap-3">
+      <button onclick="openRegisterModal('street-food')" class="flex-1 bg-white text-pink-600 py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-1.5">
+        Daftar Sekarang
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </button>
+      <div class="bg-white/20 px-3 py-3 rounded-xl text-white text-xs font-semibold">Rp 3.5jt</div>
+    </div>
+  </div>
+
+  <!-- Event Card 1 -->
+  <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+    <div class="flex items-start justify-between mb-3">
+      <div class="flex-1">
+        <p class="text-gray-900 text-sm font-bold mb-1">Street Food Carnival</p>
+        <div class="inline-flex items-center bg-blue-50 px-2 py-1 rounded-lg mb-2">
+          <span class="text-blue-600 text-xs font-medium">Makanan & Minuman</span>
+        </div>
+        <div class="space-y-1">
+          <div class="flex items-center gap-1.5 text-xs text-gray-500">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <span>5-7 Mei 2026</span>
+          </div>
+          <div class="flex items-center gap-1.5 text-xs text-gray-500">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span>GBK, Jakarta</span>
+          </div>
+          <div class="flex items-center gap-1.5 text-xs text-gray-500">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <span>100.000+ pengunjung</span>
+          </div>
+        </div>
+      </div>
+      <span class="px-2.5 py-1 rounded-full text-xs bg-blue-100 text-blue-700 font-semibold ml-3">12 spot</span>
+    </div>
+    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl mb-3">
+      <div><p class="text-gray-400 text-xs mb-0.5">Biaya Pendaftaran</p><p class="text-gray-900 font-bold text-base">Rp 3.5jt</p></div>
+      <div class="text-right"><p class="text-gray-400 text-xs mb-0.5">Deadline</p><p class="text-gray-900 text-sm font-semibold">15 April 2026</p></div>
+    </div>
+    <button onclick="openRegisterModal('street-food')" class="w-full bg-emerald-500 text-white py-3 rounded-xl text-sm font-semibold">Daftar Sekarang</button>
+  </div>
+
+  <!-- Event Card 2 -->
+  <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+    <div class="flex items-start justify-between mb-3">
+      <div class="flex-1">
+        <p class="text-gray-900 text-sm font-bold mb-1">Artisan Market Kemang</p>
+        <div class="inline-flex items-center bg-blue-50 px-2 py-1 rounded-lg mb-2">
+          <span class="text-blue-600 text-xs font-medium">Kerajinan & Fashion</span>
+        </div>
+        <div class="space-y-1">
+          <div class="flex items-center gap-1.5 text-xs text-gray-500">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <span>28-30 April 2026</span>
+          </div>
+          <div class="flex items-center gap-1.5 text-xs text-gray-500">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span>Kemang Village, Jakarta</span>
+          </div>
+          <div class="flex items-center gap-1.5 text-xs text-gray-500">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <span>20.000+ pengunjung</span>
+          </div>
+        </div>
+      </div>
+      <span class="px-2.5 py-1 rounded-full text-xs bg-red-100 text-red-700 font-semibold ml-3">5 spot</span>
+    </div>
+    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl mb-3">
+      <div><p class="text-gray-400 text-xs mb-0.5">Biaya Pendaftaran</p><p class="text-gray-900 font-bold text-base">Rp 1.5jt</p></div>
+      <div class="text-right"><p class="text-gray-400 text-xs mb-0.5">Deadline</p><p class="text-gray-900 text-sm font-semibold">20 April 2026</p></div>
+    </div>
+    <button onclick="openRegisterModal('artisan')" class="w-full bg-emerald-500 text-white py-3 rounded-xl text-sm font-semibold">Daftar Sekarang</button>
+  </div>
+
+  <!-- Event Card 3 -->
+  <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+    <div class="flex items-start justify-between mb-3">
+      <div class="flex-1">
+        <p class="text-gray-900 text-sm font-bold mb-1">UMKM Digital Expo</p>
+        <div class="inline-flex items-center bg-blue-50 px-2 py-1 rounded-lg mb-2">
+          <span class="text-blue-600 text-xs font-medium">Digital & Teknologi</span>
+        </div>
+        <div class="space-y-1">
+          <div class="flex items-center gap-1.5 text-xs text-gray-500">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <span>15-17 Mei 2026</span>
+          </div>
+          <div class="flex items-center gap-1.5 text-xs text-gray-500">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span>ICE BSD, Tangerang</span>
+          </div>
+          <div class="flex items-center gap-1.5 text-xs text-gray-500">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <span>40.000+ pengunjung</span>
+          </div>
+        </div>
+      </div>
+      <span class="px-2.5 py-1 rounded-full text-xs bg-blue-100 text-blue-700 font-semibold ml-3">30 spot</span>
+    </div>
+    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl mb-3">
+      <div><p class="text-gray-400 text-xs mb-0.5">Biaya Pendaftaran</p><p class="text-gray-900 font-bold text-base">Rp 2.0jt</p></div>
+      <div class="text-right"><p class="text-gray-400 text-xs mb-0.5">Deadline</p><p class="text-gray-900 text-sm font-semibold">5 Mei 2026</p></div>
+    </div>
+    <button onclick="openRegisterModal('digital')" class="w-full bg-emerald-500 text-white py-3 rounded-xl text-sm font-semibold">Daftar Sekarang</button>
+  </div>
 </div>
 
-<!-- ═══════════════════════════════════════════ SCRIPT ═══════════════════════════════════════════ -->
+<!-- ═══════════════════ TAB: RIWAYAT ═══════════════════ -->
+<div id="tab-history" class="tab-content px-4 py-4 space-y-3">
+
+  <!-- Summary Stats -->
+  <div class="grid grid-cols-2 gap-3 mb-2">
+    <div class="bg-emerald-50 rounded-2xl p-4 border border-emerald-100">
+      <p class="text-emerald-600 text-xs mb-1">Total Penjualan</p>
+      <p class="text-emerald-900 font-bold text-lg">Rp 28jt</p>
+      <p class="text-emerald-600 text-xs">dari 2 event</p>
+    </div>
+    <div class="bg-blue-50 rounded-2xl p-4 border border-blue-100">
+      <p class="text-blue-600 text-xs mb-1">Total Pengunjung</p>
+      <p class="text-blue-900 font-bold text-lg">4.230</p>
+      <p class="text-blue-600 text-xs">ke booth kamu</p>
+    </div>
+  </div>
+
+  <!-- Past Event 1 -->
+  <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+    <div class="flex items-start gap-3 mb-4">
+      <div class="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      </div>
+      <div class="flex-1">
+        <p class="text-gray-900 text-sm font-semibold">Ramadan Market 2026</p>
+        <div class="flex items-center gap-1.5 text-xs text-gray-500 mt-0.5">
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          <span>15-16 Feb 2026</span>
+        </div>
+        <div class="flex items-center gap-1.5 text-xs text-gray-500 mt-0.5">
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span>Grand Indonesia</span>
+        </div>
+        <div class="flex items-center gap-1 mt-1">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#facc15" stroke="#facc15" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <span class="text-gray-700 text-xs font-semibold">4.5</span>
+        </div>
+      </div>
+    </div>
+    <div class="grid grid-cols-2 gap-3">
+      <div class="bg-emerald-50 rounded-xl p-3 border border-emerald-100">
+        <p class="text-emerald-600 text-xs mb-0.5">Total Penjualan</p>
+        <p class="text-emerald-900 font-bold text-sm">Rp 15.75jt</p>
+      </div>
+      <div class="bg-blue-50 rounded-xl p-3 border border-blue-100">
+        <p class="text-blue-600 text-xs mb-0.5">Pengunjung Booth</p>
+        <p class="text-blue-900 font-bold text-sm">2.340</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Past Event 2 -->
+  <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+    <div class="flex items-start gap-3 mb-4">
+      <div class="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      </div>
+      <div class="flex-1">
+        <p class="text-gray-900 text-sm font-semibold">Coffee & Culinary Fair</p>
+        <div class="flex items-center gap-1.5 text-xs text-gray-500 mt-0.5">
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          <span>20-22 Jan 2026</span>
+        </div>
+        <div class="flex items-center gap-1.5 text-xs text-gray-500 mt-0.5">
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span>Balai Kartini</span>
+        </div>
+        <div class="flex items-center gap-1 mt-1">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#facc15" stroke="#facc15" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <span class="text-gray-700 text-xs font-semibold">4.7</span>
+        </div>
+      </div>
+    </div>
+    <div class="grid grid-cols-2 gap-3">
+      <div class="bg-emerald-50 rounded-xl p-3 border border-emerald-100">
+        <p class="text-emerald-600 text-xs mb-0.5">Total Penjualan</p>
+        <p class="text-emerald-900 font-bold text-sm">Rp 12.3jt</p>
+      </div>
+      <div class="bg-blue-50 rounded-xl p-3 border border-blue-100">
+        <p class="text-blue-600 text-xs mb-0.5">Pengunjung Booth</p>
+        <p class="text-blue-900 font-bold text-sm">1.890</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ MODAL: REGISTRASI ═══════════════════ -->
+<div id="register-modal" class="modal-overlay" onclick="closeRegisterModal()">
+  <div class="bg-white rounded-t-3xl w-full p-6 no-scrollbar anim-slide-up" style="max-height:90vh;overflow-y:auto" onclick="event.stopPropagation()">
+
+    <div class="flex items-center justify-between mb-5">
+      <div>
+        <p class="text-gray-500 text-xs font-semibold">PENDAFTARAN</p>
+        <h3 id="modal-event-name" class="text-gray-900 font-bold text-lg">Street Food Carnival</h3>
+      </div>
+      <button onclick="closeRegisterModal()" class="w-9 h-9 bg-gray-100 rounded-xl flex items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <!-- Step progress -->
+    <div class="flex gap-1.5 mb-5" id="step-bars">
+      <div class="h-1.5 flex-1 rounded-full bg-emerald-500"></div>
+      <div class="h-1.5 flex-1 rounded-full bg-gray-200"></div>
+      <div class="h-1.5 flex-1 rounded-full bg-gray-200"></div>
+      <div class="h-1.5 flex-1 rounded-full bg-gray-200"></div>
+    </div>
+
+    <!-- Step content -->
+    <div id="reg-step-content"></div>
+
+    <!-- Buttons -->
+    <div class="flex gap-3 mt-5">
+      <button id="reg-back-btn" onclick="regPrev()" class="hidden w-12 h-12 border-2 border-gray-200 rounded-xl flex items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4b5563" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <button id="reg-next-btn" onclick="regNext()" class="flex-1 py-4 bg-emerald-500 text-white rounded-2xl font-bold flex items-center justify-center gap-2">
+        Lanjut
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ MODAL: QR PASS ═══════════════════ -->
+<div id="qr-modal" class="modal-center" onclick="closeQrModal()">
+  <div class="bg-white rounded-3xl p-6 w-full anim-scale-in" onclick="event.stopPropagation()">
+    <div class="text-center mb-4">
+      <p class="text-gray-900 font-bold text-lg">Event Pass</p>
+      <p class="text-gray-500 text-sm">Jakarta Food Festival 2026</p>
+    </div>
+    <div class="bg-gray-50 rounded-2xl p-6 flex flex-col items-center gap-3 mb-4">
+      <!-- QR Code SVG simulation -->
+      <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24" fill="none" stroke="#1f2937" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/><path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/><path d="M3 12h.01"/><path d="M12 3h.01"/><path d="M12 16v.01"/><path d="M16 12h1"/><path d="M21 12v.01"/><path d="M12 21v-1"/></svg>
+      <div class="text-center">
+        <p class="text-gray-900 text-sm font-bold">Warung Kopi Nusantara</p>
+        <p class="text-gray-500 text-xs">Booth B-125 · 25-27 Mar 2026</p>
+      </div>
+      <div class="bg-emerald-100 px-4 py-2 rounded-xl">
+        <p class="text-emerald-700 text-xs font-bold">ID: JFF2026-B125-001</p>
+      </div>
+    </div>
+    <button onclick="savePass()" class="w-full py-4 bg-emerald-500 text-white rounded-2xl font-bold">Simpan Event Pass</button>
+  </div>
+</div>
+
+<!-- ═══════════════════ SCRIPT ═══════════════════ -->
 <script>
 // ── Data ──────────────────────────────────────────────────────────────────
-const COURSES = [
-  {
-    id: "konsistensi-catat", title: "Konsistensi Catat Transaksi", subtitle: "Bangun kebiasaan mencatat harian",
-    category: "basic-keuangan", categoryLabel: "Basic Keuangan", tier: "Foundation", duration: "7 menit",
-    level: "Basic", output: "Checklist", badge: "📒", badgeName: "Pencatat Rajin",
-    gradient: "from-blue-400 to-blue-600", emoji: "📝", enrolled: 3240, rating: 4.8, pathOrder: 1,
-    whatYouLearn: ["Cara mencatat transaksi harian hanya dalam 2 menit", "Template sederhana untuk UMKM pemula", "Kebiasaan kecil yang berdampak besar pada bisnis"],
-    forWho: "UMKM tier Foundation yang baru mulai usaha",
-    outcome: "Kamu bisa mulai mencatat transaksi harian dengan template siap pakai",
-    slides: [
-      { title: "Kenapa Harus Catat Transaksi?", emoji: "🤔", content: "Banyak UMKM gagal bukan karena kurang modal, tapi karena tidak tahu uangnya ke mana. Dengan mencatat, kamu bisa tahu persis kondisi usahamu setiap saat.", highlight: "UMKM yang catat rutin punya Growth Score rata-rata 20 poin lebih tinggi" },
-      { title: "Cara Simpel Mencatat", emoji: "📱", content: "Cukup 3 kolom: Tanggal, Jenis (masuk/keluar), Jumlah. Lakukan setiap habis transaksi atau di akhir hari. Gunakan UMKMate agar tersimpan otomatis dan terhitung sendiri!", highlight: "2 menit per hari = data 1 bulan yang lengkap" },
-      { title: "Kebiasaan yang Mengubah Bisnis", emoji: "🚀", content: "Setelah 30 hari konsisten mencatat, kamu akan bisa melihat pola: kapan ramai, kapan sepi, biaya apa yang bisa dikurangi. Ini dasar dari semua keputusan bisnis yang baik.", highlight: "Konsistensi 30 hari = fondasi laporan keuangan yang kuat" }
-    ],
-    quiz: [
-      { question: "Seberapa sering sebaiknya mencatat transaksi?", options: ["Sekali seminggu", "Setiap hari", "Sekali sebulan"], answer: 1, explanation: "Mencatat setiap hari membantu memantau arus kas secara akurat dan mencegah lupa transaksi kecil." },
-      { question: "Apa manfaat utama mencatat transaksi secara konsisten?", options: ["Hanya untuk laporan pajak", "Membantu pengambilan keputusan bisnis", "Tidak ada manfaatnya"], answer: 1, explanation: "Catatan harian adalah dasar semua keputusan bisnis yang baik — harga, stok, hingga pengajuan modal." },
-      { question: "Minimal berapa kolom yang dibutuhkan untuk mencatat transaksi sederhana?", options: ["5 kolom (kompleks)", "3 kolom (Tanggal, Jenis, Jumlah)", "10 kolom (detail lengkap)"], answer: 1, explanation: "Cukup 3 kolom dasar dulu. Mulai sederhana yang penting konsisten!" }
-    ],
-    nextCourseId: "arus-kas"
-  },
-  {
-    id: "arus-kas", title: "Arus Kas & Biaya Usaha", subtitle: "Pahami cashflow untuk tumbuh stabil",
-    category: "cashflow", categoryLabel: "Cashflow", tier: "Stabilization", duration: "8 menit",
-    level: "Basic", output: "Template", badge: "💰", badgeName: "Cashflow Pro",
-    gradient: "from-emerald-400 to-teal-600", emoji: "💵", enrolled: 2180, rating: 4.7, pathOrder: 2,
-    whatYouLearn: ["Perbedaan omzet, laba, dan arus kas yang sering membingungkan", "Cara membaca arus kas masuk vs keluar secara visual", "Strategi menjaga cashflow tetap positif sepanjang bulan"],
-    forWho: "UMKM tier Stabilization yang ingin menstabilkan keuangan",
-    outcome: "Kamu dapat template cashflow bulanan siap pakai untuk usahamu",
-    slides: [
-      { title: "Omzet ≠ Laba ≠ Kas", emoji: "💡", content: "Banyak pemilik UMKM bingung: omzetnya besar tapi kok rekening kosong? Karena omzet, laba, dan kas itu berbeda. Omzet = total penjualan. Laba = setelah dikurangi biaya. Kas = uang yang benar-benar ada di tangan.", highlight: "Usaha bisa laba di atas kertas tapi tetap kekurangan kas nyata!" },
-      { title: "Membaca Arus Kas", emoji: "📊", content: "Arus kas sehat: uang masuk lebih besar dari uang keluar. Pantau 3 hal: (1) Kapan uang masuk, (2) Kapan uang keluar, (3) Berapa sisanya. Jika minus → ada masalah yang perlu segera ditangani.", highlight: "Rekap kas harian = alarm dini masalah keuangan" },
-      { title: "Tips Jaga Cashflow Positif", emoji: "🛡️", content: "4 strategi efektif: (1) Tagih piutang tepat waktu. (2) Negosiasi tempo bayar ke supplier. (3) Simpan cadangan 1 bulan biaya operasional. (4) Bedakan biaya tetap dan biaya variabel.", highlight: "Target: cadangan 1 bulan biaya operasional selalu ada" }
-    ],
-    quiz: [
-      { question: "Apa yang dimaksud dengan arus kas (cashflow)?", options: ["Laba bersih usaha", "Aliran uang masuk dan keluar yang nyata", "Total aset usaha"], answer: 1, explanation: "Cashflow adalah aliran uang yang benar-benar bergerak — bukan angka di atas kertas." },
-      { question: "Kapan arus kas usaha dikatakan sehat?", options: ["Ketika tidak ada pengeluaran sama sekali", "Ketika uang masuk lebih besar dari keluar", "Ketika memiliki banyak hutang"], answer: 1, explanation: "Arus kas sehat = pemasukan secara konsisten lebih besar dari pengeluaran." },
-      { question: "Berapa cadangan kas ideal minimal untuk UMKM?", options: ["Tidak perlu cadangan", "Minimal 1 bulan biaya operasional", "5 tahun biaya operasional"], answer: 1, explanation: "Minimal 1 bulan biaya operasional sebagai buffer darurat sudah cukup untuk mulai." }
-    ],
-    nextCourseId: "dokumen-pinjaman"
-  },
-  {
-    id: "dokumen-pinjaman", title: "Dokumen & Persiapan Pinjaman", subtitle: "Siap ajukan modal ke lender resmi",
-    category: "siap-modal", categoryLabel: "Siap Ajukan Modal", tier: "Stabilization", duration: "10 menit",
-    level: "Intermediate", output: "Checklist", badge: "📋", badgeName: "Siap Modal",
-    gradient: "from-violet-400 to-purple-600", emoji: "🏦", enrolled: 1560, rating: 4.9, pathOrder: 3,
-    whatYouLearn: ["Dokumen wajib yang diminta lender (KTP, NIB, rekening koran)", "Cara meningkatkan Growth Score agar lebih mudah disetujui", "Tips memilih mitra lender yang tepat sesuai kebutuhanmu"],
-    forWho: "UMKM yang ingin mengajukan modal melalui FUND-Link",
-    outcome: "Kamu dapat checklist lengkap dokumen dan siap submit pengajuan modal",
-    slides: [
-      { title: "Dokumen Wajib untuk Pinjaman", emoji: "📁", content: "Lender membutuhkan: (1) KTP + Selfie untuk verifikasi identitas (KYC), (2) NIB/SKRT untuk legalitas usaha, (3) Rekening koran 3 bulan untuk bukti transaksi, (4) Foto tempat usaha tampak depan & dalam.", highlight: "Lengkapi semua dokumen sebelum submit = proses approval lebih cepat" },
-      { title: "Tingkatkan Growth Score Dulu", emoji: "📈", content: "Growth Score minimal 65 untuk bisa mengajukan modal. Skor kamu saat ini: 84 (Sangat Baik!). Semakin tinggi skor, semakin besar plafon yang bisa kamu dapat dan semakin rendah bunga yang ditawarkan.", highlight: "Score 84 = eligible untuk plafon hingga Rp 50 juta!" },
-      { title: "Pilih Mitra Lender yang Tepat", emoji: "🤝", content: "UMKMate punya fitur Smart Matching untuk mencocokkan kamu dengan lender terbaik. Perhatikan 3 hal: (1) Plafon sesuai kebutuhan, (2) Tenor yang nyaman, (3) Bunga yang masuk akal (8–12% p.a.).", highlight: "Smart Matching meningkatkan peluang approval hingga 85%" }
-    ],
-    quiz: [
-      { question: "Dokumen identitas apa yang wajib disiapkan saat mengajukan pinjaman?", options: ["Hanya rekening koran", "KTP dan Selfie dengan KTP", "Hanya kartu keluarga"], answer: 1, explanation: "KTP dan Selfie dengan KTP adalah syarat verifikasi identitas (KYC) yang wajib ada." },
-      { question: "Berapa Growth Score minimal untuk bisa mengajukan modal di FUND-Link?", options: ["Score 90", "Score 65", "Score 50"], answer: 1, explanation: "Minimal Growth Score 65 untuk eligible. Makin tinggi skor, makin besar plafon!" },
-      { question: "Apa yang dimaksud Smart Matching di FUND-Link?", options: ["Sistem yang memilihkan lender terbaik berdasarkan profilmu", "Game untuk mencari modal", "Fitur tabungan otomatis"], answer: 0, explanation: "Smart Matching mencocokkan profilmu dengan lender yang paling sesuai untuk meningkatkan peluang approval." }
-    ],
-    nextCourseId: "strategi-harga"
-  },
-  {
-    id: "strategi-harga", title: "Strategi Harga & Margin", subtitle: "Tetapkan harga yang benar-benar untung",
-    category: "cashflow", categoryLabel: "Cashflow", tier: "Grow", duration: "9 menit",
-    level: "Intermediate", output: "Badge", badge: "🏷️", badgeName: "Strategi Harga",
-    gradient: "from-orange-400 to-red-500", emoji: "💡", enrolled: 987, rating: 4.6, pathOrder: 0,
-    whatYouLearn: ["Cara menghitung Harga Pokok Penjualan (HPP) dengan tepat", "Strategi penetapan harga jual yang kompetitif dan menguntungkan", "Cara meningkatkan margin tanpa kehilangan pelanggan setia"],
-    forWho: "UMKM tier Grow yang ingin meningkatkan profitabilitas",
-    outcome: "Kamu bisa menghitung HPP dan menetapkan harga jual yang benar-benar menguntungkan",
-    slides: [
-      { title: "Apa itu HPP?", emoji: "🧮", content: "Harga Pokok Penjualan (HPP) adalah total biaya untuk memproduksi/membeli barang yang dijual. HPP = Bahan baku + Tenaga kerja + Biaya overhead. Tanpa HPP yang benar, kamu bisa jual rugi tanpa sadar!", highlight: "Banyak UMKM jual di bawah HPP karena tidak pernah menghitungnya" },
-      { title: "Rumus Harga Jual", emoji: "📐", content: "Harga Jual = HPP + Profit Margin yang diinginkan. Contoh: HPP Rp 50.000, margin 30% → Harga jual = Rp 65.000. Pertimbangkan juga: harga kompetitor, persepsi nilai, dan segmen target pasar.", highlight: "Margin 20–40% adalah target sehat untuk UMKM" },
-      { title: "Naikkan Margin Tanpa Kehilangan Pelanggan", emoji: "✨", content: "3 cara efektif: (1) Tingkatkan persepsi nilai produk melalui packaging dan cerita produk. (2) Buat paket bundling yang menguntungkan. (3) Fokus pada pelanggan loyal yang tidak sensitif harga.", highlight: "Value > Price. Bangun nilai, bukan perang harga." }
-    ],
-    quiz: [
-      { question: "Apa kepanjangan HPP?", options: ["Harga Pokok Penjualan", "Harga Per Produk", "Hasil Penjualan Periode"], answer: 0, explanation: "HPP = Harga Pokok Penjualan, yaitu total biaya untuk menghasilkan/membeli produk yang dijual." },
-      { question: "Berapa margin yang dianggap sehat untuk UMKM pada umumnya?", options: ["5–10%", "20–40%", "80–100%"], answer: 1, explanation: "Margin 20–40% adalah target yang sehat dan realistis untuk UMKM di berbagai sektor." },
-      { question: "Cara terbaik menaikkan harga tanpa kehilangan pelanggan adalah...", options: ["Langsung naikkan harga tanpa penjelasan", "Tingkatkan persepsi nilai produk terlebih dahulu", "Kurangi kualitas produk"], answer: 1, explanation: "Tingkatkan nilai yang dirasakan pelanggan — packaging, layanan, cerita produk — sebelum menaikkan harga." }
-    ],
-    nextCourseId: "jualan-marketplace"
-  },
-  {
-    id: "jualan-marketplace", title: "Jualan di Marketplace", subtitle: "Optimasi toko online-mu hari ini",
-    category: "digital-ops", categoryLabel: "Digital Ops & Marketing", tier: "Grow", duration: "10 menit",
-    level: "Intermediate", output: "Badge", badge: "🛒", badgeName: "Digital Seller",
-    gradient: "from-pink-400 to-rose-600", emoji: "🛒", enrolled: 4200, rating: 4.9, pathOrder: 0,
-    whatYouLearn: ["Cara optimasi listing produk agar mudah ditemukan pembeli", "Strategi foto produk yang menarik dan meningkatkan konversi", "Cara mengelola ulasan dan membangun reputasi toko"],
-    forWho: "UMKM yang ingin memperluas jangkauan penjualan secara digital",
-    outcome: "Kamu bisa membuat listing produk yang optimal dan strategi toko yang efektif",
-    slides: [
-      { title: "Kenapa Marketplace Penting?", emoji: "🌐", content: "70% konsumen Indonesia berbelanja di marketplace. Platform seperti Tokopedia, Shopee, dan Lazada sudah punya jutaan pembeli aktif setiap hari. Kamu tinggal masuk dan terhubung dengan mereka!", highlight: "70% konsumen Indonesia belanja di marketplace setiap hari" },
-      { title: "Optimasi Listing Produk", emoji: "🔍", content: "5 elemen listing optimal: (1) Judul dengan kata kunci yang dicari, (2) Foto minimal 5 dari berbagai sudut, (3) Deskripsi lengkap termasuk ukuran/bahan, (4) Harga kompetitif, (5) Stok selalu diperbarui.", highlight: "Listing lengkap = 3x lebih banyak dilihat dan diklik pembeli" },
-      { title: "Bangun Reputasi Toko", emoji: "⭐", content: "Rating dan ulasan adalah aset terpenting. Cara membangunnya: (1) Respons chat < 1 jam, (2) Kirim tepat waktu atau lebih cepat, (3) Minta ulasan setelah transaksi selesai, (4) Tangani komplain dengan profesional.", highlight: "Toko rating 4.8+ punya konversi 2x lebih tinggi!" }
-    ],
-    quiz: [
-      { question: "Berapa persen konsumen Indonesia yang berbelanja di marketplace?", options: ["30%", "70%", "10%"], answer: 1, explanation: "70% konsumen Indonesia sudah berbelanja online via marketplace — pasar yang sangat besar untuk UMKM!" },
-      { question: "Elemen apa yang paling penting dalam listing produk?", options: ["Harga murah saja sudah cukup", "Foto produk berkualitas dari berbagai sudut", "Teks panjang tanpa foto"], answer: 1, explanation: "Foto berkualitas adalah faktor utama yang membuat pembeli mau klik dan membeli produkmu." },
-      { question: "Bagaimana cara terbaik membangun reputasi toko?", options: ["Balas chat seminggu sekali", "Respons cepat + kirim tepat waktu + minta ulasan", "Tidak perlu balas chat"], answer: 1, explanation: "Responsif dan pengiriman tepat waktu adalah kunci rating toko yang tinggi dan konsisten." }
-    ],
-    nextCourseId: "konsistensi-catat"
-  },
-  {
-    id: "pinjaman-aman", title: "Pinjaman Aman untuk UMKM", subtitle: "Pinjam bijak, tumbuh cerdas",
-    category: "siap-modal", categoryLabel: "Siap Ajukan Modal", tier: "Foundation", duration: "5 menit",
-    level: "Basic", output: "Badge", badge: "🛡️", badgeName: "Peminjam Cerdas",
-    gradient: "from-teal-400 to-cyan-600", emoji: "💳", enrolled: 2890, rating: 4.8, pathOrder: 0,
-    whatYouLearn: ["Kapan waktu yang tepat untuk mengajukan pinjaman usaha", "Cara menghitung kemampuan cicilan yang aman dan realistis", "Risiko pinjaman dan cara mitigasinya agar tidak terjebak"],
-    forWho: "Semua tier UMKM yang ingin memahami pinjaman secara bijak",
-    outcome: "Kamu bisa memutuskan dengan bijak kapan dan berapa pinjaman yang aman untukmu",
-    slides: [
-      { title: "Kapan Waktu Tepat Pinjam?", emoji: "⏰", content: "Pinjaman tepat jika: (1) Modal akan menghasilkan return lebih dari bunga, (2) Cashflow sudah stabil minimal 3 bulan, (3) Ada rencana pembayaran yang jelas. JANGAN pinjam untuk menutup hutang lain!", highlight: "Return on Investment harus lebih besar dari bunga pinjaman" },
-      { title: "Hitung Kemampuan Cicilan", emoji: "🧮", content: "Aturan aman: cicilan bulanan maksimal 30% dari pendapatan bersih. Contoh: Pendapatan bersih Rp 10jt → Cicilan max Rp 3jt/bulan. Lebih dari itu bisa membahayakan operasional usaha sehari-hari.", highlight: "Cicilan aman = maksimal 30% pendapatan bersih per bulan" },
-      { title: "Mitigasi Risiko Pinjaman", emoji: "🛡️", content: "5 tips aman: (1) Pinjam dari lender berizin OJK. (2) Baca seluruh syarat perjanjian. (3) Perhatikan bunga efektif bukan bunga flat. (4) Siapkan dana darurat 1 bulan cicilan. (5) Bayar tepat waktu untuk jaga credit score.", highlight: "Hanya pinjam dari lender terdaftar dan berizin OJK!" }
-    ],
-    quiz: [
-      { question: "Kapan waktu yang tepat untuk mengajukan pinjaman usaha?", options: ["Saat cashflow sedang sangat minus", "Saat cashflow stabil dan ada rencana penggunaan yang jelas", "Kapan saja tanpa perlu rencana"], answer: 1, explanation: "Pinjam saat cashflow stabil dan ada rencana bisnis yang jelas = peluang sukses lebih tinggi." },
-      { question: "Berapa persen maksimal cicilan dari pendapatan bersih agar aman?", options: ["50%", "30%", "80%"], answer: 1, explanation: "Cicilan maksimal 30% dari pendapatan bersih memastikan operasional usaha tetap berjalan lancar." },
-      { question: "Hal apa yang wajib dipastikan sebelum meminjam dari lender?", options: ["Lender menawarkan bunga sangat murah tanpa syarat", "Lender terdaftar dan berizin OJK", "Lender bisa diakses via WhatsApp saja"], answer: 1, explanation: "Pastikan lender berizin OJK untuk keamanan hukum dan perlindungan konsumen." }
-    ],
-    nextCourseId: "dokumen-pinjaman"
-  }
-];
-
-// ── State ──────────────────────────────────────────────────────────────────
-let state = {
-  currentScreen: 'screen-landing',
-  history: [],
-  selectedCourse: null,
-  completedCourses: new Set(['konsistensi-catat']),
-  lessonSlide: 0,
-  savedPoints: new Set(),
-  quizStep: 0,
-  quizAnswers: [],
-  quizSubmitted: [],
-  quizPassed: null,
-  listCategory: 'all',
-  listDuration: 'Semua',
-  landingCategory: 'all',
+const EVENTS = {
+  'street-food': { name: 'Street Food Carnival', date: '5-7 Mei 2026', location: 'GBK, Jakarta', fee: 'Rp 3.5 juta', deadline: '15 April 2026' },
+  'artisan':     { name: 'Artisan Market Kemang', date: '28-30 April 2026', location: 'Kemang Village, Jakarta', fee: 'Rp 1.5 juta', deadline: '20 April 2026' },
+  'digital':     { name: 'UMKM Digital Expo', date: '15-17 Mei 2026', location: 'ICE BSD, Tangerang', fee: 'Rp 2.0 juta', deadline: '5 Mei 2026' },
 };
 
+// ── Toast ─────────────────────────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
 // ── Hash Router ───────────────────────────────────────────────────────────
-// Hash format:
-//   #home
-//   #course-list
-//   #course/{courseId}
-//   #lesson/{courseId}/{slideIndex}     (0-based)
-//   #quiz/{courseId}/{questionIndex}    (0-based)
-//   #completion/{courseId}
+// Skema hash:
+//   #my                        → Tab Eventku
+//   #available                 → Tab Tersedia
+//   #history                   → Tab Riwayat
+//   #register/{eventKey}/{step} → Modal registrasi, step 0–3
+//   #qr                        → Modal QR Pass
 
 function setHash(hash) {
   history.pushState(null, '', '#' + hash);
@@ -629,572 +468,218 @@ function replaceHash(hash) {
 }
 
 function routeHash(hash) {
-  if (!hash || hash === 'home') {
-    _showScreen('screen-landing');
-    return;
-  }
-  const parts = hash.split('/');
+  const parts = (hash || 'my').split('/');
   const section = parts[0];
 
-  if (section === 'course-list') {
-    renderCourseList();
-    _showScreen('screen-course-list');
+  // Tutup semua modal dulu
+  _closeAllModals();
+
+  // Tab
+  if (['my', 'available', 'history'].includes(section)) {
+    _applyTab(section);
     return;
   }
-  if (section === 'course') {
-    const course = COURSES.find(c => c.id === parts[1]);
-    if (!course) { replaceHash('home'); return; }
-    state.selectedCourse = course;
-    renderCourseDetail(course);
-    _showScreen('screen-course-detail');
+
+  // Modal registrasi: #register/{eventKey}/{step}
+  if (section === 'register') {
+    const eventKey = parts[1] || 'street-food';
+    const step     = parseInt(parts[2]) || 0;
+    if (!EVENTS[eventKey]) { replaceHash('available'); return; }
+    _applyTab('available');          // tab tetap di Tersedia
+    currentEvent = EVENTS[eventKey];
+    regStep = Math.min(step, 3);
+    document.getElementById('modal-event-name').textContent = currentEvent.name;
+    updateRegModal();
+    document.getElementById('register-modal').classList.add('active');
     return;
   }
-  if (section === 'lesson') {
-    const course = COURSES.find(c => c.id === parts[1]);
-    if (!course) { replaceHash('home'); return; }
-    const slideIdx = Math.min(parseInt(parts[2]) || 0, course.slides.length - 1);
-    state.selectedCourse = course;
-    state.lessonSlide = slideIdx;
-    if (!state.savedPoints) state.savedPoints = new Set();
-    renderLesson();
-    _showScreen('screen-lesson');
+
+  // Modal QR: #qr
+  if (section === 'qr') {
+    _applyTab('my');                 // tab tetap di Eventku
+    const modal = document.getElementById('qr-modal');
+    modal.classList.add('active');
+    const box = modal.querySelector('.bg-white');
+    box.classList.remove('anim-scale-in');
+    void box.offsetWidth;
+    box.classList.add('anim-scale-in');
     return;
   }
-  if (section === 'quiz') {
-    const course = COURSES.find(c => c.id === parts[1]);
-    if (!course) { replaceHash('home'); return; }
-    const qIdx = Math.min(parseInt(parts[2]) || 0, course.quiz.length - 1);
-    state.selectedCourse = course;
-    if (!state.quizAnswers || state.quizAnswers.length !== course.quiz.length) {
-      state.quizAnswers   = new Array(course.quiz.length).fill(null);
-      state.quizSubmitted = new Array(course.quiz.length).fill(false);
-      state.quizPassed    = null;
-    }
-    state.quizStep = qIdx;
-    renderQuiz();
-    _showScreen('screen-quiz');
-    return;
-  }
-  if (section === 'completion') {
-    const course = COURSES.find(c => c.id === parts[1]);
-    if (!course) { replaceHash('home'); return; }
-    state.selectedCourse = course;
-    renderCompletion();
-    _showScreen('screen-completion');
-    return;
-  }
-  replaceHash('home');
+
+  // fallback
+  replaceHash('my');
 }
 
-function _showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  state.currentScreen = id;
-  window.scrollTo(0, 0);
+function _applyTab(tab) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  const el = document.getElementById('tab-' + tab);
+  el.classList.add('active', 'anim-fade-in');
+  ['my','available','history'].forEach(t => {
+    const btn = document.getElementById('tab-btn-' + t);
+    btn.className = t === tab
+      ? 'flex-1 py-2.5 text-sm font-semibold border-b-2 border-emerald-500 text-emerald-600 transition-colors'
+      : 'flex-1 py-2.5 text-sm text-gray-400 border-b-2 border-transparent transition-colors';
+  });
 }
 
-// showScreen kept for backward compat with HTML onclick attributes
-function showScreen(id) {
-  if (id === 'screen-landing')     { setHash('home'); return; }
-  if (id === 'screen-course-list') { setHash('course-list'); return; }
-  if (id === 'screen-course-detail' && state.selectedCourse) { setHash('course/' + state.selectedCourse.id); return; }
-  if (id === 'screen-lesson'     && state.selectedCourse) { setHash('lesson/'     + state.selectedCourse.id + '/' + state.lessonSlide); return; }
-  if (id === 'screen-quiz'       && state.selectedCourse) { setHash('quiz/'       + state.selectedCourse.id + '/' + state.quizStep); return; }
-  if (id === 'screen-completion' && state.selectedCourse) { setHash('completion/' + state.selectedCourse.id); return; }
-  _showScreen(id);
+function _closeAllModals() {
+  document.getElementById('register-modal').classList.remove('active');
+  document.getElementById('qr-modal').classList.remove('active');
 }
 
-function goBack() { history.back(); }
-function pushHistory(id) { showScreen(id); }
-
+// Listen browser back/forward
 window.addEventListener('popstate', () => {
-  routeHash(location.hash.replace('#', '') || 'home');
+  routeHash(location.hash.replace('#', '') || 'my');
 });
 
-function showToast(msg, success=true) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2200);
+// ── Tabs (dipanggil dari onclick di HTML) ─────────────────────────────────
+function setTab(tab) { setHash(tab); }
+
+// ── QR Modal ──────────────────────────────────────────────────────────────
+function openQrModal()  { setHash('qr'); }
+function closeQrModal() { history.back(); }
+
+function savePass() {
+  history.back();
+  showToast('Event pass disimpan ke galeri! 🎉');
 }
 
-function outputLabel(type) {
-  if (type==='Badge') return '<span class="text-xs px-2.5 py-1 rounded-full bg-yellow-100 text-yellow-700 font-semibold">🏅 Badge</span>';
-  if (type==='Checklist') return '<span class="text-xs px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700 font-semibold">✅ Checklist</span>';
-  return '<span class="text-xs px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 font-semibold">📄 Template</span>';
-}
+// ── Register Modal ────────────────────────────────────────────────────────
+let regStep = 0;
+let currentEvent = null;
 
-function levelLabel(level) {
-  return level==='Basic'
-    ? '<span class="text-xs px-2.5 py-1 rounded-full bg-gray-100 text-gray-600 font-semibold">Basic</span>'
-    : '<span class="text-xs px-2.5 py-1 rounded-full bg-orange-100 text-orange-700 font-semibold">Intermediate</span>';
-}
-
-// ── Landing: Category filter ───────────────────────────────────────────────
-function setLandingCat(cat, btn) {
-  state.landingCategory = cat;
-  document.querySelectorAll('#landing-cats button').forEach(b => {
-    b.className = 'flex-shrink-0 px-4 py-2 rounded-xl text-xs bg-white text-gray-600 border border-gray-200';
-  });
-  btn.className = 'flex-shrink-0 px-4 py-2 rounded-xl text-xs bg-emerald-500 text-white shadow-sm font-semibold';
-  const label = cat==='all' ? 'SEMUA KELAS' : cat.replace(/-/g,' ').toUpperCase();
-  document.getElementById('landing-cat-label').textContent = label;
-  renderLandingCourses();
-}
-
-function renderLandingCourses() {
-  const cat = state.landingCategory;
-  const courses = COURSES.filter(c => cat==='all' || c.category===cat).slice(0,3);
-  const container = document.getElementById('landing-course-list');
-  container.innerHTML = courses.map(c => courseCardHorizontal(c)).join('');
-}
-
-function courseCardHorizontal(c) {
-  return `<button onclick="openCourse('${c.id}')" class="w-full flex items-center gap-4 p-4 bg-white rounded-2xl border border-gray-100 shadow-sm">
-    <div class="w-14 h-14 rounded-2xl bg-gradient-to-br ${c.gradient} flex items-center justify-center text-2xl flex-shrink-0">${c.emoji}</div>
-    <div class="flex-1 text-left">
-      <p class="text-gray-900 text-sm leading-tight mb-1 font-bold">${c.title}</p>
-      <div class="flex items-center gap-2 flex-wrap">
-        <span class="flex items-center gap-1 text-gray-500 text-xs">🕐 ${c.duration}</span>
-        ${levelLabel(c.level)} ${outputLabel(c.output)}
-      </div>
-    </div>
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-  </button>`;
-}
-
-function filterByGoal(cat) {
-  state.listCategory = cat;
-  renderCourseList();
-  pushHistory('screen-course-list');
-  // update chip ui
-  document.querySelectorAll('#list-cats button').forEach(b => {
-    b.className = 'flex-shrink-0 px-3.5 py-1.5 rounded-xl text-xs bg-gray-100 text-gray-600';
-  });
-  const catMap = {'basic-keuangan':1,'cashflow':2,'siap-modal':3,'digital-ops':4};
-  const btns = document.querySelectorAll('#list-cats button');
-  if(catMap[cat]) { btns[catMap[cat]].className = 'flex-shrink-0 px-3.5 py-1.5 rounded-xl text-xs bg-emerald-500 text-white font-semibold'; btns[0].className = 'flex-shrink-0 px-3.5 py-1.5 rounded-xl text-xs bg-gray-100 text-gray-600'; }
-}
-
-// ── Landing Tabs ──────────────────────────────────────────────────────────
-function setLandingTab(tab) {
-  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-  document.getElementById('tab-'+tab).classList.add('active');
-  ['belajar','tantangan','leaderboard'].forEach(t => {
-    const btn = document.getElementById('tab-btn-'+t);
-    if(t===tab) { btn.className='flex-1 py-3 text-sm font-semibold border-b-2 border-emerald-500 text-emerald-600 transition-colors'; }
-    else { btn.className='flex-1 py-3 text-sm text-gray-400 border-b-2 border-transparent transition-colors'; }
-  });
-}
-
-// ── Course List ────────────────────────────────────────────────────────────
-function setListCat(cat, btn) {
-  state.listCategory = cat;
-  document.querySelectorAll('#list-cats button').forEach(b => {
-    b.className = 'flex-shrink-0 px-3.5 py-1.5 rounded-xl text-xs bg-gray-100 text-gray-600';
-  });
-  btn.className = 'flex-shrink-0 px-3.5 py-1.5 rounded-xl text-xs bg-emerald-500 text-white font-semibold';
-  renderCourseList();
-}
-
-function setDuration(dur, btn) {
-  state.listDuration = dur;
-  document.querySelectorAll('#dur-filters button').forEach(b => {
-    b.className = 'flex-shrink-0 px-3 py-1.5 rounded-xl text-xs bg-white text-gray-600 border border-gray-200';
-  });
-  btn.className = 'flex-shrink-0 px-3 py-1.5 rounded-xl text-xs bg-gray-800 text-white border border-gray-800 font-semibold';
-  renderCourseList();
-}
-
-function filterCourseList() {
-  const q = document.getElementById('search-input').value;
-  document.getElementById('clear-search-btn').classList.toggle('hidden', !q);
-  renderCourseList();
-}
-
-function clearSearch() {
-  document.getElementById('search-input').value='';
-  document.getElementById('clear-search-btn').classList.add('hidden');
-  renderCourseList();
-}
-
-function renderCourseList() {
-  const q = document.getElementById('search-input').value.toLowerCase();
-  const cat = state.listCategory;
-  const dur = state.listDuration;
-  const filtered = COURSES.filter(c => {
-    const mc = cat==='all' || c.category===cat;
-    const ms = !q || c.title.toLowerCase().includes(q) || c.subtitle.toLowerCase().includes(q);
-    const md = dur==='Semua' || (dur==='5-7' && parseInt(c.duration)<=7) || (dur==='8-10' && parseInt(c.duration)>=8);
-    return mc && ms && md;
-  });
-  const cnt = document.getElementById('results-count');
-  const con = document.getElementById('course-list-container');
-  cnt.textContent = filtered.length + ' KELAS DITEMUKAN';
-  if(!filtered.length) {
-    con.innerHTML = `<div class="text-center py-12"><div class="text-4xl mb-3">🔍</div><p class="text-gray-600 font-medium">Kelas tidak ditemukan</p><p class="text-gray-400 text-sm">Coba kata kunci atau filter lain</p></div>`;
-    return;
-  }
-  con.innerHTML = filtered.map(c => {
-    const done = state.completedCourses.has(c.id);
-    return `<button onclick="openCourse('${c.id}')" class="w-full bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm text-left">
-      <div class="h-24 bg-gradient-to-br ${c.gradient} flex items-center justify-between px-5">
-        <span class="text-4xl">${c.emoji}</span>
-        <div class="flex flex-col items-end gap-1.5">
-          ${levelLabel(c.level)}
-          ${done ? '<div class="flex items-center gap-1 bg-white/90 px-2.5 py-1 rounded-full"><span class="text-xs text-emerald-700 font-semibold">✓ Selesai</span></div>' : ''}
+const stepContent = [
+  // Step 0: Info Booth
+  (ev) => `
+    <div class="space-y-4">
+      <div class="bg-gray-50 rounded-2xl p-4">
+        <div class="space-y-2 text-sm">
+          ${[['Event', ev.name],['Tanggal', ev.date],['Lokasi', ev.location],['Biaya', ev.fee],['Deadline', ev.deadline]]
+            .map(([l,v]) => `<div class="flex justify-between"><span class="text-gray-500">${l}</span><span class="text-gray-900 font-semibold">${v}</span></div>`).join('')}
         </div>
       </div>
-      <div class="p-4">
-        <p class="text-gray-900 text-sm font-bold leading-tight">${c.title}</p>
-        <p class="text-gray-500 text-xs mt-0.5 mb-2">${c.subtitle}</p>
-        <div class="flex items-center gap-2 flex-wrap mb-3">
-          <span class="text-gray-500 text-xs">🕐 ${c.duration}</span>
-          <span class="text-gray-500 text-xs">👥 ${c.enrolled.toLocaleString()}</span>
-          <span class="text-xs">⭐ ${c.rating}</span>
-          ${outputLabel(c.output)}
-        </div>
-        <div class="w-full py-3 rounded-xl text-sm flex items-center justify-center gap-2 font-bold ${done ? 'bg-gray-100 text-gray-600' : 'bg-emerald-500 text-white'}">
-          ${done ? '✓ Ulangi Kelas' : '▶ Mulai Belajar'}
-        </div>
-      </div>
-    </button>`;
-  }).join('');
-}
-
-// ── Open Course ────────────────────────────────────────────────────────────
-function openCourse(id) {
-  if (!COURSES.find(c => c.id === id)) return;
-  setHash('course/' + id);
-}
-
-function renderCourseDetail(c) {
-  const hero = document.getElementById('detail-hero');
-  hero.className = `h-52 bg-gradient-to-br ${c.gradient} flex items-center justify-between px-6 pt-12 relative`;
-  document.getElementById('detail-hero-emoji').textContent = c.emoji;
-  const done = state.completedCourses.has(c.id);
-  const outputIcon = c.output==='Checklist' ? '✅' : c.output==='Template' ? '📄' : '🏅';
-  document.getElementById('detail-body').innerHTML = `
-    <div class="bg-white rounded-3xl p-5 shadow-sm border border-gray-100 mb-4">
-      <div class="flex items-center gap-2 mb-3 flex-wrap">
-        <span class="text-xs px-2.5 py-1 bg-gray-100 text-gray-600 rounded-full font-semibold">${c.tier}</span>
-        ${levelLabel(c.level)} ${outputLabel(c.output)}
-      </div>
-      <h2 class="text-gray-900 font-extrabold text-xl mb-1">${c.title}</h2>
-      <p class="text-gray-500 text-sm mb-4">${c.subtitle}</p>
-      <div class="flex gap-4 mb-4">
-        <span class="text-xs text-gray-600">🕐 ${c.duration}</span>
-        <span class="text-xs text-gray-600">👥 ${c.enrolled.toLocaleString()}</span>
-        <span class="text-xs text-gray-600">⭐ ${c.rating}</span>
-      </div>
-      <div class="bg-gray-50 rounded-xl px-3 py-2">
-        <p class="text-gray-500 text-xs">Kategori: <span class="text-gray-900 font-semibold">${c.categoryLabel}</span></p>
-      </div>
-    </div>
-    <div class="bg-white rounded-2xl p-5 border border-gray-100 mb-4">
-      <h3 class="text-gray-900 font-bold mb-3">Apa yang Akan Kamu Pelajari</h3>
-      <div class="space-y-2.5">
-        ${c.whatYouLearn.map(item => `<div class="flex items-start gap-2.5"><div class="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0 mt-0.5"><span class="text-emerald-600 text-xs">✓</span></div><p class="text-gray-700 text-sm leading-relaxed">${item}</p></div>`).join('')}
-      </div>
-    </div>
-    <div class="bg-white rounded-2xl p-5 border border-gray-100 mb-4">
-      <div class="mb-4">
-        <p class="text-gray-500 text-xs font-semibold mb-2">👥 UNTUK SIAPA</p>
-        <p class="text-gray-700 text-sm">${c.forWho}</p>
-      </div>
-      <div class="border-t border-gray-100 pt-4">
-        <p class="text-gray-500 text-xs font-semibold mb-2">🎯 SETELAH SELESAI KAMU DAPAT</p>
-        <p class="text-gray-700 text-sm">${c.outcome}</p>
-      </div>
-    </div>
-    <div class="bg-gradient-to-br from-yellow-50 to-amber-50 rounded-2xl p-5 border border-yellow-200 mb-6">
-      <p class="text-gray-700 text-xs font-semibold mb-3">REWARD SETELAH SELESAI</p>
-      <div class="flex items-center gap-4">
-        <div class="text-center">
-          <div class="w-14 h-14 rounded-2xl bg-white border-2 border-yellow-300 flex items-center justify-center text-3xl mb-1.5 shadow-sm">${c.badge}</div>
-          <p class="text-gray-700 text-xs font-semibold">Badge</p>
-          <p class="text-gray-500" style="font-size:10px">${c.badgeName}</p>
-        </div>
-        <div class="flex-1 space-y-2">
-          <div class="flex items-center gap-2">
-            <div class="w-7 h-7 rounded-lg bg-emerald-100 flex items-center justify-center text-sm">${outputIcon}</div>
-            <p class="text-gray-700 text-sm font-semibold">${c.output} siap pakai</p>
-          </div>
-          <div class="flex items-center gap-2">
-            <div class="w-7 h-7 rounded-lg bg-blue-100 flex items-center justify-center text-sm">📊</div>
-            <p class="text-gray-700 text-sm">Progress path naik</p>
-          </div>
-        </div>
-      </div>
-    </div>
-    <button onclick="startLesson()" class="w-full bg-emerald-500 text-white py-4 rounded-2xl shadow-md flex items-center justify-center gap-2 font-bold text-base">
-      ▶ ${done ? 'Ulangi Pelajaran' : 'Mulai Pelajaran'}
-    </button>
-  `;
-}
-
-// ── Lesson ─────────────────────────────────────────────────────────────────
-function startLesson() {
-  state.savedPoints = new Set();
-  setHash('lesson/' + state.selectedCourse.id + '/0');
-}
-
-function renderLesson() {
-  const c = state.selectedCourse;
-  const i = state.lessonSlide;
-  const slide = c.slides[i];
-  const isLast = i === c.slides.length - 1;
-  const isSaved = state.savedPoints.has(i);
-
-  document.getElementById('lesson-course-title').textContent = c.title;
-  document.getElementById('lesson-slide-counter').textContent = `Slide ${i+1} / ${c.slides.length}`;
-  document.getElementById('lesson-duration').textContent = c.duration;
-
-  // Progress dots
-  document.getElementById('lesson-progress-dots').innerHTML = c.slides.map((_,j) =>
-    `<div class="flex-1 h-1.5 rounded-full ${j<=i ? 'bg-emerald-500' : 'bg-gray-200'}"></div>`
-  ).join('');
-
-  // Saved key points summary
-  const savedHTML = state.savedPoints.size > 0 ? `
-    <div class="bg-amber-50 rounded-2xl p-4 border border-amber-200">
-      <p class="text-amber-800 text-xs font-bold mb-2">📌 RINGKASAN POIN KUNCIMU</p>
-      <div class="space-y-1.5">
-        ${Array.from(state.savedPoints).sort().map(idx => `<p class="text-amber-700 text-xs">• ${c.slides[idx].highlight}</p>`).join('')}
-      </div>
-    </div>` : '';
-
-  document.getElementById('lesson-content').innerHTML = `
-    <div class="bg-white rounded-3xl overflow-hidden border border-gray-100 shadow-sm anim-slide-right">
-      <div class="bg-gradient-to-br ${c.gradient} p-6 text-center">
-        <div class="text-6xl mb-3">${slide.emoji}</div>
-        <h2 class="text-white font-extrabold text-xl">${slide.title}</h2>
-      </div>
-      <div class="p-5">
-        <p class="text-gray-700 leading-relaxed mb-5">${slide.content}</p>
-        <div class="bg-emerald-50 border-l-4 border-emerald-500 rounded-r-2xl p-4">
-          <p class="text-emerald-800 text-sm leading-relaxed font-semibold">💡 ${slide.highlight}</p>
-        </div>
-      </div>
-    </div>
-    <button onclick="toggleSavePoint(${i})" id="save-btn" class="w-full flex items-center justify-center gap-2 py-3 rounded-2xl border-2 font-semibold transition-all ${isSaved ? 'bg-amber-50 border-amber-400 text-amber-700' : 'bg-white border-gray-200 text-gray-600'}">
-      ${isSaved ? '📌 Poin tersimpan!' : '🔖 Simpan Poin Kunci'}
-    </button>
-    ${savedHTML}
-    <div class="flex gap-3">
-      ${i > 0 ? `<button onclick="prevSlide()" class="flex-1 py-4 border-2 border-gray-200 rounded-2xl text-gray-700 font-semibold">← Sebelumnya</button>` : ''}
-      <button onclick="${isLast ? 'startQuiz()' : 'nextSlide()'}" class="flex-1 bg-emerald-500 text-white py-4 rounded-2xl shadow-md font-bold">
-        ${isLast ? 'Lanjut Kuis →' : 'Selanjutnya →'}
-      </button>
-    </div>
-    ${isLast ? `<button onclick="skipQuiz()" class="w-full py-3 text-gray-400 text-sm">Lewati kuis, langsung selesai</button>` : ''}
-  `;
-}
-
-function toggleSavePoint(idx) {
-  if (state.savedPoints.has(idx)) {
-    state.savedPoints.delete(idx);
-    showToast('Poin dihapus dari catatan', false);
-  } else {
-    state.savedPoints.add(idx);
-    showToast('Poin kunci disimpan! 📌');
-  }
-  renderLesson();
-}
-
-function nextSlide() {
-  setHash('lesson/' + state.selectedCourse.id + '/' + (state.lessonSlide + 1));
-}
-
-function prevSlide() {
-  setHash('lesson/' + state.selectedCourse.id + '/' + (state.lessonSlide - 1));
-}
-
-function skipQuiz() {
-  if (state.selectedCourse) state.completedCourses.add(state.selectedCourse.id);
-  state.quizPassed = true;
-  state.quizAnswers = [];
-  setHash('completion/' + state.selectedCourse.id);
-}
-
-// ── Quiz ───────────────────────────────────────────────────────────────────
-function startQuiz() {
-  state.quizAnswers  = new Array(state.selectedCourse.quiz.length).fill(null);
-  state.quizSubmitted = new Array(state.selectedCourse.quiz.length).fill(false);
-  state.quizPassed   = null;
-  setHash('quiz/' + state.selectedCourse.id + '/0');
-}
-
-function renderQuiz() {
-  const c = state.selectedCourse;
-  const step = state.quizStep;
-  const q = c.quiz[step];
-  const answered = state.quizSubmitted[step];
-  const chosen = state.quizAnswers[step];
-  const isCorrect = chosen === q.answer;
-  const isLast = step === c.quiz.length - 1;
-
-  document.getElementById('quiz-subtitle').textContent = `Kuis · ${c.title}`;
-  document.getElementById('quiz-counter').textContent = `Pertanyaan ${step+1} / ${c.quiz.length}`;
-
-  document.getElementById('quiz-progress-dots').innerHTML = c.quiz.map((_,i) => {
-    let cls = 'bg-gray-200';
-    if(i < step) cls = state.quizAnswers[i] === c.quiz[i].answer ? 'bg-emerald-500' : 'bg-red-400';
-    else if(i === step) cls = 'bg-blue-400';
-    return `<div class="flex-1 h-1.5 rounded-full ${cls}"></div>`;
-  }).join('');
-
-  const optionsHTML = q.options.map((opt, i) => {
-    let cls = 'bg-white border-gray-200 text-gray-700';
-    let indicator = `<span class="text-xs text-gray-500 font-semibold">${['A','B','C'][i]}</span>`;
-    if(answered) {
-      if(i===q.answer) { cls='bg-emerald-50 border-emerald-500 text-emerald-800'; indicator='<span class="text-white">✓</span>'; }
-      else if(i===chosen && i!==q.answer) { cls='bg-red-50 border-red-400 text-red-800'; indicator='<span class="text-white">✗</span>'; }
-      else { cls='bg-gray-50 border-gray-200 text-gray-400'; }
-    }
-    const indicatorBg = answered && i===q.answer ? 'bg-emerald-500 border-emerald-500' : answered && i===chosen && i!==q.answer ? 'bg-red-400 border-red-400' : 'border-gray-300';
-    return `<button onclick="${answered ? '' : `submitAnswer(${i})`}" ${answered?'disabled':''} class="w-full flex items-center gap-3 p-4 rounded-2xl border-2 text-left transition-all ${cls}">
-      <div class="w-7 h-7 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${indicatorBg}">${indicator}</div>
-      <span class="text-sm ${answered && i===q.answer ? 'font-bold' : 'font-medium'}">${opt}</span>
-    </button>`;
-  }).join('');
-
-  const feedbackHTML = answered ? (isCorrect
-    ? `<div class="mt-4 bg-emerald-50 rounded-2xl p-4 border border-emerald-200 flex items-center gap-2.5"><span class="text-emerald-600 text-lg flex-shrink-0">✅</span><p class="text-emerald-800 text-sm font-semibold">Benar! Jawaban kamu tepat 🎉</p></div>`
-    : `<div class="mt-4 bg-blue-50 rounded-2xl p-4 border border-blue-200 flex items-start gap-2.5"><span class="text-blue-600 text-lg flex-shrink-0">ℹ️</span><div><p class="text-blue-800 text-sm font-bold mb-1">Penjelasan</p><p class="text-blue-700 text-sm">${q.explanation}</p></div></div>`
-  ) : '';
-
-  const nextBtn = answered ? `<button onclick="${isLast ? 'finishQuiz()' : 'nextQuestion()'}" class="w-full bg-emerald-500 text-white py-4 rounded-2xl shadow-md font-bold anim-slide-up">
-    ${isLast ? 'Lihat Hasil Kuis →' : 'Pertanyaan Berikutnya →'}
-  </button>` : '';
-
-  document.getElementById('quiz-content').innerHTML = `
-    <div class="anim-fade-in">
-      <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm mb-4">
-        <div class="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center mb-3">
-          <span class="text-blue-700 font-bold">Q${step+1}</span>
-        </div>
-        <p class="text-gray-900 font-bold text-base leading-relaxed">${q.question}</p>
-      </div>
-      <div class="space-y-3">${optionsHTML}</div>
-      ${feedbackHTML}
-    </div>
-    ${nextBtn}
-  `;
-}
-
-function submitAnswer(idx) {
-  if (state.quizSubmitted[state.quizStep]) return;
-  state.quizAnswers[state.quizStep] = idx;
-  state.quizSubmitted[state.quizStep] = true;
-  renderQuiz();
-}
-
-function nextQuestion() {
-  setHash('quiz/' + state.selectedCourse.id + '/' + (state.quizStep + 1));
-}
-
-function finishQuiz() {
-  const c = state.selectedCourse;
-  const correct = state.quizAnswers.filter((a,i) => a === c.quiz[i].answer).length;
-  const score = Math.round((correct / c.quiz.length) * 100);
-  state.quizPassed = score >= 60;
-  if (state.quizPassed) state.completedCourses.add(c.id);
-  setHash('completion/' + c.id);
-}
-
-// ── Completion ─────────────────────────────────────────────────────────────
-function renderCompletion() {
-  const c = state.selectedCourse;
-  const correct = state.quizAnswers.filter((a,i) => a === c.quiz[i]?.answer).length;
-  const totalQ = c.quiz.length;
-  const score = totalQ > 0 ? Math.round((correct/totalQ)*100) : 100;
-  const passed = state.quizPassed !== null ? state.quizPassed : true;
-  const isModal = c.category === 'siap-modal';
-  const nextC = COURSES.find(x => x.id === c.nextCourseId);
-
-  const pathDone = COURSES.filter(x => x.pathOrder>0 && state.completedCourses.has(x.id)).length;
-  const pathTotal = COURSES.filter(x => x.pathOrder>0).length;
-
-  const scoreHTML = totalQ > 0 ? `<div class="mt-4 bg-white/20 rounded-2xl p-3">
-    <p class="text-white/80 text-xs">Skor Kuis</p>
-    <p class="font-extrabold text-4xl">${score}%</p>
-    <p class="text-white/80 text-xs">${correct}/${totalQ} jawaban benar · ${passed ? 'Lulus ✓' : 'Belum lulus'}</p>
-  </div>` : '';
-
-  const badgeHTML = passed ? `<div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm anim-slide-up" style="animation-delay:.2s">
-    <p class="text-gray-500 text-xs font-semibold mb-4">REWARD YANG KAMU DAPATKAN</p>
-    <div class="flex items-center gap-4">
-      <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-yellow-100 to-amber-200 border-2 border-yellow-400 flex items-center justify-center text-3xl shadow-md anim-pop-in">${c.badge}</div>
       <div>
-        <p class="text-gray-900 font-extrabold text-xl">Badge Baru! 🏅</p>
-        <p class="text-gray-600 text-sm">${c.badgeName}</p>
-        <div class="mt-1">${outputLabel(c.output)}</div>
+        <label class="text-xs text-gray-500 mb-2 block font-semibold">Nama Brand / Toko</label>
+        <input value="Warung Kopi Nusantara" class="w-full px-4 py-3.5 border-2 border-gray-200 rounded-2xl text-sm" />
       </div>
-    </div>
-  </div>` : '';
-
-  const pathHTML = passed && c.pathOrder > 0 ? `<div class="bg-emerald-50 rounded-2xl p-4 border border-emerald-200 anim-slide-up" style="animation-delay:.3s">
-    <div class="flex items-center gap-2 mb-2"><span class="text-emerald-600">📈</span><p class="text-emerald-800 text-sm font-bold">Progress Path Naik!</p></div>
-    <div class="flex justify-between text-xs text-emerald-700 mb-1.5"><span>Recommended Path · Stabilization</span><span class="font-bold">${pathDone}/${pathTotal} selesai</span></div>
-    <div class="h-2 bg-emerald-200 rounded-full overflow-hidden"><div class="h-full bg-emerald-500 rounded-full progress-bar" style="width:${Math.round((pathDone/pathTotal)*100)}%"></div></div>
-  </div>` : '';
-
-  const nextHTML = passed && nextC ? `<div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm anim-slide-up" style="animation-delay:.4s">
-    <p class="text-gray-500 text-xs font-semibold mb-3">KELAS BERIKUTNYA YANG DISARANKAN</p>
-    <button onclick="openCourseFromCompletion('${nextC.id}')" class="w-full flex items-center gap-3">
-      <div class="w-14 h-14 rounded-2xl bg-gradient-to-br ${nextC.gradient} flex items-center justify-center text-2xl flex-shrink-0">${nextC.emoji}</div>
-      <div class="flex-1 text-left">
-        <p class="text-gray-900 text-sm font-bold">${nextC.title}</p>
-        <p class="text-gray-500 text-xs mt-0.5">${nextC.duration} · ${nextC.output}</p>
-        <div class="mt-1">${levelLabel(nextC.level)}</div>
+      <div>
+        <label class="text-xs text-gray-500 mb-2 block font-semibold">Kategori Produk</label>
+        <select class="w-full px-4 py-3.5 border-2 border-gray-200 rounded-2xl text-sm bg-white">
+          <option>Minuman Kopi</option><option>Makanan Ringan</option><option>Makanan Berat</option>
+        </select>
       </div>
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-    </button>
-  </div>` : '';
+    </div>`,
 
-  const ctaHTML = `<div class="space-y-3">
-    ${passed && isModal ? `<button onclick="showToast('Fitur pendanaan akan segera hadir! 🚀')" class="w-full bg-gradient-to-r from-emerald-500 to-teal-600 text-white py-4 rounded-2xl shadow-md flex items-center justify-center gap-2 font-bold text-base">💰 Buka Pendanaan FUND-Link →</button>` : ''}
-    ${!passed ? `<button onclick="retryQuiz()" class="w-full bg-emerald-500 text-white py-4 rounded-2xl shadow-md font-bold">Coba Kuis Lagi →</button>` : ''}
-    <button onclick="backToHome()" class="w-full py-4 rounded-2xl border-2 border-gray-200 text-gray-700 font-semibold">Kembali ke Learning Hub</button>
-  </div>`;
+  // Step 1: Upload Produk
+  () => `
+    <div class="space-y-4">
+      <p class="text-gray-500 text-sm">Upload foto produk yang akan dijual di booth</p>
+      <div class="border-2 border-dashed border-gray-200 rounded-2xl p-8 flex flex-col items-center gap-3 bg-gray-50">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <p class="text-gray-500 text-sm">Upload foto produk</p>
+        <p class="text-gray-400 text-xs">JPG, PNG, maks 5MB per foto</p>
+        <button onclick="showToast('Fitur upload akan segera hadir!')" class="px-4 py-2 bg-emerald-100 text-emerald-600 rounded-xl text-sm font-semibold">Pilih File</button>
+      </div>
+      <div>
+        <label class="text-xs text-gray-500 mb-2 block font-semibold">Deskripsi Produk</label>
+        <textarea placeholder="Ceritakan produk unggulanmu..." class="w-full px-4 py-3.5 border-2 border-gray-200 rounded-2xl text-sm" rows="3"></textarea>
+      </div>
+    </div>`,
 
-  document.getElementById('completion-content').innerHTML = `
-    <div class="rounded-3xl p-6 text-center ${passed ? 'bg-gradient-to-br from-emerald-500 to-teal-600' : 'bg-gradient-to-br from-amber-400 to-orange-500'} text-white anim-scale-in">
-      <div class="text-6xl mb-3">${passed ? '🎉' : '💪'}</div>
-      <h2 class="font-extrabold text-2xl">${passed ? 'Kelas Selesai!' : 'Hampir Berhasil!'}</h2>
-      <p class="text-white/90 text-sm mt-1">${passed ? 'Luar biasa! Kamu telah menyelesaikan pelajaran ini.' : 'Terus belajar dan coba lagi!'}</p>
-      ${scoreHTML}
-    </div>
-    ${badgeHTML}
-    ${pathHTML}
-    ${nextHTML}
-    ${ctaHTML}
-  `;
+  // Step 2: Bayar
+  (ev) => `
+    <div class="space-y-4">
+      <div class="bg-gray-50 rounded-2xl p-4">
+        <p class="text-gray-500 text-xs font-semibold mb-3">RINGKASAN PEMBAYARAN</p>
+        <div class="space-y-2 text-sm">
+          <div class="flex justify-between"><span class="text-gray-500">Biaya pendaftaran</span><span class="text-gray-900 font-semibold">${ev.fee}</span></div>
+          <div class="flex justify-between"><span class="text-gray-500">Pajak</span><span class="text-gray-900 font-semibold">Rp 0</span></div>
+          <div class="border-t border-gray-200 pt-2 flex justify-between"><span class="text-gray-900 font-semibold">Total</span><span class="text-emerald-600 font-bold">${ev.fee}</span></div>
+        </div>
+      </div>
+      <div>
+        <p class="text-gray-500 text-xs font-semibold mb-3">METODE PEMBAYARAN</p>
+        ${['Transfer Bank BCA','GoPay','OVO','QRIS'].map((m, i) => `
+          <div onclick="selectPayment(this)" class="flex items-center gap-3 p-3 mb-2 rounded-xl border-2 cursor-pointer ${i===0 ? 'border-emerald-500 bg-emerald-50' : 'border-gray-200'}">
+            <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center ${i===0 ? 'border-emerald-500 bg-emerald-500' : 'border-gray-300'}">
+              ${i===0 ? '<div class="w-2 h-2 bg-white rounded-full"></div>' : ''}
+            </div>
+            <span class="text-sm ${i===0 ? 'text-emerald-700 font-semibold' : 'text-gray-600'}">${m}</span>
+          </div>`).join('')}
+      </div>
+    </div>`,
+
+  // Step 3: Selesai
+  (ev) => `
+    <div class="text-center py-6">
+      <div class="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      </div>
+      <h3 class="text-gray-900 font-bold text-xl mb-2">Pendaftaran Berhasil!</h3>
+      <p class="text-gray-500 text-sm mb-4">Kamu sudah terdaftar di ${ev.name}. Event pass akan segera dikirim.</p>
+      <div class="bg-gray-50 rounded-2xl p-5 border-2 border-dashed border-gray-200">
+        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-2"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/><path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/><path d="M3 12h.01"/><path d="M12 3h.01"/><path d="M12 16v.01"/><path d="M16 12h1"/><path d="M21 12v.01"/><path d="M12 21v-1"/></svg>
+        <p class="text-gray-500 text-xs">Event Pass akan tersedia setelah pembayaran dikonfirmasi</p>
+      </div>
+    </div>`,
+];
+
+function openRegisterModal(eventKey) {
+  setHash('register/' + eventKey + '/0');
 }
 
-function openCourseFromCompletion(id) {
-  setHash('course/' + id);
+function closeRegisterModal() { history.back(); }
+
+function updateRegModal() {
+  // Step bars
+  document.querySelectorAll('#step-bars div').forEach((b, i) => {
+    b.className = 'h-1.5 flex-1 rounded-full ' + (i <= regStep ? 'bg-emerald-500' : 'bg-gray-200');
+  });
+
+  // Content
+  document.getElementById('reg-step-content').innerHTML = stepContent[regStep](currentEvent);
+
+  // Back button
+  document.getElementById('reg-back-btn').classList.toggle('hidden', regStep === 0 || regStep === 3);
+
+  // Next button label
+  const nextBtn = document.getElementById('reg-next-btn');
+  const labels  = ['Lanjut', 'Lanjut', 'Bayar Sekarang', 'Selesai'];
+  const showArrow = regStep < 3;
+  nextBtn.innerHTML = labels[regStep] + (showArrow
+    ? `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>`
+    : '');
 }
 
-function retryQuiz() {
-  state.quizAnswers   = new Array(state.selectedCourse.quiz.length).fill(null);
-  state.quizSubmitted = new Array(state.selectedCourse.quiz.length).fill(false);
-  state.quizPassed    = null;
-  setHash('quiz/' + state.selectedCourse.id + '/0');
+function regNext() {
+  if (regStep < 3) {
+    // Ganti hash ke step berikutnya — history.back() akan kembali ke step sebelumnya
+    const key = Object.keys(EVENTS).find(k => EVENTS[k] === currentEvent) || 'street-food';
+    setHash('register/' + key + '/' + (regStep + 1));
+  } else {
+    // Step selesai: tutup modal dan kembali ke tab available
+    replaceHash('available');
+    showToast('Pendaftaran bazaar berhasil! 🎉');
+  }
 }
 
-function backToHome() {
-  setLandingTab('belajar');
-  setHash('home');
+function regPrev() { history.back(); }
+
+function selectPayment(el) {
+  document.querySelectorAll('#reg-step-content [onclick="selectPayment(this)"]').forEach(item => {
+    item.className = 'flex items-center gap-3 p-3 mb-2 rounded-xl border-2 cursor-pointer border-gray-200';
+    item.querySelector('.rounded-full').className = 'w-5 h-5 rounded-full border-2 flex items-center justify-center border-gray-300';
+    item.querySelector('.rounded-full').innerHTML = '';
+    item.querySelector('span').className = 'text-sm text-gray-600';
+  });
+  el.className = 'flex items-center gap-3 p-3 mb-2 rounded-xl border-2 cursor-pointer border-emerald-500 bg-emerald-50';
+  el.querySelector('.rounded-full').className = 'w-5 h-5 rounded-full border-2 flex items-center justify-center border-emerald-500 bg-emerald-500';
+  el.querySelector('.rounded-full').innerHTML = '<div class="w-2 h-2 bg-white rounded-full"></div>';
+  el.querySelector('span').className = 'text-sm text-emerald-700 font-semibold';
 }
 
-// ── Init ───────────────────────────────────────────────────────────────────
-renderLandingCourses();
-renderCourseList();
-// Boot dari hash URL, fallback ke home
-const initHash = location.hash.replace('#', '') || 'home';
-routeHash(initHash);
+// ── Init ──────────────────────────────────────────────────────────────────
+routeHash(location.hash.replace('#', '') || 'my');
 </script>
 </body>
 </html>
