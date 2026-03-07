@@ -609,24 +609,107 @@ let state = {
   landingCategory: 'all',
 };
 
-// ── Helpers ──────────────────────────────────────────────────────────────
-function showScreen(id) {
+// ── Hash Router ───────────────────────────────────────────────────────────
+// Hash format:
+//   #home
+//   #course-list
+//   #course/{courseId}
+//   #lesson/{courseId}/{slideIndex}     (0-based)
+//   #quiz/{courseId}/{questionIndex}    (0-based)
+//   #completion/{courseId}
+
+function setHash(hash) {
+  history.pushState(null, '', '#' + hash);
+  routeHash(hash);
+}
+
+function replaceHash(hash) {
+  history.replaceState(null, '', '#' + hash);
+  routeHash(hash);
+}
+
+function routeHash(hash) {
+  if (!hash || hash === 'home') {
+    _showScreen('screen-landing');
+    return;
+  }
+  const parts = hash.split('/');
+  const section = parts[0];
+
+  if (section === 'course-list') {
+    renderCourseList();
+    _showScreen('screen-course-list');
+    return;
+  }
+  if (section === 'course') {
+    const course = COURSES.find(c => c.id === parts[1]);
+    if (!course) { replaceHash('home'); return; }
+    state.selectedCourse = course;
+    renderCourseDetail(course);
+    _showScreen('screen-course-detail');
+    return;
+  }
+  if (section === 'lesson') {
+    const course = COURSES.find(c => c.id === parts[1]);
+    if (!course) { replaceHash('home'); return; }
+    const slideIdx = Math.min(parseInt(parts[2]) || 0, course.slides.length - 1);
+    state.selectedCourse = course;
+    state.lessonSlide = slideIdx;
+    if (!state.savedPoints) state.savedPoints = new Set();
+    renderLesson();
+    _showScreen('screen-lesson');
+    return;
+  }
+  if (section === 'quiz') {
+    const course = COURSES.find(c => c.id === parts[1]);
+    if (!course) { replaceHash('home'); return; }
+    const qIdx = Math.min(parseInt(parts[2]) || 0, course.quiz.length - 1);
+    state.selectedCourse = course;
+    if (!state.quizAnswers || state.quizAnswers.length !== course.quiz.length) {
+      state.quizAnswers   = new Array(course.quiz.length).fill(null);
+      state.quizSubmitted = new Array(course.quiz.length).fill(false);
+      state.quizPassed    = null;
+    }
+    state.quizStep = qIdx;
+    renderQuiz();
+    _showScreen('screen-quiz');
+    return;
+  }
+  if (section === 'completion') {
+    const course = COURSES.find(c => c.id === parts[1]);
+    if (!course) { replaceHash('home'); return; }
+    state.selectedCourse = course;
+    renderCompletion();
+    _showScreen('screen-completion');
+    return;
+  }
+  replaceHash('home');
+}
+
+function _showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   state.currentScreen = id;
-  window.scrollTo(0,0);
+  window.scrollTo(0, 0);
 }
 
-function goBack() {
-  if (state.history.length === 0) return;
-  const prev = state.history.pop();
-  showScreen(prev);
+// showScreen kept for backward compat with HTML onclick attributes
+function showScreen(id) {
+  if (id === 'screen-landing')     { setHash('home'); return; }
+  if (id === 'screen-course-list') { setHash('course-list'); return; }
+  if (id === 'screen-course-detail' && state.selectedCourse) { setHash('course/' + state.selectedCourse.id); return; }
+  if (id === 'screen-lesson'     && state.selectedCourse) { setHash('lesson/'     + state.selectedCourse.id + '/' + state.lessonSlide); return; }
+  if (id === 'screen-quiz'       && state.selectedCourse) { setHash('quiz/'       + state.selectedCourse.id + '/' + state.quizStep); return; }
+  if (id === 'screen-completion' && state.selectedCourse) { setHash('completion/' + state.selectedCourse.id); return; }
+  _showScreen(id);
 }
 
-function pushHistory(id) {
-  state.history.push(state.currentScreen);
-  showScreen(id);
-}
+function goBack() { history.back(); }
+function pushHistory(id) { showScreen(id); }
+
+window.addEventListener('popstate', () => {
+  routeHash(location.hash.replace('#', '') || 'home');
+});
 
 function showToast(msg, success=true) {
   const t = document.getElementById('toast');
@@ -781,11 +864,8 @@ function renderCourseList() {
 
 // ── Open Course ────────────────────────────────────────────────────────────
 function openCourse(id) {
-  const course = COURSES.find(c => c.id === id);
-  if (!course) return;
-  state.selectedCourse = course;
-  renderCourseDetail(course);
-  pushHistory('screen-course-detail');
+  if (!COURSES.find(c => c.id === id)) return;
+  setHash('course/' + id);
 }
 
 function renderCourseDetail(c) {
@@ -855,10 +935,8 @@ function renderCourseDetail(c) {
 
 // ── Lesson ─────────────────────────────────────────────────────────────────
 function startLesson() {
-  state.lessonSlide = 0;
   state.savedPoints = new Set();
-  renderLesson();
-  pushHistory('screen-lesson');
+  setHash('lesson/' + state.selectedCourse.id + '/0');
 }
 
 function renderLesson() {
@@ -925,33 +1003,26 @@ function toggleSavePoint(idx) {
 }
 
 function nextSlide() {
-  state.lessonSlide++;
-  window.scrollTo(0,0);
-  renderLesson();
+  setHash('lesson/' + state.selectedCourse.id + '/' + (state.lessonSlide + 1));
 }
 
 function prevSlide() {
-  state.lessonSlide--;
-  window.scrollTo(0,0);
-  renderLesson();
+  setHash('lesson/' + state.selectedCourse.id + '/' + (state.lessonSlide - 1));
 }
 
 function skipQuiz() {
   if (state.selectedCourse) state.completedCourses.add(state.selectedCourse.id);
   state.quizPassed = true;
   state.quizAnswers = [];
-  renderCompletion();
-  pushHistory('screen-completion');
+  setHash('completion/' + state.selectedCourse.id);
 }
 
 // ── Quiz ───────────────────────────────────────────────────────────────────
 function startQuiz() {
-  state.quizStep = 0;
-  state.quizAnswers = new Array(state.selectedCourse.quiz.length).fill(null);
+  state.quizAnswers  = new Array(state.selectedCourse.quiz.length).fill(null);
   state.quizSubmitted = new Array(state.selectedCourse.quiz.length).fill(false);
-  state.quizPassed = null;
-  renderQuiz();
-  pushHistory('screen-quiz');
+  state.quizPassed   = null;
+  setHash('quiz/' + state.selectedCourse.id + '/0');
 }
 
 function renderQuiz() {
@@ -1020,9 +1091,7 @@ function submitAnswer(idx) {
 }
 
 function nextQuestion() {
-  state.quizStep++;
-  renderQuiz();
-  window.scrollTo(0,0);
+  setHash('quiz/' + state.selectedCourse.id + '/' + (state.quizStep + 1));
 }
 
 function finishQuiz() {
@@ -1030,9 +1099,8 @@ function finishQuiz() {
   const correct = state.quizAnswers.filter((a,i) => a === c.quiz[i].answer).length;
   const score = Math.round((correct / c.quiz.length) * 100);
   state.quizPassed = score >= 60;
-  if(state.quizPassed) state.completedCourses.add(c.id);
-  renderCompletion();
-  pushHistory('screen-completion');
+  if (state.quizPassed) state.completedCourses.add(c.id);
+  setHash('completion/' + c.id);
 }
 
 // ── Completion ─────────────────────────────────────────────────────────────
@@ -1106,30 +1174,27 @@ function renderCompletion() {
 }
 
 function openCourseFromCompletion(id) {
-  state.selectedCourse = COURSES.find(c => c.id === id);
-  renderCourseDetail(state.selectedCourse);
-  showScreen('screen-course-detail');
+  setHash('course/' + id);
 }
 
 function retryQuiz() {
-  state.quizStep = 0;
-  state.quizAnswers = new Array(state.selectedCourse.quiz.length).fill(null);
+  state.quizAnswers   = new Array(state.selectedCourse.quiz.length).fill(null);
   state.quizSubmitted = new Array(state.selectedCourse.quiz.length).fill(false);
-  state.quizPassed = null;
-  renderQuiz();
-  showScreen('screen-quiz');
+  state.quizPassed    = null;
+  setHash('quiz/' + state.selectedCourse.id + '/0');
 }
 
 function backToHome() {
-  state.history = [];
   setLandingTab('belajar');
-  showScreen('screen-landing');
+  setHash('home');
 }
 
 // ── Init ───────────────────────────────────────────────────────────────────
 renderLandingCourses();
 renderCourseList();
-openCourse('arus-kas');
+// Boot dari hash URL, fallback ke home
+const initHash = location.hash.replace('#', '') || 'home';
+routeHash(initHash);
 </script>
 </body>
 </html>
