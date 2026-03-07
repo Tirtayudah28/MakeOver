@@ -8,45 +8,40 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
     * { font-family: 'Plus Jakarta Sans', sans-serif; }
-    
-    /* Container untuk preview - dipertahankan minimal, namun TANPA tombol pemicu */
-    .demo-container {
-      max-width: 430px;
-      margin: 0 auto;
+
+    body {
       background: #f9fafb;
       min-height: 100vh;
-      padding: 20px;
       display: flex;
       align-items: flex-end;
+      justify-content: center;
+      padding: 0;
+      margin: 0;
     }
-    
-    /* Modal styles */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.6);
-      z-index: 50;
+
+    /* Modal wrapper langsung jadi tampilan utama */
+    .modal-sheet {
+      width: 100%;
       max-width: 430px;
-      margin: 0 auto;
-      display: flex;
-      align-items: flex-end;
+      background: white;
+      border-radius: 24px 24px 0 0;
+      padding: 24px;
+      max-height: 90vh;
+      overflow-y: auto;
+      animation: slideUp .35s cubic-bezier(0.32,0.72,0,1) forwards;
     }
-    
+
     @keyframes slideUp {
-      from { transform: translateY(100%); }
-      to { transform: translateY(0); }
+      from { transform: translateY(60px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
     }
-    
-    .anim-slide-up {
-      animation: slideUp .3s cubic-bezier(0.32,0.72,0,1) forwards;
-    }
-    
+
     button:active { transform: scale(0.97); }
     textarea:focus, input:focus, select:focus { border-color: #10b981 !important; outline: none; }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     select { appearance: none; }
-    
+
     .toast {
       position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%);
       background: #1f2937; color: #fff; padding: 10px 20px;
@@ -55,64 +50,47 @@
       white-space: nowrap;
     }
     .toast.show { opacity: 1; }
-
-    /* Hilangkan tombol yang ada di container demo */
-    .demo-container button {
-      display: none;
-    }
   </style>
 </head>
 <body>
 
-<!-- Toast (tetap ada untuk feedback) -->
 <div id="toast" class="toast"></div>
 
-<!-- Demo container: HANYA sebagai latar/ruang kosong, tombol di dalamnya sudah disembunyikan via CSS -->
-<div class="demo-container">
-  <!-- Tombol sengaja disembunyikan dengan CSS .demo-container button { display:none; } -->
-  <button style="display:none;">Tersembunyi</button>
-</div>
+<div class="modal-sheet no-scrollbar">
 
-<!-- ═══════════════════ MODAL REGISTRASI (DESAIN MURNI) LANGSUNG TAMPIL ═══════════════════ -->
-<div id="register-modal" class="modal-overlay" onclick="closeRegisterModal()">
-  <div class="bg-white rounded-t-3xl w-full p-6 no-scrollbar anim-slide-up" style="max-height:90vh;overflow-y:auto" onclick="event.stopPropagation()">
-
-    <div class="flex items-center justify-between mb-5">
-      <div>
-        <p class="text-gray-500 text-xs font-semibold">PENDAFTARAN</p>
-        <h3 id="modal-event-name" class="text-gray-900 font-bold text-lg">Street Food Carnival</h3>
-      </div>
-      <button onclick="closeRegisterModal()" class="w-9 h-9 bg-gray-100 rounded-xl flex items-center justify-center">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
+  <div class="flex items-center justify-between mb-5">
+    <div>
+      <p class="text-gray-500 text-xs font-semibold">PENDAFTARAN</p>
+      <h3 id="modal-event-name" class="text-gray-900 font-bold text-lg">Street Food Carnival</h3>
     </div>
-
-    <!-- Step progress -->
-    <div class="flex gap-1.5 mb-5" id="step-bars">
-      <div class="h-1.5 flex-1 rounded-full bg-emerald-500"></div>
-      <div class="h-1.5 flex-1 rounded-full bg-gray-200"></div>
-      <div class="h-1.5 flex-1 rounded-full bg-gray-200"></div>
-      <div class="h-1.5 flex-1 rounded-full bg-gray-200"></div>
-    </div>
-
-    <!-- Step content -->
-    <div id="reg-step-content"></div>
-
-    <!-- Buttons -->
-    <div class="flex gap-3 mt-5">
-      <button id="reg-back-btn" onclick="regPrev()" class="hidden w-12 h-12 border-2 border-gray-200 rounded-xl flex items-center justify-center">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4b5563" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-      </button>
-      <button id="reg-next-btn" onclick="regNext()" class="flex-1 py-4 bg-emerald-500 text-white rounded-2xl font-bold flex items-center justify-center gap-2">
-        Lanjut
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-      </button>
-    </div>
+    <!-- Tombol close dihilangkan -->
   </div>
+
+  <!-- Step progress -->
+  <div class="flex gap-1.5 mb-5" id="step-bars">
+    <div class="h-1.5 flex-1 rounded-full bg-emerald-500"></div>
+    <div class="h-1.5 flex-1 rounded-full bg-gray-200"></div>
+    <div class="h-1.5 flex-1 rounded-full bg-gray-200"></div>
+    <div class="h-1.5 flex-1 rounded-full bg-gray-200"></div>
+  </div>
+
+  <!-- Step content -->
+  <div id="reg-step-content"></div>
+
+  <!-- Navigation Buttons -->
+  <div class="flex gap-3 mt-5">
+    <button id="reg-back-btn" onclick="regPrev()" class="hidden w-12 h-12 border-2 border-gray-200 rounded-xl flex items-center justify-center">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4b5563" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <button id="reg-next-btn" onclick="regNext()" class="flex-1 py-4 bg-emerald-500 text-white rounded-2xl font-bold flex items-center justify-center gap-2">
+      Lanjut
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+    </button>
+  </div>
+
 </div>
 
 <script>
-// ── Data Events ──────────────────────────────────────────────────────────
 const EVENTS = {
   'street-food': { 
     name: 'Street Food Carnival', 
@@ -137,7 +115,6 @@ const EVENTS = {
   },
 };
 
-// ── Toast ─────────────────────────────────────────────────────────────────
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
@@ -145,12 +122,10 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 2500);
 }
 
-// ── Modal State ──────────────────────────────────────────────────────────
 let regStep = 0;
-let currentEvent = EVENTS['street-food']; // Default event
+let currentEvent = EVENTS['street-food'];
 
 const stepContent = [
-  // Step 0: Info Booth
   (ev) => `
     <div class="space-y-4">
       <div class="bg-gray-50 rounded-2xl p-4">
@@ -169,12 +144,10 @@ const stepContent = [
           `).join('')}
         </div>
       </div>
-      
       <div>
         <label class="text-xs text-gray-500 mb-2 block font-semibold">Nama Brand / Toko</label>
         <input value="Warung Kopi Nusantara" class="w-full px-4 py-3.5 border-2 border-gray-200 rounded-2xl text-sm" />
       </div>
-      
       <div>
         <label class="text-xs text-gray-500 mb-2 block font-semibold">Kategori Produk</label>
         <select class="w-full px-4 py-3.5 border-2 border-gray-200 rounded-2xl text-sm bg-white">
@@ -187,11 +160,9 @@ const stepContent = [
       </div>
     </div>`,
 
-  // Step 1: Upload Produk
   () => `
     <div class="space-y-4">
       <p class="text-gray-500 text-sm">Upload foto produk yang akan dijual di booth</p>
-      
       <div class="border-2 border-dashed border-gray-200 rounded-2xl p-8 flex flex-col items-center gap-3 bg-gray-50">
         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
@@ -204,14 +175,12 @@ const stepContent = [
           Pilih File
         </button>
       </div>
-      
       <div>
         <label class="text-xs text-gray-500 mb-2 block font-semibold">Deskripsi Produk</label>
         <textarea placeholder="Ceritakan produk unggulanmu..." class="w-full px-4 py-3.5 border-2 border-gray-200 rounded-2xl text-sm" rows="3"></textarea>
       </div>
     </div>`,
 
-  // Step 2: Bayar
   (ev) => `
     <div class="space-y-4">
       <div class="bg-gray-50 rounded-2xl p-4">
@@ -231,7 +200,6 @@ const stepContent = [
           </div>
         </div>
       </div>
-      
       <div>
         <p class="text-gray-500 text-xs font-semibold mb-3">METODE PEMBAYARAN</p>
         ${['Transfer Bank BCA', 'GoPay', 'OVO', 'QRIS'].map((m, i) => `
@@ -245,7 +213,6 @@ const stepContent = [
       </div>
     </div>`,
 
-  // Step 3: Selesai
   (ev) => `
     <div class="text-center py-6">
       <div class="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -256,7 +223,6 @@ const stepContent = [
       </div>
       <h3 class="text-gray-900 font-bold text-xl mb-2">Pendaftaran Berhasil!</h3>
       <p class="text-gray-500 text-sm mb-4">Kamu sudah terdaftar di ${ev.name}. Event pass akan segera dikirim.</p>
-      
       <div class="bg-gray-50 rounded-2xl p-5 border-2 border-dashed border-gray-200">
         <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-2">
           <rect width="5" height="5" x="3" y="3" rx="1"/>
@@ -277,50 +243,53 @@ const stepContent = [
     </div>`,
 ];
 
-// ── Modal Functions ──────────────────────────────────────────────────────
-function openRegisterModal(eventKey = 'street-food') {
-  currentEvent = EVENTS[eventKey] || EVENTS['street-food'];
-  document.getElementById('modal-event-name').textContent = currentEvent.name;
-  regStep = 0;
-  updateRegModal();
-  
-  const modal = document.getElementById('register-modal');
-  modal.classList.remove('hidden');
-  
-  // Trigger animation
-  const content = modal.querySelector('.bg-white');
-  content.classList.remove('anim-slide-up');
-  void content.offsetWidth;
-  content.classList.add('anim-slide-up');
+// ── Hash Navigation ──────────────────────────────────────────────────────
+// Format: #step1, #step2, #step3, #step4 (1-indexed untuk URL yang lebih natural)
+// Juga support: #step=1, #step=2, dst.
+
+function getStepFromHash() {
+  const hash = window.location.hash.toLowerCase();
+  // Support format: #step1, #step2, #step3, #step4
+  const matchShort = hash.match(/^#step(\d+)$/);
+  if (matchShort) {
+    const n = parseInt(matchShort[1]) - 1; // konversi ke 0-index
+    if (n >= 0 && n <= 3) return n;
+  }
+  // Support format: #step=1, #step=2, dst.
+  const matchEq = hash.match(/^#step=(\d+)$/);
+  if (matchEq) {
+    const n = parseInt(matchEq[1]) - 1;
+    if (n >= 0 && n <= 3) return n;
+  }
+  return 0; // default ke step 1
 }
 
-function closeRegisterModal() {
-  document.getElementById('register-modal').classList.add('hidden');
+function setHashForStep(step) {
+  // Update URL hash tanpa memicu scroll / reload
+  history.replaceState(null, '', '#step' + (step + 1));
 }
 
 function updateRegModal() {
-  // Update step bars
   document.querySelectorAll('#step-bars div').forEach((b, i) => {
     b.className = 'h-1.5 flex-1 rounded-full ' + (i <= regStep ? 'bg-emerald-500' : 'bg-gray-200');
   });
 
-  // Update content
   document.getElementById('reg-step-content').innerHTML = stepContent[regStep](currentEvent);
-
-  // Update back button visibility
   document.getElementById('reg-back-btn').classList.toggle('hidden', regStep === 0 || regStep === 3);
 
-  // Update next button label
   const nextBtn = document.getElementById('reg-next-btn');
   const labels = ['Lanjut', 'Lanjut', 'Bayar Sekarang', 'Selesai'];
   const showArrow = regStep < 3;
-  
+
   nextBtn.innerHTML = labels[regStep] + (showArrow
     ? `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <line x1="5" y1="12" x2="19" y2="12"/>
         <polyline points="12 5 19 12 12 19"/>
        </svg>`
     : '');
+
+  // Sync URL hash dengan step saat ini
+  setHashForStep(regStep);
 }
 
 function regNext() {
@@ -328,11 +297,9 @@ function regNext() {
     regStep++;
     updateRegModal();
   } else {
-    // Step selesai
-    closeRegisterModal();
     showToast('Pendaftaran bazaar berhasil! 🎉');
-    // Reset ke step 0 untuk next time
     regStep = 0;
+    updateRegModal();
   }
 }
 
@@ -344,44 +311,32 @@ function regPrev() {
 }
 
 function selectPayment(el) {
-  // Reset semua
   document.querySelectorAll('#reg-step-content [onclick="selectPayment(this)"]').forEach(item => {
     item.className = 'flex items-center gap-3 p-3 mb-2 rounded-xl border-2 cursor-pointer border-gray-200';
     const circle = item.querySelector('.rounded-full');
-    if (circle) {
-      circle.className = 'w-5 h-5 rounded-full border-2 flex items-center justify-center border-gray-300';
-      circle.innerHTML = '';
-    }
+    if (circle) { circle.className = 'w-5 h-5 rounded-full border-2 flex items-center justify-center border-gray-300'; circle.innerHTML = ''; }
     const span = item.querySelector('span');
     if (span) span.className = 'text-sm text-gray-600';
   });
-  
-  // Set yang dipilih
+
   el.className = 'flex items-center gap-3 p-3 mb-2 rounded-xl border-2 cursor-pointer border-emerald-500 bg-emerald-50';
   const circle = el.querySelector('.rounded-full');
-  if (circle) {
-    circle.className = 'w-5 h-5 rounded-full border-2 flex items-center justify-center border-emerald-500 bg-emerald-500';
-    circle.innerHTML = '<div class="w-2 h-2 bg-white rounded-full"></div>';
-  }
+  if (circle) { circle.className = 'w-5 h-5 rounded-full border-2 flex items-center justify-center border-emerald-500 bg-emerald-500'; circle.innerHTML = '<div class="w-2 h-2 bg-white rounded-full"></div>'; }
   const span = el.querySelector('span');
   if (span) span.className = 'text-sm text-emerald-700 font-semibold';
 }
 
-// ── TAMPILKAN MODAL LANGSUNG SETELAH HALAMAN DIMUAT ─────────────────────
-window.addEventListener('load', function() {
-  // Pastikan modal dalam keadaan siap, lalu buka dengan event default (street-food)
-  openRegisterModal('street-food');
+// ── Dengarkan perubahan hash (tombol Back browser / ubah URL manual) ──────
+window.addEventListener('hashchange', () => {
+  regStep = getStepFromHash();
+  updateRegModal();
 });
-</script>
 
-<!-- Optional: Contoh tombol kecil untuk membuka modal dengan event berbeda -->
-<!-- Bisa dihapus jika tidak diperlukan. TAPI di sini tetap saya beri agar kamu bisa ganti-ganti event -->
-<div style="max-width:430px; margin:20px auto; padding:0 20px; display:flex; gap:10px; flex-wrap:wrap;">
-  <button onclick="openRegisterModal('street-food')" class="px-4 py-2 bg-emerald-100 text-emerald-700 rounded-xl text-sm">Street Food</button>
-  <button onclick="openRegisterModal('artisan')" class="px-4 py-2 bg-emerald-100 text-emerald-700 rounded-xl text-sm">Artisan Market</button>
-  <button onclick="openRegisterModal('digital')" class="px-4 py-2 bg-emerald-100 text-emerald-700 rounded-xl text-sm">Digital Expo</button>
-  <p class="text-xs text-gray-500 mt-4">Klik tombol di atas untuk buka modal dengan data event berbeda (jika diperlukan)</p>
-</div>
+// ── Init: baca hash saat pertama kali halaman dimuat ─────────────────────
+document.getElementById('modal-event-name').textContent = currentEvent.name;
+regStep = getStepFromHash();
+updateRegModal();
+</script>
 
 </body>
 </html>
