@@ -1,377 +1,858 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Status Pembayaran · UMKMate</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <style>
-    * { font-family: 'Plus Jakarta Sans', sans-serif; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>UMKMate — Onboarding</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fraunces:ital,wght@0,300;0,700;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --g1: #3cc68a;
+  --g2: #5dddb0;
+  --g3: #8eefd0;
+  --g4: #c4f7e8;
+  --g5: #edfaf5;
+  --dark: #0d2b1e;
+  --mid:  #1e5c3a;
+  --text: #0f3324;
+  --muted: #6b9e88;
+  --white: #ffffff;
+  --card-r: 32px;
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
 
-    body {
-      background: #f1f5f9;
-      min-height: 100vh;
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-      margin: 0; padding: 0;
-    }
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 
-    .sheet {
-      width: 100%; max-width: 430px;
-      background: white;
-      border-radius: 24px 24px 0 0;
-      padding: 32px 24px 40px;
-      max-height: 93vh;
-      overflow-y: auto;
-    }
+html, body {
+  width:100%; height:100%;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--dark);
+  overflow: hidden;
+  user-select: none;
+}
 
-    @keyframes slideUp {
-      from { transform: translateY(40px); opacity: 0; }
-      to   { transform: translateY(0);    opacity: 1; }
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    @keyframes pulseRing {
-      0%   { transform: scale(1);   opacity: 0.5; }
-      100% { transform: scale(1.9); opacity: 0;   }
-    }
-    @keyframes fillBar {
-      from { width: 0%; }
-      to   { width: 100%; }
-    }
-    @keyframes scaleIn {
-      from { transform: scale(0.6); opacity: 0; }
-      to   { transform: scale(1);   opacity: 1; }
-    }
-    @keyframes checkDraw {
-      from { stroke-dashoffset: 60; }
-      to   { stroke-dashoffset: 0;  }
-    }
-    @keyframes float {
-      0%, 100% { transform: translateY(0px);  }
-      50%       { transform: translateY(-6px); }
-    }
+/* ═══════════════════════════════
+   WRAPPER
+═══════════════════════════════ */
+#app {
+  width: 100%;
+  max-width: 420px;
+  height: 100vh;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+  background: var(--dark);
+}
 
-    .anim-sheet { animation: slideUp .38s cubic-bezier(0.32,0.72,0,1) forwards; }
-    .anim-fade  { animation: fadeIn  .3s ease forwards; }
-    .anim-scale { animation: scaleIn .4s cubic-bezier(0.34,1.56,0.64,1) forwards; }
-    .anim-float { animation: float 3s ease-in-out infinite; }
-    .spinner    { animation: spin 1s linear infinite; }
-    .pulse-ring { animation: pulseRing 1.6s ease-out infinite; }
-    .check-path {
-      stroke-dasharray: 60;
-      stroke-dashoffset: 60;
-      animation: checkDraw .5s ease .4s forwards;
-    }
+/* ═══════════════════════════════
+   BG BLOB
+═══════════════════════════════ */
+.bg-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  transition: all 0.9s var(--ease-out);
+  pointer-events: none;
+  z-index: 0;
+}
+.blob-a {
+  width: 320px; height: 320px;
+  top: -80px; left: -60px;
+  background: radial-gradient(circle, rgba(60,198,138,0.35) 0%, transparent 70%);
+}
+.blob-b {
+  width: 260px; height: 260px;
+  bottom: 80px; right: -60px;
+  background: radial-gradient(circle, rgba(93,221,176,0.25) 0%, transparent 70%);
+}
 
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+/* ═══════════════════════════════
+   SLIDES TRACK
+═══════════════════════════════ */
+.slides-track {
+  display: flex;
+  width: 400%;
+  height: 100%;
+  transition: transform 0.65s var(--ease-out);
+  position: relative;
+  z-index: 1;
+}
 
-    button:active { transform: scale(0.97); }
+.slide {
+  width: 25%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 28px 40px;
+  position: relative;
+}
 
-    .toast {
-      position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%);
-      background: #111827; color: #fff; padding: 11px 22px;
-      border-radius: 99px; font-size: 13px; font-weight: 600;
-      z-index: 9999; opacity: 0; pointer-events: none; transition: opacity .3s;
-      white-space: nowrap; box-shadow: 0 4px 20px rgba(0,0,0,.25);
-    }
-    .toast.show { opacity: 1; }
+/* ═══════════════════════════════
+   TOP NAV
+═══════════════════════════════ */
+.top-nav {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 56px 0 0;
+  position: relative;
+  z-index: 2;
+}
 
-    /* Step pill nav */
-    .step-nav {
-      display: flex; gap: 6px;
-      margin-bottom: 24px;
-    }
-    .step-pill {
-      flex: 1; padding: 8px 6px;
-      border-radius: 12px; font-size: 11px; font-weight: 700;
-      text-align: center; cursor: pointer;
-      border: 1.5px solid #e5e7eb; color: #9ca3af;
-      background: white; transition: all .18s;
-      line-height: 1.3;
-    }
-    .step-pill.active {
-      background: #111827; color: white; border-color: #111827;
-    }
-    .step-pill.done {
-      background: #f0fdf4; color: #059669; border-color: #a7f3d0;
-    }
+.logo-small {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.logo-small svg { width: 28px; height: 28px; }
+.logo-small span {
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--white);
+}
 
-    .info-row {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 11px 0; border-bottom: 1px solid #f9fafb;
-    }
-    .info-row:last-child { border-bottom: none; }
+.skip-btn {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  transition: color 0.2s;
+}
+.skip-btn:hover { color: var(--g2); }
 
-    /* Receipt tear line */
-    .tear-line {
-      position: relative; margin: 0 -24px;
-      height: 24px; overflow: hidden;
-    }
-    .tear-line::before {
-      content: '';
-      position: absolute; top: 50%; left: 0; right: 0;
-      border-top: 2px dashed #e5e7eb;
-    }
-    .tear-circle-l, .tear-circle-r {
-      position: absolute; top: 50%; transform: translateY(-50%);
-      width: 20px; height: 20px; border-radius: 50%;
-      background: #f1f5f9;
-    }
-    .tear-circle-l { left: -10px; }
-    .tear-circle-r { right: -10px; }
-  </style>
+/* ═══════════════════════════════
+   ILLUSTRATION AREA
+═══════════════════════════════ */
+.illus-wrap {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin-top: 8px;
+}
+
+.illus-card {
+  width: 100%;
+  max-width: 340px;
+  aspect-ratio: 1 / 1.05;
+  border-radius: 36px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.06);
+}
+
+/* Card backgrounds per slide */
+.slide-1 .illus-card { background: linear-gradient(145deg, #1a4a30 0%, #0d2b1e 60%, #0a2218 100%); }
+.slide-2 .illus-card { background: linear-gradient(145deg, #193d2c 0%, #0e2a1e 60%, #091f17 100%); }
+.slide-3 .illus-card { background: linear-gradient(145deg, #1c4535 0%, #0f2e23 60%, #091f17 100%); }
+.slide-4 .illus-card { background: linear-gradient(135deg, #3cc68a 0%, #2aab76 50%, #1a8f5e 100%); }
+
+.illus-card svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Floating badge on card */
+.float-badge {
+  position: absolute;
+  background: rgba(255,255,255,0.12);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 16px;
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: white;
+  letter-spacing: 0.02em;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+}
+.badge-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #3cc68a;
+  box-shadow: 0 0 8px #3cc68a;
+  animation: pulse 1.8s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,100% { opacity:1; transform:scale(1); }
+  50% { opacity:0.6; transform:scale(1.3); }
+}
+
+/* ═══════════════════════════════
+   TEXT CONTENT
+═══════════════════════════════ */
+.text-block {
+  width: 100%;
+  margin-top: 28px;
+  text-align: left;
+}
+
+.slide-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--g2);
+  margin-bottom: 10px;
+}
+.slide-tag::before {
+  content: '';
+  display: block;
+  width: 18px; height: 2px;
+  background: var(--g2);
+  border-radius: 2px;
+}
+
+.slide-title {
+  font-family: 'Fraunces', serif;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--white);
+  margin-bottom: 12px;
+}
+.slide-title em {
+  font-style: italic;
+  font-weight: 300;
+  color: var(--g2);
+}
+
+.slide-desc {
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.65;
+  color: #7ab898;
+  max-width: 320px;
+}
+
+/* ═══════════════════════════════
+   BOTTOM CONTROLS
+═══════════════════════════════ */
+.bottom-ctrl {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 28px;
+  position: relative;
+  z-index: 2;
+}
+
+/* Dots */
+.dots {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.dot {
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255,255,255,0.2);
+  transition: all 0.4s var(--ease-spring);
+  cursor: pointer;
+}
+.dot.active {
+  width: 24px;
+  background: var(--g1);
+  box-shadow: 0 0 12px rgba(60,198,138,0.6);
+}
+.dot:not(.active) { width: 6px; }
+
+/* Next / CTA button */
+.next-btn {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--g1), var(--g2));
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 28px rgba(60,198,138,0.45);
+  transition: all 0.3s var(--ease-spring);
+  outline: none;
+  position: relative;
+  overflow: hidden;
+}
+.next-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: white;
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.next-btn:active::after { opacity: 0.15; }
+.next-btn:hover { transform: scale(1.08); box-shadow: 0 12px 36px rgba(60,198,138,0.55); }
+.next-btn svg { position: relative; z-index: 1; }
+
+/* CTA Full button (last slide) */
+.cta-btn {
+  display: none;
+  width: 100%;
+  padding: 17px;
+  border-radius: 18px;
+  background: white;
+  border: none;
+  cursor: pointer;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--dark);
+  letter-spacing: 0.02em;
+  box-shadow: 0 12px 40px rgba(255,255,255,0.2);
+  transition: all 0.3s var(--ease-spring);
+  outline: none;
+  margin-top: 16px;
+}
+.cta-btn:hover { transform: scale(1.02); }
+.cta-btn.show { display: block; }
+
+.sub-cta {
+  text-align: center;
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.4);
+  margin-top: 10px;
+  display: none;
+}
+.sub-cta.show { display: block; }
+.sub-cta span { color: rgba(255,255,255,0.7); font-weight: 600; cursor: pointer; }
+
+/* ═══════════════════════════════
+   SLIDE ENTRY ANIMATION
+═══════════════════════════════ */
+.illus-card,
+.text-block,
+.bottom-ctrl {
+  opacity: 0;
+  transform: translateY(24px);
+  animation: none;
+}
+.slide.active .illus-card { animation: slideUp 0.65s var(--ease-out) 0.05s both; }
+.slide.active .text-block  { animation: slideUp 0.65s var(--ease-out) 0.18s both; }
+.slide.active .bottom-ctrl { animation: slideUp 0.65s var(--ease-out) 0.28s both; }
+
+.slide.active .top-nav { opacity: 1; }
+
+@keyframes slideUp {
+  from { opacity:0; transform:translateY(28px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+/* ═══════════════════════════════
+   SWIPE HINT
+═══════════════════════════════ */
+.swipe-hint {
+  position: absolute;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  opacity: 0;
+  animation: hintFade 2s ease 2s forwards;
+  pointer-events: none;
+}
+@keyframes hintFade {
+  0%   { opacity:0; transform:translateX(-50%) translateY(8px); }
+  30%  { opacity:0.7; transform:translateX(-50%) translateY(0); }
+  70%  { opacity:0.7; }
+  100% { opacity:0; }
+}
+.swipe-arrow { animation: swipeBounce 1s ease-in-out infinite; }
+@keyframes swipeBounce {
+  0%,100% { transform: translateX(0); }
+  50%     { transform: translateX(8px); }
+}
+
+</style>
 </head>
 <body>
+<div id="app">
 
-<div id="toast" class="toast"></div>
+  <!-- BG Blobs -->
+  <div class="bg-blob blob-a" id="blobA"></div>
+  <div class="bg-blob blob-b" id="blobB"></div>
 
-<div class="sheet no-scrollbar anim-sheet" id="main-sheet">
+  <!-- Slides Track -->
+  <div class="slides-track" id="track">
 
-  <!-- Step nav -->
-  <div class="step-nav" id="step-nav">
-    <button class="step-pill" onclick="navigate('verifying')" id="pill-verifying">⏳<br>Verifikasi</button>
-    <button class="step-pill" onclick="navigate('success')"   id="pill-success">✅<br>Berhasil</button>
+    <!-- ══ SLIDE 1: Kelola Bisnis ══ -->
+    <div class="slide slide-1 active" data-index="0">
+      <div class="top-nav">
+        <div class="logo-small">
+          <svg viewBox="0 0 40 40" fill="none">
+            <circle cx="8" cy="7" r="5" fill="#8ee8c8"/>
+            <circle cx="32" cy="7" r="5" fill="#8ee8c8"/>
+            <circle cx="8" cy="33" r="5" fill="#8ee8c8"/>
+            <circle cx="32" cy="33" r="5" fill="#8ee8c8"/>
+            <path d="M8 14 Q8 20 14 20 Q8 20 8 26" stroke="#6eda9e" stroke-width="5" stroke-linecap="round" fill="none"/>
+            <path d="M32 14 Q32 20 26 20 Q32 20 32 26" stroke="#7de5c8" stroke-width="5" stroke-linecap="round" fill="none"/>
+            <polygon points="20,13 27,20 20,27 13,20" fill="#5ecf8e"/>
+            <rect x="17" y="17" width="6" height="6" rx="1" fill="white" opacity="0.85"/>
+          </svg>
+          <span>UMKMate</span>
+        </div>
+        <div class="skip-btn" onclick="goToSlide(3)">Lewati</div>
+      </div>
+
+      <div class="illus-wrap">
+        <div class="illus-card">
+          <!-- Illustration: Dashboard/Kelola Bisnis -->
+          <svg viewBox="0 0 340 360" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- BG pattern -->
+            <circle cx="280" cy="60" r="80" fill="rgba(60,198,138,0.08)"/>
+            <circle cx="60" cy="300" r="60" fill="rgba(93,221,176,0.06)"/>
+
+            <!-- Phone frame -->
+            <rect x="80" y="40" width="180" height="280" rx="24" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+            
+            <!-- Status bar -->
+            <rect x="90" y="52" width="160" height="8" rx="4" fill="rgba(255,255,255,0.08)"/>
+            
+            <!-- Header card -->
+            <rect x="90" y="70" width="160" height="60" rx="16" fill="rgba(60,198,138,0.2)"/>
+            <circle cx="112" cy="100" r="14" fill="rgba(60,198,138,0.4)"/>
+            <text x="112" y="105" text-anchor="middle" font-size="12" fill="#3cc68a" font-family="sans-serif" font-weight="bold">Rp</text>
+            <rect x="130" y="90" width="80" height="8" rx="4" fill="rgba(255,255,255,0.2)"/>
+            <rect x="130" y="104" width="55" height="6" rx="3" fill="rgba(60,198,138,0.5)"/>
+            <text x="200" y="107" font-size="8" fill="#3cc68a" font-family="sans-serif" font-weight="bold">+12%</text>
+
+            <!-- Stat cards row -->
+            <rect x="90" y="142" width="74" height="56" rx="14" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+            <rect x="176" y="142" width="74" height="56" rx="14" fill="rgba(60,198,138,0.15)" stroke="rgba(60,198,138,0.25)" stroke-width="1"/>
+            
+            <text x="127" y="163" text-anchor="middle" font-size="18" fill="white" font-family="sans-serif" font-weight="bold">24</text>
+            <text x="127" y="176" text-anchor="middle" font-size="7" fill="rgba(255,255,255,0.45)" font-family="sans-serif">Produk</text>
+            
+            <text x="213" y="163" text-anchor="middle" font-size="18" fill="#3cc68a" font-family="sans-serif" font-weight="bold">87</text>
+            <text x="213" y="176" text-anchor="middle" font-size="7" fill="rgba(60,198,138,0.7)" font-family="sans-serif">Transaksi</text>
+
+            <!-- Chart area -->
+            <rect x="90" y="210" width="160" height="80" rx="14" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
+            <text x="102" y="225" font-size="7" fill="rgba(255,255,255,0.4)" font-family="sans-serif">Penjualan Minggu Ini</text>
+            
+            <!-- Bar chart -->
+            <rect x="104" y="255" width="14" height="22" rx="4" fill="rgba(60,198,138,0.3)"/>
+            <rect x="124" y="243" width="14" height="34" rx="4" fill="rgba(60,198,138,0.5)"/>
+            <rect x="144" y="249" width="14" height="28" rx="4" fill="rgba(60,198,138,0.4)"/>
+            <rect x="164" y="238" width="14" height="39" rx="4" fill="#3cc68a"/>
+            <rect x="184" y="246" width="14" height="31" rx="4" fill="rgba(60,198,138,0.45)"/>
+            <rect x="204" y="240" width="14" height="37" rx="4" fill="rgba(60,198,138,0.55)"/>
+            <rect x="224" y="233" width="14" height="44" rx="4" fill="#5dddb0"/>
+
+            <!-- Bottom nav -->
+            <rect x="90" y="302" width="160" height="8" rx="4" fill="rgba(255,255,255,0.06)"/>
+          </svg>
+
+          <!-- Float badge -->
+          <div class="float-badge" style="top:18px;right:16px">
+            <div class="badge-dot"></div>
+            Live Dashboard
+          </div>
+          <div class="float-badge" style="bottom:18px;left:16px;font-size:0.68rem">
+            📈 Omzet +28% bulan ini
+          </div>
+        </div>
+      </div>
+
+      <div class="text-block">
+        <div class="slide-tag">Kelola Bisnis</div>
+        <h2 class="slide-title">Pantau bisnis kamu <em>real-time</em></h2>
+        <p class="slide-desc">Semua data penjualan, stok, dan keuangan dalam satu layar. Tidak perlu lagi repot mencatat manual.</p>
+      </div>
+
+      <div class="bottom-ctrl">
+        <div class="dots">
+          <div class="dot active" onclick="goToSlide(0)"></div>
+          <div class="dot" onclick="goToSlide(1)"></div>
+          <div class="dot" onclick="goToSlide(2)"></div>
+          <div class="dot" onclick="goToSlide(3)"></div>
+        </div>
+        <button class="next-btn" onclick="nextSlide()">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+            <path d="M4 11H18M18 11L12 5M18 11L12 17" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- ══ SLIDE 2: Laporan Keuangan ══ -->
+    <div class="slide slide-2" data-index="1">
+      <div class="top-nav">
+        <div class="logo-small">
+          <svg viewBox="0 0 40 40" fill="none">
+            <circle cx="8" cy="7" r="5" fill="#8ee8c8"/>
+            <circle cx="32" cy="7" r="5" fill="#8ee8c8"/>
+            <circle cx="8" cy="33" r="5" fill="#8ee8c8"/>
+            <circle cx="32" cy="33" r="5" fill="#8ee8c8"/>
+            <path d="M8 14 Q8 20 14 20 Q8 20 8 26" stroke="#6eda9e" stroke-width="5" stroke-linecap="round" fill="none"/>
+            <path d="M32 14 Q32 20 26 20 Q32 20 32 26" stroke="#7de5c8" stroke-width="5" stroke-linecap="round" fill="none"/>
+            <polygon points="20,13 27,20 20,27 13,20" fill="#5ecf8e"/>
+            <rect x="17" y="17" width="6" height="6" rx="1" fill="white" opacity="0.85"/>
+          </svg>
+          <span>UMKMate</span>
+        </div>
+        <div class="skip-btn" onclick="goToSlide(3)">Lewati</div>
+      </div>
+
+      <div class="illus-wrap">
+        <div class="illus-card">
+          <svg viewBox="0 0 340 360" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="290" cy="80" r="90" fill="rgba(93,221,176,0.07)"/>
+            <circle cx="50" cy="280" r="70" fill="rgba(60,198,138,0.06)"/>
+
+            <!-- Donut chart center -->
+            <circle cx="170" cy="155" r="80" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+            
+            <!-- Donut segments -->
+            <circle cx="170" cy="155" r="64" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="28"/>
+            <!-- Pemasukan segment -->
+            <circle cx="170" cy="155" r="64" fill="none" stroke="#3cc68a" stroke-width="28"
+              stroke-dasharray="201 201" stroke-dashoffset="50" stroke-linecap="round"
+              transform="rotate(-90 170 155)"/>
+            <!-- Pengeluaran segment -->
+            <circle cx="170" cy="155" r="64" fill="none" stroke="#5dddb0" stroke-width="28"
+              stroke-dasharray="100 302" stroke-dashoffset="-151" stroke-linecap="round"
+              transform="rotate(-90 170 155)" opacity="0.7"/>
+            <!-- Tabungan segment -->
+            <circle cx="170" cy="155" r="64" fill="none" stroke="#8eefd0" stroke-width="28"
+              stroke-dasharray="60 342" stroke-dashoffset="-251" stroke-linecap="round"
+              transform="rotate(-90 170 155)" opacity="0.5"/>
+
+            <!-- Center text -->
+            <circle cx="170" cy="155" r="38" fill="#0d2318"/>
+            <text x="170" y="150" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.5)" font-family="sans-serif">Total</text>
+            <text x="170" y="164" text-anchor="middle" font-size="13" fill="white" font-family="sans-serif" font-weight="bold">4,2 Jt</text>
+
+            <!-- Legend -->
+            <rect x="55" y="252" width="10" height="10" rx="3" fill="#3cc68a"/>
+            <text x="70" y="261" font-size="8" fill="rgba(255,255,255,0.6)" font-family="sans-serif">Pemasukan</text>
+            <text x="180" y="261" font-size="8" fill="#3cc68a" font-family="sans-serif" font-weight="bold">Rp 2,8Jt</text>
+
+            <rect x="55" y="270" width="10" height="10" rx="3" fill="#5dddb0"/>
+            <text x="70" y="279" font-size="8" fill="rgba(255,255,255,0.6)" font-family="sans-serif">Pengeluaran</text>
+            <text x="180" y="279" font-size="8" fill="#5dddb0" font-family="sans-serif" font-weight="bold">Rp 1,1Jt</text>
+
+            <rect x="55" y="288" width="10" height="10" rx="3" fill="#8eefd0"/>
+            <text x="70" y="297" font-size="8" fill="rgba(255,255,255,0.6)" font-family="sans-serif">Tabungan</text>
+            <text x="180" y="297" font-size="8" fill="#8eefd0" font-family="sans-serif" font-weight="bold">Rp 1,3Jt</text>
+
+            <!-- Report card top -->
+            <rect x="55" y="35" width="230" height="48" rx="14" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+            <text x="72" y="55" font-size="8" fill="rgba(255,255,255,0.4)" font-family="sans-serif">Laporan Otomatis</text>
+            <text x="72" y="70" font-size="11" fill="white" font-family="sans-serif" font-weight="bold">Mei 2025</text>
+            <rect x="230" y="48" width="44" height="22" rx="8" fill="rgba(60,198,138,0.25)"/>
+            <text x="252" y="63" text-anchor="middle" font-size="8" fill="#3cc68a" font-family="sans-serif" font-weight="bold">Export</text>
+          </svg>
+
+          <div class="float-badge" style="top:18px;right:16px">
+            <div class="badge-dot"></div>
+            Auto Laporan
+          </div>
+          <div class="float-badge" style="bottom:18px;right:16px;font-size:0.68rem">
+            🧾 PDF siap download
+          </div>
+        </div>
+      </div>
+
+      <div class="text-block">
+        <div class="slide-tag">Keuangan</div>
+        <h2 class="slide-title">Laporan <em>otomatis</em>, akurat & rapi</h2>
+        <p class="slide-desc">Rekap pemasukan & pengeluaran tersaji otomatis setiap hari. Bisa langsung ekspor ke PDF atau Excel.</p>
+      </div>
+
+      <div class="bottom-ctrl">
+        <div class="dots">
+          <div class="dot" onclick="goToSlide(0)"></div>
+          <div class="dot active" onclick="goToSlide(1)"></div>
+          <div class="dot" onclick="goToSlide(2)"></div>
+          <div class="dot" onclick="goToSlide(3)"></div>
+        </div>
+        <button class="next-btn" onclick="nextSlide()">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+            <path d="M4 11H18M18 11L12 5M18 11L12 17" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- ══ SLIDE 3: AI Assistant ══ -->
+    <div class="slide slide-3" data-index="2">
+      <div class="top-nav">
+        <div class="logo-small">
+          <svg viewBox="0 0 40 40" fill="none">
+            <circle cx="8" cy="7" r="5" fill="#8ee8c8"/>
+            <circle cx="32" cy="7" r="5" fill="#8ee8c8"/>
+            <circle cx="8" cy="33" r="5" fill="#8ee8c8"/>
+            <circle cx="32" cy="33" r="5" fill="#8ee8c8"/>
+            <path d="M8 14 Q8 20 14 20 Q8 20 8 26" stroke="#6eda9e" stroke-width="5" stroke-linecap="round" fill="none"/>
+            <path d="M32 14 Q32 20 26 20 Q32 20 32 26" stroke="#7de5c8" stroke-width="5" stroke-linecap="round" fill="none"/>
+            <polygon points="20,13 27,20 20,27 13,20" fill="#5ecf8e"/>
+            <rect x="17" y="17" width="6" height="6" rx="1" fill="white" opacity="0.85"/>
+          </svg>
+          <span>UMKMate</span>
+        </div>
+        <div class="skip-btn" onclick="goToSlide(3)">Lewati</div>
+      </div>
+
+      <div class="illus-wrap">
+        <div class="illus-card">
+          <svg viewBox="0 0 340 360" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="260" cy="70" r="100" fill="rgba(60,198,138,0.07)"/>
+
+            <!-- Chat bubbles -->
+            <!-- User message 1 -->
+            <rect x="130" y="45" width="165" height="38" rx="14" rx="14"
+              fill="rgba(60,198,138,0.25)" />
+            <rect x="133" y="48" width="159" height="32" rx="12"
+              fill="rgba(60,198,138,0.2)"/>
+            <text x="145" y="62" font-size="8.5" fill="white" font-family="sans-serif">"Stok mie ayam</text>
+            <text x="145" y="74" font-size="8.5" fill="white" font-family="sans-serif">hampir habis 🍜"</text>
+            <!-- tail -->
+            <polygon points="285,83 295,83 295,95" fill="rgba(60,198,138,0.2)"/>
+            <!-- Avatar -->
+            <circle cx="310" cy="60" r="14" fill="rgba(60,198,138,0.3)"/>
+            <text x="310" y="65" text-anchor="middle" font-size="11" font-family="sans-serif">👤</text>
+
+            <!-- AI message 1 -->
+            <circle cx="32" cy="130" r="18" fill="rgba(255,255,255,0.08)"/>
+            <text x="32" y="135" text-anchor="middle" font-size="14" font-family="sans-serif">🤖</text>
+            <rect x="56" y="110" width="180" height="58" rx="14" fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+            <text x="68" y="128" font-size="8.5" fill="rgba(255,255,255,0.8)" font-family="sans-serif">Saya sudah reorder otomatis!</text>
+            <text x="68" y="142" font-size="8" fill="rgba(255,255,255,0.5)" font-family="sans-serif">Supplier: Pak Budi</text>
+            <text x="68" y="155" font-size="8" fill="rgba(255,255,255,0.5)" font-family="sans-serif">ETA: Besok pagi ✅</text>
+            <polygon points="56,130 46,130 46,142" fill="rgba(255,255,255,0.07)"/>
+
+            <!-- User message 2 -->
+            <rect x="130" y="188" width="165" height="38" rx="14"
+              fill="rgba(60,198,138,0.2)"/>
+            <text x="145" y="203" font-size="8.5" fill="white" font-family="sans-serif">"Gimana cara naikkan</text>
+            <text x="145" y="217" font-size="8.5" fill="white" font-family="sans-serif">omzet bulan ini?"</text>
+            <polygon points="285,226 295,226 295,238" fill="rgba(60,198,138,0.2)"/>
+            <circle cx="310" cy="203" r="14" fill="rgba(60,198,138,0.3)"/>
+            <text x="310" y="208" text-anchor="middle" font-size="11" font-family="sans-serif">👤</text>
+
+            <!-- AI message 2 -->
+            <circle cx="32" cy="274" r="18" fill="rgba(255,255,255,0.08)"/>
+            <text x="32" y="279" text-anchor="middle" font-size="14" font-family="sans-serif">🤖</text>
+            <rect x="56" y="254" width="200" height="72" rx="14" fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+            <text x="68" y="272" font-size="8.5" fill="rgba(255,255,255,0.8)" font-family="sans-serif">3 tips untukmu:</text>
+            <text x="68" y="288" font-size="8" fill="#3cc68a" font-family="sans-serif">① Promo bundle hemat 20%</text>
+            <text x="68" y="302" font-size="8" fill="#3cc68a" font-family="sans-serif">② Post di jam 11-13 WIB</text>
+            <text x="68" y="316" font-size="8" fill="#3cc68a" font-family="sans-serif">③ Aktifkan GoFood & GrabFood</text>
+            <polygon points="56,274 46,274 46,286" fill="rgba(255,255,255,0.07)"/>
+
+            <!-- Typing dots -->
+            <rect x="56" y="340" width="60" height="20" rx="10" fill="rgba(255,255,255,0.06)"/>
+            <circle cx="72" cy="350" r="3" fill="rgba(255,255,255,0.3)"/>
+            <circle cx="83" cy="350" r="3" fill="rgba(255,255,255,0.5)"/>
+            <circle cx="94" cy="350" r="3" fill="rgba(255,255,255,0.3)"/>
+          </svg>
+
+          <div class="float-badge" style="top:18px;left:16px">
+            <div class="badge-dot"></div>
+            AI Aktif
+          </div>
+        </div>
+      </div>
+
+      <div class="text-block">
+        <div class="slide-tag">Asisten AI</div>
+        <h2 class="slide-title">Konsultan bisnis <em>24 jam</em></h2>
+        <p class="slide-desc">Tanya apa saja soal bisnis kamu. AI kami bantu analisis, beri saran, bahkan reorder stok secara otomatis.</p>
+      </div>
+
+      <div class="bottom-ctrl">
+        <div class="dots">
+          <div class="dot" onclick="goToSlide(0)"></div>
+          <div class="dot" onclick="goToSlide(1)"></div>
+          <div class="dot active" onclick="goToSlide(2)"></div>
+          <div class="dot" onclick="goToSlide(3)"></div>
+        </div>
+        <button class="next-btn" onclick="nextSlide()">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+            <path d="M4 11H18M18 11L12 5M18 11L12 17" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- ══ SLIDE 4: Get Started ══ -->
+    <div class="slide slide-4" data-index="3">
+      <div class="top-nav" style="justify-content:center;">
+        <div class="logo-small" style="gap:10px;">
+          <svg viewBox="0 0 40 40" fill="none" style="width:36px;height:36px">
+            <circle cx="8" cy="7" r="5" fill="#0d2318"/>
+            <circle cx="32" cy="7" r="5" fill="#0d2318"/>
+            <circle cx="8" cy="33" r="5" fill="#0d2318"/>
+            <circle cx="32" cy="33" r="5" fill="#0d2318"/>
+            <path d="M8 14 Q8 20 14 20 Q8 20 8 26" stroke="#1a5c3a" stroke-width="5" stroke-linecap="round" fill="none"/>
+            <path d="M32 14 Q32 20 26 20 Q32 20 32 26" stroke="#1e6b44" stroke-width="5" stroke-linecap="round" fill="none"/>
+            <polygon points="20,13 27,20 20,27 13,20" fill="#2a8a58"/>
+            <rect x="17" y="17" width="6" height="6" rx="1" fill="white" opacity="0.5"/>
+          </svg>
+          <span style="color:var(--dark);font-size:1.1rem">UMKMate</span>
+        </div>
+      </div>
+
+      <div class="illus-wrap">
+        <div class="illus-card">
+          <!-- Green celebration card -->
+          <svg viewBox="0 0 340 360" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Confetti / particles -->
+            <circle cx="60" cy="50" r="6" fill="white" opacity="0.3"/>
+            <circle cx="280" cy="80" r="4" fill="white" opacity="0.25"/>
+            <circle cx="300" cy="200" r="8" fill="white" opacity="0.15"/>
+            <circle cx="40" cy="250" r="5" fill="white" opacity="0.2"/>
+            <rect x="120" y="30" width="8" height="8" rx="2" fill="white" opacity="0.25" transform="rotate(20 124 34)"/>
+            <rect x="260" y="140" width="6" height="6" rx="1" fill="white" opacity="0.2" transform="rotate(35 263 143)"/>
+            <rect x="50" y="180" width="7" height="7" rx="2" fill="white" opacity="0.2" transform="rotate(-15 54 184)"/>
+            <rect x="290" y="300" width="9" height="9" rx="2" fill="white" opacity="0.15" transform="rotate(10 295 305)"/>
+
+            <!-- Star sparkles -->
+            <text x="80" y="110" font-size="18" opacity="0.6">✦</text>
+            <text x="260" y="60" font-size="12" opacity="0.5">✦</text>
+            <text x="290" y="250" font-size="16" opacity="0.4">✦</text>
+            <text x="30" y="300" font-size="10" opacity="0.5">✦</text>
+
+            <!-- Big center illustration -->
+            <circle cx="170" cy="160" r="85" fill="rgba(255,255,255,0.12)"/>
+            <circle cx="170" cy="160" r="65" fill="rgba(255,255,255,0.14)"/>
+            
+            <!-- Big logo in center -->
+            <g transform="translate(125, 115) scale(2.2)">
+              <circle cx="8" cy="7" r="5" fill="rgba(255,255,255,0.5)"/>
+              <circle cx="32" cy="7" r="5" fill="rgba(255,255,255,0.5)"/>
+              <circle cx="8" cy="33" r="5" fill="rgba(255,255,255,0.5)"/>
+              <circle cx="32" cy="33" r="5" fill="rgba(255,255,255,0.5)"/>
+              <path d="M8 14 Q8 20 14 20 Q8 20 8 26" stroke="rgba(255,255,255,0.7)" stroke-width="5" stroke-linecap="round" fill="none"/>
+              <path d="M32 14 Q32 20 26 20 Q32 20 32 26" stroke="rgba(255,255,255,0.7)" stroke-width="5" stroke-linecap="round" fill="none"/>
+              <polygon points="20,13 27,20 20,27 13,20" fill="white"/>
+              <rect x="17" y="17" width="6" height="6" rx="1" fill="rgba(60,198,138,0.8)" />
+            </g>
+
+            <!-- Bottom text on card -->
+            <text x="170" y="270" text-anchor="middle" font-size="22" fill="white" font-family="sans-serif" font-weight="800" letter-spacing="2">UMKMate</text>
+            <text x="170" y="292" text-anchor="middle" font-size="10" fill="rgba(255,255,255,0.65)" font-family="sans-serif" letter-spacing="1">Solusi Cerdas UMKM Indonesia</text>
+
+            <!-- Stars rating -->
+            <text x="130" y="320" font-size="14">⭐⭐⭐⭐⭐</text>
+            <text x="170" y="340" text-anchor="middle" font-size="8" fill="rgba(255,255,255,0.5)" font-family="sans-serif">50.000+ UMKM sudah bergabung</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="text-block" style="text-align:center;align-items:center;display:flex;flex-direction:column;">
+        <div class="slide-tag" style="justify-content:center;">
+          <span style="width:0"></span>Mulai Sekarang
+        </div>
+        <h2 class="slide-title" style="text-align:center;">Siap majukan <em>bisnis kamu?</em></h2>
+        <p class="slide-desc" style="text-align:center;">Bergabung bersama ribuan UMKM yang sudah berkembang dengan UMKMate.</p>
+      </div>
+
+      <div class="bottom-ctrl" style="flex-direction:column;gap:0">
+        <div class="dots" style="margin-bottom:20px">
+          <div class="dot" onclick="goToSlide(0)"></div>
+          <div class="dot" onclick="goToSlide(1)"></div>
+          <div class="dot" onclick="goToSlide(2)"></div>
+          <div class="dot active" onclick="goToSlide(3)"></div>
+        </div>
+        <button class="cta-btn show">🚀 Daftar Gratis Sekarang</button>
+        <div class="sub-cta show">Sudah punya akun? <span>Masuk di sini</span></div>
+      </div>
+    </div>
+
+  </div><!-- /slides-track -->
+
+  <!-- Swipe hint (shown once) -->
+  <div class="swipe-hint" id="swipeHint">
+    <svg class="swipe-arrow" width="32" height="32" viewBox="0 0 32 32" fill="none">
+      <path d="M8 16H24M24 16L18 10M24 16L18 22" stroke="rgba(255,255,255,0.4)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span style="font-size:0.65rem;color:rgba(255,255,255,0.3);letter-spacing:0.1em">GESER</span>
   </div>
 
-  <!-- Dynamic content -->
-  <div id="content"></div>
-</div>
+</div><!-- /app -->
 
 <script>
-const EVENT = {
-  name:   'Street Food Carnival',
-  date:   '5-7 Mei 2026',
-  loc:    'GBK, Jakarta',
-  fee:    '3.500.000',
-  method: 'Transfer Bank BCA',
-  trx:    'TRX-' + Math.random().toString(36).substring(2,10).toUpperCase(),
-  booth:  'Warung Kopi Nusantara',
-};
+let current = 0;
+const total = 4;
+const track = document.getElementById('track');
+const slides = document.querySelectorAll('.slide');
+const blobA = document.getElementById('blobA');
+const blobB = document.getElementById('blobB');
 
-// ─── Toast ──────────────────────────────────────────────
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2200);
+const blobConfig = [
+  { aTop:'-80px', aLeft:'-60px', bBot:'80px', bRight:'-60px' },
+  { aTop:'-40px', aLeft:'60px',  bBot:'120px', bRight:'-30px' },
+  { aTop:'20px',  aLeft:'-80px', bBot:'60px',  bRight:'20px' },
+  { aTop:'0px',   aLeft:'0px',   bBot:'0px',   bRight:'0px' },
+];
+
+function goToSlide(index) {
+  slides[current].classList.remove('active');
+  current = index;
+  slides[current].classList.add('active');
+  track.style.transform = `translateX(-${current * 25}%)`;
+
+  // Move blobs
+  const b = blobConfig[current];
+  blobA.style.top = b.aTop;
+  blobA.style.left = b.aLeft;
+  blobB.style.bottom = b.bBot;
+  blobB.style.right = b.bRight;
+
+  // Tint bg on last slide
+  document.body.style.background = current === 3 ? '#0a2218' : '#0d2b1e';
 }
 
-// ─── Hash Router ─────────────────────────────────────────
-const STEPS = ['verifying', 'success'];
-
-function getStepFromHash() {
-  const h = window.location.hash.replace('#', '').toLowerCase();
-  return STEPS.includes(h) ? h : 'verifying';
+function nextSlide() {
+  if (current < total - 1) goToSlide(current + 1);
 }
 
-function navigate(step) {
-  history.pushState(null, '', '#' + step);
-  render(step);
-}
-
-function render(step) {
-  if (!STEPS.includes(step)) step = 'verifying';
-
-  // Update pills
-  STEPS.forEach(s => {
-    const p = document.getElementById('pill-' + s);
-    if (!p) return;
-    const idx = STEPS.indexOf(s);
-    const cur = STEPS.indexOf(step);
-    if (s === step) p.className = 'step-pill active';
-    else if (idx < cur) p.className = 'step-pill done';
-    else p.className = 'step-pill';
-  });
-
-  const content = document.getElementById('content');
-  content.innerHTML = step === 'verifying' ? tplVerifying() : tplSuccess();
-  content.className = 'anim-fade';
-
-  // Auto-advance from verifying after 3s for demo
-  if (step === 'verifying') {
-    setTimeout(() => {
-      if (getStepFromHash() === 'verifying') navigate('success');
-    }, 3000);
+// Touch / swipe support
+let startX = 0;
+document.getElementById('app').addEventListener('touchstart', e => {
+  startX = e.touches[0].clientX;
+}, { passive: true });
+document.getElementById('app').addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - startX;
+  if (Math.abs(dx) > 50) {
+    if (dx < 0 && current < total - 1) nextSlide();
+    else if (dx > 0 && current > 0) goToSlide(current - 1);
   }
-}
+}, { passive: true });
 
-window.addEventListener('popstate', () => render(getStepFromHash()));
-
-// ─── Template: Verifying ─────────────────────────────────
-function tplVerifying() {
-  return `
-  <div class="flex flex-col items-center text-center py-6">
-
-    <!-- Spinner with pulse rings -->
-    <div class="relative w-28 h-28 mb-8">
-      <div class="absolute inset-0 bg-emerald-200 rounded-full pulse-ring"></div>
-      <div class="absolute inset-0 bg-emerald-100 rounded-full pulse-ring" style="animation-delay:.6s"></div>
-      <div class="relative w-28 h-28 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full flex items-center justify-center shadow-lg z-10">
-        <svg class="spinner" xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
-        </svg>
-      </div>
-    </div>
-
-    <h2 class="text-gray-900 font-extrabold text-2xl mb-2">Memverifikasi</h2>
-    <p class="text-gray-500 text-sm leading-relaxed mb-8">Sistem kami sedang memeriksa<br>pembayaranmu secara otomatis...</p>
-
-    <!-- Progress bar -->
-    <div class="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden mb-3">
-      <div class="h-full bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full"
-           style="animation: fillBar 2.9s ease forwards; width:0%"></div>
-    </div>
-    <p class="text-gray-400 text-xs mb-10">Jangan tutup halaman ini</p>
-
-    <!-- Transaction summary -->
-    <div class="w-full bg-gray-50 rounded-2xl p-5 text-left">
-      <p class="text-gray-400 text-xs font-bold mb-3 tracking-wider">DETAIL TRANSAKSI</p>
-      <div class="space-y-2.5 text-sm">
-        <div class="flex justify-between"><span class="text-gray-400">Event</span><span class="text-gray-700 font-semibold">${EVENT.name}</span></div>
-        <div class="flex justify-between"><span class="text-gray-400">Booth</span><span class="text-gray-700 font-semibold">${EVENT.booth}</span></div>
-        <div class="flex justify-between"><span class="text-gray-400">Metode</span><span class="text-gray-700 font-semibold">${EVENT.method}</span></div>
-        <div class="flex justify-between items-center pt-1 border-t border-gray-200">
-          <span class="text-gray-700 font-bold">Total</span>
-          <span class="text-emerald-600 font-extrabold text-lg">Rp ${EVENT.fee}</span>
-        </div>
-      </div>
-    </div>
-
-    <p class="text-gray-400 text-xs mt-5">Biasanya selesai dalam <strong class="text-gray-600">10–30 detik</strong></p>
-  </div>`;
-}
-
-// ─── Template: Success ───────────────────────────────────
-function tplSuccess() {
-  const now = new Date();
-  const fmt = now.toLocaleString('id-ID', {
-    day: '2-digit', month: 'short', year: 'numeric',
-    hour: '2-digit', minute: '2-digit'
-  });
-
-  return `
-  <div class="flex flex-col items-center">
-
-    <!-- Check icon -->
-    <div class="relative w-28 h-28 mb-6 anim-float">
-      <div class="w-28 h-28 bg-emerald-100 rounded-full flex items-center justify-center anim-scale">
-        <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="32" cy="32" r="32" fill="#d1fae5"/>
-          <polyline class="check-path" points="16,32 27,43 48,22"
-            fill="none" stroke="#10b981" stroke-width="4.5"
-            stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </div>
-    </div>
-
-    <p class="text-emerald-500 text-xs font-extrabold tracking-widest mb-1.5">PEMBAYARAN BERHASIL</p>
-    <p class="text-gray-900 font-extrabold text-3xl mb-1">Rp ${EVENT.fee}</p>
-    <p class="text-gray-400 text-sm mb-8">via ${EVENT.method}</p>
-
-    <!-- Receipt card -->
-    <div class="w-full border border-gray-200 rounded-3xl overflow-hidden mb-6 shadow-sm">
-
-      <!-- Receipt header -->
-      <div class="bg-gradient-to-r from-emerald-500 to-teal-500 px-5 py-4">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/>
-              <rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/>
-              <path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/>
-              <path d="M3 12h.01"/><path d="M12 3h.01"/><path d="M12 16v.01"/>
-              <path d="M16 12h1"/><path d="M21 12v.01"/><path d="M12 21v-1"/>
-            </svg>
-          </div>
-          <div>
-            <p class="text-white font-bold text-sm">Event Pass Aktif</p>
-            <p class="text-emerald-100 text-xs">${EVENT.booth} · ${EVENT.date}</p>
-          </div>
-          <span class="ml-auto bg-white/25 text-white text-xs font-bold px-2.5 py-1 rounded-full">✓ AKTIF</span>
-        </div>
-      </div>
-
-      <!-- Tear line -->
-      <div class="tear-line">
-        <div class="tear-circle-l"></div>
-        <div class="tear-circle-r"></div>
-      </div>
-
-      <!-- Receipt body -->
-      <div class="px-5 py-4">
-        <div class="info-row">
-          <span class="text-gray-400 text-xs">Event</span>
-          <span class="text-gray-800 font-semibold text-sm">${EVENT.name}</span>
-        </div>
-        <div class="info-row">
-          <span class="text-gray-400 text-xs">Tanggal</span>
-          <span class="text-gray-800 font-semibold text-sm">${EVENT.date}</span>
-        </div>
-        <div class="info-row">
-          <span class="text-gray-400 text-xs">Lokasi</span>
-          <span class="text-gray-800 font-semibold text-sm">${EVENT.loc}</span>
-        </div>
-        <div class="info-row">
-          <span class="text-gray-400 text-xs">No. Transaksi</span>
-          <span class="text-gray-700 font-semibold text-xs">${EVENT.trx}</span>
-        </div>
-        <div class="info-row">
-          <span class="text-gray-400 text-xs">Waktu</span>
-          <span class="text-gray-700 font-semibold text-xs">${fmt}</span>
-        </div>
-        <div class="info-row">
-          <span class="text-gray-400 text-xs">Metode</span>
-          <span class="text-gray-700 font-semibold text-sm">${EVENT.method}</span>
-        </div>
-        <div class="info-row" style="border-bottom:none; padding-top:14px; border-top:2px dashed #f3f4f6; margin-top:4px;">
-          <span class="text-gray-800 font-bold">Total Dibayar</span>
-          <span class="text-emerald-600 font-extrabold text-xl">Rp ${EVENT.fee}</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Next steps -->
-    <div class="w-full bg-gray-50 rounded-2xl p-5 mb-6">
-      <p class="text-gray-600 text-xs font-bold mb-3 tracking-wider">LANGKAH SELANJUTNYA</p>
-      <div class="space-y-3">
-        ${[
-          ['📲', 'Nomor booth dikirim via WhatsApp dalam 1×24 jam'],
-          ['📦', 'Siapkan produk & perlengkapan boothmu'],
-          ['🎟️', 'Download Event Pass dari menu Eventku saat sudah aktif'],
-        ].map(([ic, tx]) => `
-        <div class="flex items-start gap-3">
-          <span class="text-base mt-0.5">${ic}</span>
-          <p class="text-gray-500 text-xs leading-relaxed">${tx}</p>
-        </div>`).join('')}
-      </div>
-    </div>
-
-    <!-- CTA buttons -->
-    <button onclick="showToast('Membuka Eventku...')" class="w-full py-4 bg-emerald-500 text-white rounded-2xl font-bold mb-3 flex items-center justify-center gap-2">
-      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-      Lihat Eventku 🎉
-    </button>
-    <button onclick="shareReceipt()" class="w-full py-3.5 border-2 border-gray-200 rounded-2xl text-gray-600 font-semibold text-sm flex items-center justify-center gap-2">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-      Bagikan Bukti Pembayaran
-    </button>
-
-  </div>`;
-}
-
-function shareReceipt() {
-  navigator.clipboard?.writeText(window.location.href).catch(() => {});
-  showToast('Link disalin ke clipboard 🔗');
-}
-
-// ─── Init ────────────────────────────────────────────────
-render(getStepFromHash());
+// Mouse drag support (desktop)
+let mouseStart = 0, dragging = false;
+document.getElementById('app').addEventListener('mousedown', e => { mouseStart = e.clientX; dragging = true; });
+document.getElementById('app').addEventListener('mouseup', e => {
+  if (!dragging) return;
+  dragging = false;
+  const dx = e.clientX - mouseStart;
+  if (Math.abs(dx) > 60) {
+    if (dx < 0 && current < total - 1) nextSlide();
+    else if (dx > 0 && current > 0) goToSlide(current - 1);
+  }
+});
 </script>
 </body>
 </html>
