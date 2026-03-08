@@ -807,7 +807,31 @@ const blobConfig = [
   { aTop:'0px',   aLeft:'0px',   bBot:'0px',   bRight:'0px' },
 ];
 
-function goToSlide(index) {
+// ── Slide names for URL hash ──────────────────────────────
+// Accessible via:
+//   #slide=1  or  #slide=2  etc.       (1-based index)
+//   #dashboard  #keuangan  #ai  #mulai  (named slugs)
+const slugs = ['dashboard', 'keuangan', 'ai', 'mulai'];
+
+function getIndexFromHash() {
+  const hash = location.hash.replace('#', '').toLowerCase().trim();
+  if (!hash) return 0;
+  // Named slug
+  const slugIdx = slugs.indexOf(hash);
+  if (slugIdx !== -1) return slugIdx;
+  // slide=N  or  just N
+  const match = hash.match(/(?:slide=)?(\d+)/);
+  if (match) {
+    const n = parseInt(match[1], 10);
+    // support both 0-based and 1-based
+    if (n >= 1 && n <= total) return n - 1;
+    if (n >= 0 && n < total) return n;
+  }
+  return 0;
+}
+
+function goToSlide(index, pushHistory = true) {
+  if (index < 0 || index >= total) return;
   slides[current].classList.remove('active');
   current = index;
   slides[current].classList.add('active');
@@ -822,11 +846,29 @@ function goToSlide(index) {
 
   // Tint bg on last slide
   document.body.style.background = current === 3 ? '#0a2218' : '#0d2b1e';
+
+  // Sync URL hash without triggering hashchange listener
+  if (pushHistory) {
+    history.pushState(null, '', `#${slugs[current]}`);
+  }
 }
 
 function nextSlide() {
   if (current < total - 1) goToSlide(current + 1);
 }
+
+// ── Listen for hash changes (browser back/forward or direct URL) ──
+window.addEventListener('hashchange', () => {
+  const idx = getIndexFromHash();
+  if (idx !== current) goToSlide(idx, false); // don't re-push
+});
+
+// ── Read hash on initial load ─────────────────────────────
+(function initFromHash() {
+  const idx = getIndexFromHash();
+  if (idx !== 0) goToSlide(idx, false);
+  else history.replaceState(null, '', `#${slugs[0]}`);
+})();
 
 // Touch / swipe support
 let startX = 0;
