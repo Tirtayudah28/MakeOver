@@ -3,110 +3,477 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Konfirmasi Pembayaran · UMKMate</title>
+  <title>Pembayaran · UMKMate</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
     * { font-family: 'Plus Jakarta Sans', sans-serif; }
 
     body {
-      background: #f9fafb;
+      background: #f1f5f9;
       min-height: 100vh;
       display: flex;
       align-items: flex-end;
       justify-content: center;
-      padding: 0;
-      margin: 0;
+      margin: 0; padding: 0;
     }
 
-    .modal-sheet {
-      width: 100%;
-      max-width: 430px;
+    .sheet {
+      width: 100%; max-width: 430px;
       background: white;
       border-radius: 24px 24px 0 0;
-      padding: 24px;
-      max-height: 90vh;
+      padding: 24px 24px 36px;
+      max-height: 93vh;
       overflow-y: auto;
-      animation: slideUp .35s cubic-bezier(0.32,0.72,0,1) forwards;
     }
 
     @keyframes slideUp {
-      from { transform: translateY(60px); opacity: 0; }
+      from { transform: translateY(40px); opacity: 0; }
       to   { transform: translateY(0);    opacity: 1; }
     }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes pulseRing {
+      0%   { transform: scale(1);   opacity: .4; }
+      100% { transform: scale(1.7); opacity: 0;  }
+    }
+    @keyframes fillBar {
+      from { width: 0; }
+      to   { width: 100%; }
+    }
+    @keyframes scaleIn {
+      from { transform: scale(0.7); opacity: 0; }
+      to   { transform: scale(1);   opacity: 1; }
+    }
 
-    button:active { transform: scale(0.97); }
+    .anim-sheet  { animation: slideUp .38s cubic-bezier(0.32,0.72,0,1) forwards; }
+    .anim-fade   { animation: fadeIn  .28s ease forwards; }
+    .anim-scale  { animation: scaleIn .35s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+    .spinner     { animation: spin 1s linear infinite; }
+    .pulse-ring  { animation: pulseRing 1.6s ease-out infinite; }
+
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
+    button:active { transform: scale(0.97); }
+    input:focus   { border-color: #10b981 !important; outline: none; }
+
     .toast {
-      position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%);
-      background: #1f2937; color: #fff; padding: 10px 20px;
+      position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%);
+      background: #111827; color: #fff; padding: 11px 22px;
       border-radius: 99px; font-size: 13px; font-weight: 600;
       z-index: 9999; opacity: 0; pointer-events: none; transition: opacity .3s;
-      white-space: nowrap;
+      white-space: nowrap; box-shadow: 0 4px 20px rgba(0,0,0,.25);
     }
     .toast.show { opacity: 1; }
+
+    /* Divider dots */
+    .dot-divider {
+      display: flex; align-items: center; gap: 6px;
+      padding: 12px 0;
+    }
+    .dot-divider::before, .dot-divider::after {
+      content: ''; flex: 1; height: 1px; background: #f3f4f6;
+    }
+
+    /* Row utility */
+    .info-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 11px 0; border-bottom: 1px solid #f9fafb;
+    }
+    .info-row:last-child { border-bottom: none; }
+
+    /* Method pill nav */
+    .method-nav {
+      display: flex; gap: 8px; overflow-x: auto;
+      padding-bottom: 2px; margin-bottom: 20px;
+    }
+    .method-nav::-webkit-scrollbar { display: none; }
+    .method-pill {
+      flex-shrink: 0; padding: 7px 14px;
+      border-radius: 99px; font-size: 12px; font-weight: 600;
+      border: 1.5px solid #e5e7eb; color: #6b7280;
+      cursor: pointer; transition: all .18s; background: white;
+    }
+    .method-pill.active {
+      background: #111827; color: white; border-color: #111827;
+    }
   </style>
 </head>
 <body>
 
 <div id="toast" class="toast"></div>
 
-<div class="modal-sheet no-scrollbar">
-
-  <div class="flex items-center justify-between mb-6">
-    <button onclick="history.back()" class="w-9 h-9 bg-gray-100 rounded-xl flex items-center justify-center">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-    </button>
-    <p class="text-gray-900 font-bold">Konfirmasi Pembayaran</p>
-    <div class="w-9"></div>
+<div class="sheet no-scrollbar anim-sheet" id="main-sheet">
+  <!-- Method nav pills -->
+  <div class="method-nav" id="method-nav">
+    <button class="method-pill active" onclick="navigate('bca')"    id="pill-bca">🏦 BCA</button>
+    <button class="method-pill"        onclick="navigate('gopay')"  id="pill-gopay">💚 GoPay</button>
+    <button class="method-pill"        onclick="navigate('ovo')"    id="pill-ovo">💜 OVO</button>
+    <button class="method-pill"        onclick="navigate('qris')"   id="pill-qris">📱 QRIS</button>
+    <button class="method-pill"        onclick="navigate('dana')"   id="pill-dana">🔵 Dana</button>
+    <button class="method-pill"        onclick="navigate('shopee')" id="pill-shopee">🟠 ShopeePay</button>
   </div>
 
-  <!-- Total card -->
-  <div class="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl p-5 mb-5 text-white">
-    <p class="text-emerald-100 text-xs font-semibold mb-1">TOTAL PEMBAYARAN</p>
-    <p class="text-4xl font-extrabold mb-4">Rp 3.500.000</p>
-    <div class="flex items-center gap-2.5 bg-white/20 rounded-xl px-3 py-2.5">
-      <span class="text-xl" id="method-icon">🏦</span>
-      <span class="text-white text-sm font-semibold" id="method-label">Transfer Bank BCA</span>
-      <button onclick="showToast('Metode diubah')" class="ml-auto text-white/70 text-xs underline">Ganti</button>
-    </div>
-  </div>
-
-  <!-- Order summary -->
-  <div class="bg-gray-50 rounded-2xl p-4 mb-5 space-y-2.5 text-sm">
-    <div class="flex justify-between"><span class="text-gray-500">Event</span><span class="text-gray-900 font-semibold">Street Food Carnival</span></div>
-    <div class="flex justify-between"><span class="text-gray-500">Nama Booth</span><span class="text-gray-900 font-semibold">Warung Kopi Nusantara</span></div>
-    <div class="flex justify-between"><span class="text-gray-500">Tanggal</span><span class="text-gray-900 font-semibold">5-7 Mei 2026</span></div>
-    <div class="flex justify-between"><span class="text-gray-500">Lokasi</span><span class="text-gray-900 font-semibold">GBK, Jakarta</span></div>
-    <div class="border-t border-gray-200 pt-2.5 flex justify-between items-center">
-      <span class="text-gray-800 font-bold">Total</span>
-      <span class="text-emerald-600 font-extrabold text-lg">Rp 3.500.000</span>
-    </div>
-  </div>
-
-  <!-- Warning -->
-  <div class="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 flex gap-2.5 mb-6">
-    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 mt-0.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-    <p class="text-amber-700 text-xs leading-relaxed">Selesaikan pembayaran dalam <strong>1×24 jam</strong> agar slot booth tidak dilepas otomatis.</p>
-  </div>
-
-  <!-- CTA -->
-  <button onclick="showToast('Melanjutkan pembayaran...')" class="w-full py-4 bg-emerald-500 text-white rounded-2xl font-bold text-base flex items-center justify-center gap-2">
-    Lanjutkan Pembayaran
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-  </button>
-
+  <!-- Dynamic content -->
+  <div id="content" class="anim-fade"></div>
 </div>
 
 <script>
+// ─── Constants ───────────────────────────────────────────
+const EVENT = {
+  name: 'Street Food Carnival',
+  date: '5-7 Mei 2026',
+  fee:  '3.500.000',
+  code: 'REG-' + Math.random().toString(36).substring(2,8).toUpperCase(),
+};
+
+const METHODS = {
+  bca:    { label: 'Transfer Bank BCA',  icon: '🏦', color: '#005baa', bg: '#eff6ff', bdr: '#bfdbfe' },
+  gopay:  { label: 'GoPay',             icon: '💚', color: '#008000', bg: '#f0fdf4', bdr: '#bbf7d0' },
+  ovo:    { label: 'OVO',               icon: '💜', color: '#4c3494', bg: '#f5f3ff', bdr: '#ddd6fe' },
+  qris:   { label: 'QRIS',              icon: '📱', color: '#dc2626', bg: '#fff1f2', bdr: '#fecaca' },
+  dana:   { label: 'Dana',              icon: '🔵', color: '#0066cc', bg: '#eff6ff', bdr: '#bfdbfe' },
+  shopee: { label: 'ShopeePay',         icon: '🟠', color: '#ee4d2d', bg: '#fff7ed', bdr: '#fed7aa' },
+};
+
+// ─── Timers ──────────────────────────────────────────────
+let timerInterval = null;
+let timerSecs = 0;
+
+function startTimer(id, seconds, color) {
+  if (timerInterval) clearInterval(timerInterval);
+  timerSecs = seconds;
+  timerInterval = setInterval(() => {
+    timerSecs--;
+    const el = document.getElementById(id);
+    if (!el) { clearInterval(timerInterval); return; }
+    if (timerSecs <= 0) {
+      clearInterval(timerInterval);
+      el.textContent = 'Kedaluwarsa';
+      el.style.color = '#ef4444';
+      return;
+    }
+    if (seconds >= 3600) {
+      const h = String(Math.floor(timerSecs/3600)).padStart(2,'0');
+      const m = String(Math.floor((timerSecs%3600)/60)).padStart(2,'0');
+      const s = String(timerSecs%60).padStart(2,'0');
+      el.textContent = `${h}:${m}:${s}`;
+    } else {
+      const m = String(Math.floor(timerSecs/60)).padStart(2,'0');
+      const s = String(timerSecs%60).padStart(2,'0');
+      el.textContent = `${m}:${s}`;
+    }
+  }, 1000);
+}
+
+// ─── Utilities ───────────────────────────────────────────
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2500);
+  setTimeout(() => t.classList.remove('show'), 2200);
 }
-</script>
 
+function copyText(text, label) {
+  navigator.clipboard?.writeText(text).catch(() => {});
+  showToast((label || 'Teks') + ' disalin ✓');
+}
+
+function buildQR(color, size) {
+  size = size || 152;
+  const p = [
+    [1,1,1,1,1,1,1,0,0,1,0,1,1,1,1,1,1,1],
+    [1,0,0,0,0,0,1,0,1,0,0,0,1,0,0,0,0,1],
+    [1,0,1,1,1,0,1,0,0,1,0,0,1,0,1,1,0,1],
+    [1,0,1,1,1,0,1,0,1,0,1,0,1,0,1,1,0,1],
+    [1,0,0,0,0,0,1,0,0,0,0,1,1,0,0,0,0,1],
+    [1,1,1,1,1,1,1,0,1,0,1,0,1,1,1,1,1,1],
+    [0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0],
+    [1,0,1,1,0,1,1,0,1,0,1,0,1,1,0,1,1,0],
+    [0,1,0,0,1,0,0,1,0,1,0,1,0,0,1,0,0,1],
+    [1,0,1,0,0,1,1,0,1,0,1,0,1,0,1,0,1,0],
+    [0,1,0,1,0,0,0,1,0,1,0,1,0,1,0,0,0,1],
+    [1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0],
+    [0,0,0,0,0,0,0,0,0,1,0,1,0,1,0,1,0,1],
+    [1,1,1,1,1,1,1,0,1,0,1,0,1,0,1,0,1,0],
+    [1,0,0,0,0,0,1,0,0,1,0,0,0,1,0,0,0,1],
+    [1,0,1,1,1,0,1,0,1,0,1,0,1,0,1,0,1,0],
+    [1,0,0,0,0,0,1,0,0,1,0,1,0,1,0,1,0,1],
+    [1,1,1,1,1,1,1,0,1,0,1,0,1,0,1,0,1,1],
+  ];
+  const cols=p[0].length, rows=p.length;
+  const cw=size/cols, ch=size/rows;
+  let r='';
+  p.forEach((row,ri) => row.forEach((v,ci) => {
+    if(v) r += `<rect x="${ci*cw+.5}" y="${ri*ch+.5}" width="${cw-1}" height="${ch-1}" rx="2" fill="${color}"/>`;
+  }));
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg">${r}</svg>`;
+}
+
+function copyBtn(text, label, extraClass) {
+  return `<button onclick="copyText('${text}','${label}')" class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold active:scale-95 transition-transform ${extraClass||'bg-gray-100 text-gray-700'}">
+    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Salin
+  </button>`;
+}
+
+// ─── Hash Router ──────────────────────────────────────────
+const VALID = Object.keys(METHODS);
+
+function getMethodFromHash() {
+  const h = window.location.hash.replace('#','').toLowerCase();
+  return VALID.includes(h) ? h : 'bca';
+}
+
+function navigate(method) {
+  history.pushState(null, '', '#' + method);
+  render(method);
+}
+
+function render(method) {
+  if (!VALID.includes(method)) method = 'bca';
+
+  // Update pills
+  VALID.forEach(m => {
+    const p = document.getElementById('pill-' + m);
+    if (p) p.className = 'method-pill' + (m === method ? ' active' : '');
+  });
+
+  const content = document.getElementById('content');
+  content.innerHTML = '';
+
+  let html = '';
+  if      (method === 'bca')    html = tplBCA();
+  else if (method === 'gopay')  html = tplEwallet('gopay');
+  else if (method === 'ovo')    html = tplEwallet('ovo');
+  else if (method === 'dana')   html = tplEwallet('dana');
+  else if (method === 'shopee') html = tplEwallet('shopee');
+  else if (method === 'qris')   html = tplQRIS();
+
+  content.innerHTML = html;
+  content.className = 'anim-fade';
+
+  // Start timers
+  if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+  if (method === 'bca') startTimer('bca-timer', 86386, '#dc2626');
+  else if (['gopay','ovo','dana','shopee'].includes(method)) startTimer('ew-timer', 899, METHODS[method].color);
+}
+
+window.addEventListener('popstate', () => render(getMethodFromHash()));
+
+// ─── Template: BCA ───────────────────────────────────────
+function tplBCA() {
+  return `
+  <div>
+    <div class="flex items-center gap-3 mb-5">
+      <div class="w-11 h-11 rounded-2xl flex items-center justify-center bg-blue-600">
+        <span class="text-white text-xs font-black tracking-tight">BCA</span>
+      </div>
+      <div>
+        <p class="text-gray-900 font-bold">Transfer Bank BCA</p>
+        <p class="text-gray-400 text-xs">Virtual Account / Rekening Tujuan</p>
+      </div>
+    </div>
+
+    <!-- Countdown -->
+    <div class="bg-red-50 border border-red-100 rounded-2xl p-4 mb-5">
+      <div class="flex items-center justify-between mb-2">
+        <div class="flex items-center gap-1.5">
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <p class="text-red-500 text-xs font-bold">BAYAR SEBELUM</p>
+        </div>
+        <p id="bca-timer" class="text-red-700 font-extrabold text-sm tabular-nums">23:59:46</p>
+      </div>
+      <div class="bg-red-100 rounded-full h-1.5 overflow-hidden">
+        <div class="h-full bg-red-500 rounded-full" style="width:99.98%; transition:width 1s linear;"></div>
+      </div>
+    </div>
+
+    <!-- Rekening Card -->
+    <div class="border-2 border-gray-100 rounded-2xl overflow-hidden mb-5">
+      <div class="bg-gray-50 px-5 py-3 border-b border-gray-100">
+        <p class="text-gray-400 text-xs font-bold tracking-wider">REKENING TUJUAN</p>
+      </div>
+      <div class="px-5">
+        <div class="info-row">
+          <div><p class="text-gray-400 text-xs mb-0.5">Bank</p><p class="text-gray-900 font-bold">Bank Central Asia</p></div>
+          <div class="w-10 h-7 bg-blue-600 rounded-lg flex items-center justify-center"><span class="text-white text-xs font-black">BCA</span></div>
+        </div>
+        <div class="info-row">
+          <div>
+            <p class="text-gray-400 text-xs mb-0.5">Nomor Rekening</p>
+            <p class="text-gray-900 font-extrabold text-xl tracking-widest">8800 1234 5678</p>
+          </div>
+          ${copyBtn('88001234567890','Nomor rekening')}
+        </div>
+        <div class="info-row">
+          <div><p class="text-gray-400 text-xs mb-0.5">Atas Nama</p><p class="text-gray-900 font-semibold">PT UMKMate Indonesia</p></div>
+        </div>
+        <div class="info-row">
+          <div>
+            <p class="text-gray-400 text-xs mb-0.5">Jumlah Transfer</p>
+            <p class="text-emerald-600 font-extrabold text-2xl">Rp ${EVENT.fee}</p>
+          </div>
+          ${copyBtn(EVENT.fee.replace(/\./g,''),'Nominal','bg-emerald-50 text-emerald-700 border border-emerald-200')}
+        </div>
+        <div class="info-row">
+          <div><p class="text-gray-400 text-xs mb-0.5">Berita Transfer</p><p class="text-gray-900 font-bold">${EVENT.code}</p></div>
+          ${copyBtn(EVENT.code,'Kode')}
+        </div>
+      </div>
+    </div>
+
+    <!-- Warning -->
+    <div class="bg-yellow-50 border border-yellow-200 rounded-xl px-4 py-3 flex gap-2.5 mb-5">
+      <span class="text-base flex-shrink-0">⚠️</span>
+      <p class="text-yellow-700 text-xs leading-relaxed">Transfer <strong>harus tepat sesuai nominal</strong>. Kelebihan atau kekurangan 1 rupiah menyebabkan verifikasi otomatis gagal.</p>
+    </div>
+
+    <!-- How to -->
+    <div class="bg-gray-50 rounded-2xl p-4 mb-6">
+      <p class="text-gray-600 text-xs font-bold mb-3">📱 CARA TRANSFER BCA MOBILE</p>
+      <div class="space-y-2.5">
+        ${['Buka aplikasi BCA Mobile','Pilih m-Transfer → BCA Virtual Account atau Antar Rekening BCA','Masukkan nomor rekening di atas','Masukkan nominal transfer persis sama','Isi kolom Berita Transfer dengan kode di atas','Periksa kembali & konfirmasi transaksi'].map((s,i)=>`
+        <div class="flex items-start gap-2.5">
+          <div class="w-5 h-5 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">${i+1}</div>
+          <p class="text-gray-500 text-xs leading-relaxed">${s}</p>
+        </div>`).join('')}
+      </div>
+    </div>
+
+    <button onclick="showToast('Pembayaran dikonfirmasi ✓')" class="w-full py-4 bg-gray-900 text-white rounded-2xl font-bold text-sm">
+      Saya Sudah Transfer ✓
+    </button>
+  </div>`;
+}
+
+// ─── Template: E-Wallet (GoPay / OVO / Dana / ShopeePay) ──
+function tplEwallet(method) {
+  const m = METHODS[method];
+  const timerLabel = { gopay:'14:59', ovo:'14:59', dana:'14:59', shopee:'14:59' };
+  const appName = { gopay:'Gojek', ovo:'OVO', dana:'Dana', shopee:'Shopee' };
+
+  return `
+  <div>
+    <div class="flex items-center gap-3 mb-5">
+      <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-2xl" style="background:${m.bg}; border:1.5px solid ${m.bdr}">
+        ${m.icon}
+      </div>
+      <div>
+        <p class="text-gray-900 font-bold">${m.label}</p>
+        <p class="text-gray-400 text-xs">Scan QR atau buka aplikasi ${appName[method]||m.label}</p>
+      </div>
+    </div>
+
+    <!-- Amount banner -->
+    <div class="rounded-2xl p-4 mb-5 flex items-center justify-between" style="background:${m.bg}; border:1.5px solid ${m.bdr}">
+      <div>
+        <p class="text-xs font-semibold mb-0.5" style="color:${m.color}">TOTAL PEMBAYARAN</p>
+        <p class="text-gray-900 font-extrabold text-xl">Rp ${EVENT.fee}</p>
+      </div>
+      <div class="text-right">
+        <p class="text-gray-400 text-xs mb-0.5">${EVENT.name}</p>
+        <p class="text-gray-500 text-xs">${EVENT.date}</p>
+      </div>
+    </div>
+
+    <!-- QR Countdown -->
+    <div class="flex items-center justify-between mb-1.5">
+      <p class="text-gray-400 text-xs">QR kedaluwarsa dalam</p>
+      <p id="ew-timer" class="font-extrabold text-sm tabular-nums" style="color:${m.color}">${timerLabel[method]}</p>
+    </div>
+    <div class="rounded-full h-1.5 mb-5 overflow-hidden" style="background:${m.bdr}">
+      <div class="h-full rounded-full" style="background:${m.color}; width:99.9%; transition:width 1s linear;"></div>
+    </div>
+
+    <!-- QR Box -->
+    <div class="flex flex-col items-center py-7 rounded-2xl mb-5" style="background:${m.bg}; border:2px solid ${m.bdr}">
+      <div class="bg-white rounded-2xl p-4 shadow-sm mb-4" style="border:2px solid ${m.bdr}">
+        ${buildQR(m.color, 152)}
+      </div>
+      <div class="flex items-center gap-2 px-4 py-2 rounded-full mb-2" style="background:${m.color}20">
+        <span>${m.icon}</span>
+        <p class="text-xs font-bold" style="color:${m.color}">Rp ${EVENT.fee} · ${m.label}</p>
+      </div>
+      <p class="text-gray-400 text-xs text-center px-8">Buka <strong>${appName[method]||m.label}</strong> → Bayar → Pindai QR ini</p>
+    </div>
+
+    <!-- OR Divider -->
+    <div class="dot-divider text-gray-300 text-xs font-semibold">ATAU</div>
+
+    <!-- Deep link button -->
+    <button onclick="showToast('Membuka ${m.label}...')" class="w-full py-4 rounded-2xl font-bold text-white mb-3 flex items-center justify-center gap-2" style="background:${m.color}">
+      <span class="text-xl">${m.icon}</span> Buka Aplikasi ${m.label}
+    </button>
+    <button onclick="showToast('Pembayaran dikonfirmasi ✓')" class="w-full py-3.5 rounded-2xl font-semibold text-gray-500 border-2 border-gray-200 text-sm">
+      Saya Sudah Bayar ✓
+    </button>
+  </div>`;
+}
+
+// ─── Template: QRIS ──────────────────────────────────────
+function tplQRIS() {
+  return `
+  <div>
+    <div class="flex items-center gap-3 mb-5">
+      <div class="w-11 h-11 rounded-2xl flex items-center justify-center bg-red-600">
+        <span class="text-white text-xs font-black tracking-tight">QRIS</span>
+      </div>
+      <div>
+        <p class="text-gray-900 font-bold">QRIS Universal</p>
+        <p class="text-gray-400 text-xs">Berlaku di semua aplikasi dompet digital</p>
+      </div>
+    </div>
+
+    <!-- Supported apps -->
+    <div class="bg-gray-50 rounded-2xl px-4 py-3 mb-5">
+      <p class="text-gray-400 text-xs font-bold mb-2.5">DIDUKUNG OLEH</p>
+      <div class="flex flex-wrap gap-1.5">
+        ${['💚 GoPay','💜 OVO','🔵 Dana','🟠 ShopeePay','🟢 LinkAja','📱 BCA Mobile','🏦 Livin\' Mandiri','💳 Jenius'].map(a=>`
+        <span class="bg-white border border-gray-200 text-gray-600 text-xs px-2.5 py-1 rounded-lg font-medium">${a}</span>`).join('')}
+      </div>
+    </div>
+
+    <!-- QR + amount -->
+    <div class="flex flex-col items-center py-7 bg-white rounded-2xl border-2 border-dashed border-gray-200 mb-5">
+      <div class="bg-white rounded-2xl p-4 shadow-md border border-gray-100 mb-4">
+        ${buildQR('#111827', 168)}
+      </div>
+      <div class="bg-emerald-500 px-6 py-2.5 rounded-full mb-2">
+        <p class="text-white text-sm font-extrabold">Rp ${EVENT.fee}</p>
+      </div>
+      <p class="text-gray-500 text-xs font-semibold">${EVENT.name}</p>
+      <p class="text-gray-400 text-xs mt-0.5">UMKMate · Booth Registration</p>
+    </div>
+
+    <!-- Info -->
+    <div class="bg-blue-50 border border-blue-100 rounded-xl px-4 py-3 flex gap-2.5 mb-5">
+      <span class="text-sm flex-shrink-0 mt-0.5">ℹ️</span>
+      <p class="text-blue-700 text-xs leading-relaxed">Pastikan nominal di aplikasmu <strong>Rp ${EVENT.fee}</strong> sebelum konfirmasi. QRIS berlaku <strong>satu kali</strong> per transaksi.</p>
+    </div>
+
+    <!-- How to -->
+    <div class="bg-gray-50 rounded-2xl p-4 mb-6">
+      <p class="text-gray-600 text-xs font-bold mb-3">📲 CARA BAYAR VIA QRIS</p>
+      <div class="space-y-2.5">
+        ${['Buka aplikasi dompet digitalmu','Pilih menu Scan / Bayar','Arahkan kamera ke QR di atas','Pastikan nominal sudah benar','Konfirmasi & selesaikan pembayaran'].map((s,i)=>`
+        <div class="flex items-start gap-2.5">
+          <div class="w-5 h-5 rounded-full bg-red-600 text-white text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">${i+1}</div>
+          <p class="text-gray-500 text-xs leading-relaxed">${s}</p>
+        </div>`).join('')}
+      </div>
+    </div>
+
+    <button onclick="showToast('Pembayaran dikonfirmasi ✓')" class="w-full py-4 bg-gray-900 text-white rounded-2xl font-bold text-sm">
+      Saya Sudah Scan ✓
+    </button>
+  </div>`;
+}
+
+// ─── Init ─────────────────────────────────────────────────
+render(getMethodFromHash());
+</script>
 </body>
 </html>
