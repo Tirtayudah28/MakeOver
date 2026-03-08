@@ -2,41 +2,45 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-  <title>Event Pass · UMKMate</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Konfirmasi Pembayaran · UMKMate</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
     * { font-family: 'Plus Jakarta Sans', sans-serif; }
 
     body {
-      background: rgba(0,0,0,0.7);
+      background: #f9fafb;
       min-height: 100vh;
       display: flex;
-      align-items: center;
+      align-items: flex-end;
       justify-content: center;
-      padding: 24px;
+      padding: 0;
       margin: 0;
     }
 
-    .modal-box {
-      background: white;
-      border-radius: 24px;
-      padding: 24px;
+    .modal-sheet {
       width: 100%;
-      max-width: 382px;
-      animation: scaleIn .25s ease forwards;
+      max-width: 430px;
+      background: white;
+      border-radius: 24px 24px 0 0;
+      padding: 24px;
+      max-height: 90vh;
+      overflow-y: auto;
+      animation: slideUp .35s cubic-bezier(0.32,0.72,0,1) forwards;
     }
 
-    @keyframes scaleIn {
-      from { opacity: 0; transform: scale(0.85); }
-      to   { opacity: 1; transform: scale(1); }
+    @keyframes slideUp {
+      from { transform: translateY(60px); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
     }
 
     button:active { transform: scale(0.97); }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
     .toast {
-      position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%);
+      position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%);
       background: #1f2937; color: #fff; padding: 10px 20px;
       border-radius: 99px; font-size: 13px; font-weight: 600;
       z-index: 9999; opacity: 0; pointer-events: none; transition: opacity .3s;
@@ -49,35 +53,51 @@
 
 <div id="toast" class="toast"></div>
 
-<div class="modal-box">
-  <div class="text-center mb-4">
-    <p class="text-gray-900 font-bold text-lg">Event Pass</p>
-    <p class="text-gray-500 text-sm">Jakarta Food Festival 2026</p>
+<div class="modal-sheet no-scrollbar">
+
+  <div class="flex items-center justify-between mb-6">
+    <button onclick="history.back()" class="w-9 h-9 bg-gray-100 rounded-xl flex items-center justify-center">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <p class="text-gray-900 font-bold">Konfirmasi Pembayaran</p>
+    <div class="w-9"></div>
   </div>
-  <div class="bg-gray-50 rounded-2xl p-6 flex flex-col items-center gap-3 mb-4">
-    <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24" fill="none" stroke="#1f2937" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-      <rect width="5" height="5" x="3" y="3" rx="1"/>
-      <rect width="5" height="5" x="16" y="3" rx="1"/>
-      <rect width="5" height="5" x="3" y="16" rx="1"/>
-      <path d="M21 16h-3a2 2 0 0 0-2 2v3"/>
-      <path d="M21 21v.01"/>
-      <path d="M12 7v3a2 2 0 0 1-2 2H7"/>
-      <path d="M3 12h.01"/>
-      <path d="M12 3h.01"/>
-      <path d="M12 16v.01"/>
-      <path d="M16 12h1"/>
-      <path d="M21 12v.01"/>
-      <path d="M12 21v-1"/>
-    </svg>
-    <div class="text-center">
-      <p class="text-gray-900 text-sm font-bold">Warung Kopi Nusantara</p>
-      <p class="text-gray-500 text-xs">Booth B-125 · 25-27 Mar 2026</p>
-    </div>
-    <div class="bg-emerald-100 px-4 py-2 rounded-xl">
-      <p class="text-emerald-700 text-xs font-bold">ID: JFF2026-B125-001</p>
+
+  <!-- Total card -->
+  <div class="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl p-5 mb-5 text-white">
+    <p class="text-emerald-100 text-xs font-semibold mb-1">TOTAL PEMBAYARAN</p>
+    <p class="text-4xl font-extrabold mb-4">Rp 3.500.000</p>
+    <div class="flex items-center gap-2.5 bg-white/20 rounded-xl px-3 py-2.5">
+      <span class="text-xl" id="method-icon">🏦</span>
+      <span class="text-white text-sm font-semibold" id="method-label">Transfer Bank BCA</span>
+      <button onclick="showToast('Metode diubah')" class="ml-auto text-white/70 text-xs underline">Ganti</button>
     </div>
   </div>
-  <button onclick="savePass()" class="w-full py-4 bg-emerald-500 text-white rounded-2xl font-bold">Simpan Event Pass</button>
+
+  <!-- Order summary -->
+  <div class="bg-gray-50 rounded-2xl p-4 mb-5 space-y-2.5 text-sm">
+    <div class="flex justify-between"><span class="text-gray-500">Event</span><span class="text-gray-900 font-semibold">Street Food Carnival</span></div>
+    <div class="flex justify-between"><span class="text-gray-500">Nama Booth</span><span class="text-gray-900 font-semibold">Warung Kopi Nusantara</span></div>
+    <div class="flex justify-between"><span class="text-gray-500">Tanggal</span><span class="text-gray-900 font-semibold">5-7 Mei 2026</span></div>
+    <div class="flex justify-between"><span class="text-gray-500">Lokasi</span><span class="text-gray-900 font-semibold">GBK, Jakarta</span></div>
+    <div class="border-t border-gray-200 pt-2.5 flex justify-between items-center">
+      <span class="text-gray-800 font-bold">Total</span>
+      <span class="text-emerald-600 font-extrabold text-lg">Rp 3.500.000</span>
+    </div>
+  </div>
+
+  <!-- Warning -->
+  <div class="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 flex gap-2.5 mb-6">
+    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 mt-0.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <p class="text-amber-700 text-xs leading-relaxed">Selesaikan pembayaran dalam <strong>1×24 jam</strong> agar slot booth tidak dilepas otomatis.</p>
+  </div>
+
+  <!-- CTA -->
+  <button onclick="showToast('Melanjutkan pembayaran...')" class="w-full py-4 bg-emerald-500 text-white rounded-2xl font-bold text-base flex items-center justify-center gap-2">
+    Lanjutkan Pembayaran
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+  </button>
+
 </div>
 
 <script>
@@ -85,9 +105,6 @@ function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg; t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2500);
-}
-function savePass() {
-  showToast('Event pass disimpan ke galeri! 🎉');
 }
 </script>
 
