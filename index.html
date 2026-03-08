@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pembayaran · UMKMate</title>
+  <title>Status Pembayaran · UMKMate</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
@@ -22,7 +22,7 @@
       width: 100%; max-width: 430px;
       background: white;
       border-radius: 24px 24px 0 0;
-      padding: 24px 24px 36px;
+      padding: 32px 24px 40px;
       max-height: 93vh;
       overflow-y: auto;
     }
@@ -32,34 +32,47 @@
       to   { transform: translateY(0);    opacity: 1; }
     }
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(8px); }
+      from { opacity: 0; transform: translateY(10px); }
       to   { opacity: 1; transform: translateY(0); }
     }
     @keyframes spin { to { transform: rotate(360deg); } }
     @keyframes pulseRing {
-      0%   { transform: scale(1);   opacity: .4; }
-      100% { transform: scale(1.7); opacity: 0;  }
+      0%   { transform: scale(1);   opacity: 0.5; }
+      100% { transform: scale(1.9); opacity: 0;   }
     }
     @keyframes fillBar {
-      from { width: 0; }
+      from { width: 0%; }
       to   { width: 100%; }
     }
     @keyframes scaleIn {
-      from { transform: scale(0.7); opacity: 0; }
+      from { transform: scale(0.6); opacity: 0; }
       to   { transform: scale(1);   opacity: 1; }
     }
+    @keyframes checkDraw {
+      from { stroke-dashoffset: 60; }
+      to   { stroke-dashoffset: 0;  }
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0px);  }
+      50%       { transform: translateY(-6px); }
+    }
 
-    .anim-sheet  { animation: slideUp .38s cubic-bezier(0.32,0.72,0,1) forwards; }
-    .anim-fade   { animation: fadeIn  .28s ease forwards; }
-    .anim-scale  { animation: scaleIn .35s cubic-bezier(0.34,1.56,0.64,1) forwards; }
-    .spinner     { animation: spin 1s linear infinite; }
-    .pulse-ring  { animation: pulseRing 1.6s ease-out infinite; }
+    .anim-sheet { animation: slideUp .38s cubic-bezier(0.32,0.72,0,1) forwards; }
+    .anim-fade  { animation: fadeIn  .3s ease forwards; }
+    .anim-scale { animation: scaleIn .4s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+    .anim-float { animation: float 3s ease-in-out infinite; }
+    .spinner    { animation: spin 1s linear infinite; }
+    .pulse-ring { animation: pulseRing 1.6s ease-out infinite; }
+    .check-path {
+      stroke-dasharray: 60;
+      stroke-dashoffset: 60;
+      animation: checkDraw .5s ease .4s forwards;
+    }
 
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
     button:active { transform: scale(0.97); }
-    input:focus   { border-color: #10b981 !important; outline: none; }
 
     .toast {
       position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%);
@@ -70,37 +83,49 @@
     }
     .toast.show { opacity: 1; }
 
-    /* Divider dots */
-    .dot-divider {
-      display: flex; align-items: center; gap: 6px;
-      padding: 12px 0;
+    /* Step pill nav */
+    .step-nav {
+      display: flex; gap: 6px;
+      margin-bottom: 24px;
     }
-    .dot-divider::before, .dot-divider::after {
-      content: ''; flex: 1; height: 1px; background: #f3f4f6;
+    .step-pill {
+      flex: 1; padding: 8px 6px;
+      border-radius: 12px; font-size: 11px; font-weight: 700;
+      text-align: center; cursor: pointer;
+      border: 1.5px solid #e5e7eb; color: #9ca3af;
+      background: white; transition: all .18s;
+      line-height: 1.3;
+    }
+    .step-pill.active {
+      background: #111827; color: white; border-color: #111827;
+    }
+    .step-pill.done {
+      background: #f0fdf4; color: #059669; border-color: #a7f3d0;
     }
 
-    /* Row utility */
     .info-row {
       display: flex; justify-content: space-between; align-items: center;
       padding: 11px 0; border-bottom: 1px solid #f9fafb;
     }
     .info-row:last-child { border-bottom: none; }
 
-    /* Method pill nav */
-    .method-nav {
-      display: flex; gap: 8px; overflow-x: auto;
-      padding-bottom: 2px; margin-bottom: 20px;
+    /* Receipt tear line */
+    .tear-line {
+      position: relative; margin: 0 -24px;
+      height: 24px; overflow: hidden;
     }
-    .method-nav::-webkit-scrollbar { display: none; }
-    .method-pill {
-      flex-shrink: 0; padding: 7px 14px;
-      border-radius: 99px; font-size: 12px; font-weight: 600;
-      border: 1.5px solid #e5e7eb; color: #6b7280;
-      cursor: pointer; transition: all .18s; background: white;
+    .tear-line::before {
+      content: '';
+      position: absolute; top: 50%; left: 0; right: 0;
+      border-top: 2px dashed #e5e7eb;
     }
-    .method-pill.active {
-      background: #111827; color: white; border-color: #111827;
+    .tear-circle-l, .tear-circle-r {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      width: 20px; height: 20px; border-radius: 50%;
+      background: #f1f5f9;
     }
+    .tear-circle-l { left: -10px; }
+    .tear-circle-r { right: -10px; }
   </style>
 </head>
 <body>
@@ -108,372 +133,245 @@
 <div id="toast" class="toast"></div>
 
 <div class="sheet no-scrollbar anim-sheet" id="main-sheet">
-  <!-- Method nav pills -->
-  <div class="method-nav" id="method-nav">
-    <button class="method-pill active" onclick="navigate('bca')"    id="pill-bca">🏦 BCA</button>
-    <button class="method-pill"        onclick="navigate('gopay')"  id="pill-gopay">💚 GoPay</button>
-    <button class="method-pill"        onclick="navigate('ovo')"    id="pill-ovo">💜 OVO</button>
-    <button class="method-pill"        onclick="navigate('qris')"   id="pill-qris">📱 QRIS</button>
-    <button class="method-pill"        onclick="navigate('dana')"   id="pill-dana">🔵 Dana</button>
-    <button class="method-pill"        onclick="navigate('shopee')" id="pill-shopee">🟠 ShopeePay</button>
+
+  <!-- Step nav -->
+  <div class="step-nav" id="step-nav">
+    <button class="step-pill" onclick="navigate('verifying')" id="pill-verifying">⏳<br>Verifikasi</button>
+    <button class="step-pill" onclick="navigate('success')"   id="pill-success">✅<br>Berhasil</button>
   </div>
 
   <!-- Dynamic content -->
-  <div id="content" class="anim-fade"></div>
+  <div id="content"></div>
 </div>
 
 <script>
-// ─── Constants ───────────────────────────────────────────
 const EVENT = {
-  name: 'Street Food Carnival',
-  date: '5-7 Mei 2026',
-  fee:  '3.500.000',
-  code: 'REG-' + Math.random().toString(36).substring(2,8).toUpperCase(),
+  name:   'Street Food Carnival',
+  date:   '5-7 Mei 2026',
+  loc:    'GBK, Jakarta',
+  fee:    '3.500.000',
+  method: 'Transfer Bank BCA',
+  trx:    'TRX-' + Math.random().toString(36).substring(2,10).toUpperCase(),
+  booth:  'Warung Kopi Nusantara',
 };
 
-const METHODS = {
-  bca:    { label: 'Transfer Bank BCA',  icon: '🏦', color: '#005baa', bg: '#eff6ff', bdr: '#bfdbfe' },
-  gopay:  { label: 'GoPay',             icon: '💚', color: '#008000', bg: '#f0fdf4', bdr: '#bbf7d0' },
-  ovo:    { label: 'OVO',               icon: '💜', color: '#4c3494', bg: '#f5f3ff', bdr: '#ddd6fe' },
-  qris:   { label: 'QRIS',              icon: '📱', color: '#dc2626', bg: '#fff1f2', bdr: '#fecaca' },
-  dana:   { label: 'Dana',              icon: '🔵', color: '#0066cc', bg: '#eff6ff', bdr: '#bfdbfe' },
-  shopee: { label: 'ShopeePay',         icon: '🟠', color: '#ee4d2d', bg: '#fff7ed', bdr: '#fed7aa' },
-};
-
-// ─── Timers ──────────────────────────────────────────────
-let timerInterval = null;
-let timerSecs = 0;
-
-function startTimer(id, seconds, color) {
-  if (timerInterval) clearInterval(timerInterval);
-  timerSecs = seconds;
-  timerInterval = setInterval(() => {
-    timerSecs--;
-    const el = document.getElementById(id);
-    if (!el) { clearInterval(timerInterval); return; }
-    if (timerSecs <= 0) {
-      clearInterval(timerInterval);
-      el.textContent = 'Kedaluwarsa';
-      el.style.color = '#ef4444';
-      return;
-    }
-    if (seconds >= 3600) {
-      const h = String(Math.floor(timerSecs/3600)).padStart(2,'0');
-      const m = String(Math.floor((timerSecs%3600)/60)).padStart(2,'0');
-      const s = String(timerSecs%60).padStart(2,'0');
-      el.textContent = `${h}:${m}:${s}`;
-    } else {
-      const m = String(Math.floor(timerSecs/60)).padStart(2,'0');
-      const s = String(timerSecs%60).padStart(2,'0');
-      el.textContent = `${m}:${s}`;
-    }
-  }, 1000);
-}
-
-// ─── Utilities ───────────────────────────────────────────
+// ─── Toast ──────────────────────────────────────────────
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg; t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2200);
 }
 
-function copyText(text, label) {
-  navigator.clipboard?.writeText(text).catch(() => {});
-  showToast((label || 'Teks') + ' disalin ✓');
+// ─── Hash Router ─────────────────────────────────────────
+const STEPS = ['verifying', 'success'];
+
+function getStepFromHash() {
+  const h = window.location.hash.replace('#', '').toLowerCase();
+  return STEPS.includes(h) ? h : 'verifying';
 }
 
-function buildQR(color, size) {
-  size = size || 152;
-  const p = [
-    [1,1,1,1,1,1,1,0,0,1,0,1,1,1,1,1,1,1],
-    [1,0,0,0,0,0,1,0,1,0,0,0,1,0,0,0,0,1],
-    [1,0,1,1,1,0,1,0,0,1,0,0,1,0,1,1,0,1],
-    [1,0,1,1,1,0,1,0,1,0,1,0,1,0,1,1,0,1],
-    [1,0,0,0,0,0,1,0,0,0,0,1,1,0,0,0,0,1],
-    [1,1,1,1,1,1,1,0,1,0,1,0,1,1,1,1,1,1],
-    [0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0],
-    [1,0,1,1,0,1,1,0,1,0,1,0,1,1,0,1,1,0],
-    [0,1,0,0,1,0,0,1,0,1,0,1,0,0,1,0,0,1],
-    [1,0,1,0,0,1,1,0,1,0,1,0,1,0,1,0,1,0],
-    [0,1,0,1,0,0,0,1,0,1,0,1,0,1,0,0,0,1],
-    [1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0],
-    [0,0,0,0,0,0,0,0,0,1,0,1,0,1,0,1,0,1],
-    [1,1,1,1,1,1,1,0,1,0,1,0,1,0,1,0,1,0],
-    [1,0,0,0,0,0,1,0,0,1,0,0,0,1,0,0,0,1],
-    [1,0,1,1,1,0,1,0,1,0,1,0,1,0,1,0,1,0],
-    [1,0,0,0,0,0,1,0,0,1,0,1,0,1,0,1,0,1],
-    [1,1,1,1,1,1,1,0,1,0,1,0,1,0,1,0,1,1],
-  ];
-  const cols=p[0].length, rows=p.length;
-  const cw=size/cols, ch=size/rows;
-  let r='';
-  p.forEach((row,ri) => row.forEach((v,ci) => {
-    if(v) r += `<rect x="${ci*cw+.5}" y="${ri*ch+.5}" width="${cw-1}" height="${ch-1}" rx="2" fill="${color}"/>`;
-  }));
-  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg">${r}</svg>`;
+function navigate(step) {
+  history.pushState(null, '', '#' + step);
+  render(step);
 }
 
-function copyBtn(text, label, extraClass) {
-  return `<button onclick="copyText('${text}','${label}')" class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold active:scale-95 transition-transform ${extraClass||'bg-gray-100 text-gray-700'}">
-    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Salin
-  </button>`;
-}
-
-// ─── Hash Router ──────────────────────────────────────────
-const VALID = Object.keys(METHODS);
-
-function getMethodFromHash() {
-  const h = window.location.hash.replace('#','').toLowerCase();
-  return VALID.includes(h) ? h : 'bca';
-}
-
-function navigate(method) {
-  history.pushState(null, '', '#' + method);
-  render(method);
-}
-
-function render(method) {
-  if (!VALID.includes(method)) method = 'bca';
+function render(step) {
+  if (!STEPS.includes(step)) step = 'verifying';
 
   // Update pills
-  VALID.forEach(m => {
-    const p = document.getElementById('pill-' + m);
-    if (p) p.className = 'method-pill' + (m === method ? ' active' : '');
+  STEPS.forEach(s => {
+    const p = document.getElementById('pill-' + s);
+    if (!p) return;
+    const idx = STEPS.indexOf(s);
+    const cur = STEPS.indexOf(step);
+    if (s === step) p.className = 'step-pill active';
+    else if (idx < cur) p.className = 'step-pill done';
+    else p.className = 'step-pill';
   });
 
   const content = document.getElementById('content');
-  content.innerHTML = '';
-
-  let html = '';
-  if      (method === 'bca')    html = tplBCA();
-  else if (method === 'gopay')  html = tplEwallet('gopay');
-  else if (method === 'ovo')    html = tplEwallet('ovo');
-  else if (method === 'dana')   html = tplEwallet('dana');
-  else if (method === 'shopee') html = tplEwallet('shopee');
-  else if (method === 'qris')   html = tplQRIS();
-
-  content.innerHTML = html;
+  content.innerHTML = step === 'verifying' ? tplVerifying() : tplSuccess();
   content.className = 'anim-fade';
 
-  // Start timers
-  if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
-  if (method === 'bca') startTimer('bca-timer', 86386, '#dc2626');
-  else if (['gopay','ovo','dana','shopee'].includes(method)) startTimer('ew-timer', 899, METHODS[method].color);
+  // Auto-advance from verifying after 3s for demo
+  if (step === 'verifying') {
+    setTimeout(() => {
+      if (getStepFromHash() === 'verifying') navigate('success');
+    }, 3000);
+  }
 }
 
-window.addEventListener('popstate', () => render(getMethodFromHash()));
+window.addEventListener('popstate', () => render(getStepFromHash()));
 
-// ─── Template: BCA ───────────────────────────────────────
-function tplBCA() {
+// ─── Template: Verifying ─────────────────────────────────
+function tplVerifying() {
   return `
-  <div>
-    <div class="flex items-center gap-3 mb-5">
-      <div class="w-11 h-11 rounded-2xl flex items-center justify-center bg-blue-600">
-        <span class="text-white text-xs font-black tracking-tight">BCA</span>
-      </div>
-      <div>
-        <p class="text-gray-900 font-bold">Transfer Bank BCA</p>
-        <p class="text-gray-400 text-xs">Virtual Account / Rekening Tujuan</p>
+  <div class="flex flex-col items-center text-center py-6">
+
+    <!-- Spinner with pulse rings -->
+    <div class="relative w-28 h-28 mb-8">
+      <div class="absolute inset-0 bg-emerald-200 rounded-full pulse-ring"></div>
+      <div class="absolute inset-0 bg-emerald-100 rounded-full pulse-ring" style="animation-delay:.6s"></div>
+      <div class="relative w-28 h-28 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full flex items-center justify-center shadow-lg z-10">
+        <svg class="spinner" xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+        </svg>
       </div>
     </div>
 
-    <!-- Countdown -->
-    <div class="bg-red-50 border border-red-100 rounded-2xl p-4 mb-5">
-      <div class="flex items-center justify-between mb-2">
-        <div class="flex items-center gap-1.5">
-          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          <p class="text-red-500 text-xs font-bold">BAYAR SEBELUM</p>
+    <h2 class="text-gray-900 font-extrabold text-2xl mb-2">Memverifikasi</h2>
+    <p class="text-gray-500 text-sm leading-relaxed mb-8">Sistem kami sedang memeriksa<br>pembayaranmu secara otomatis...</p>
+
+    <!-- Progress bar -->
+    <div class="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden mb-3">
+      <div class="h-full bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full"
+           style="animation: fillBar 2.9s ease forwards; width:0%"></div>
+    </div>
+    <p class="text-gray-400 text-xs mb-10">Jangan tutup halaman ini</p>
+
+    <!-- Transaction summary -->
+    <div class="w-full bg-gray-50 rounded-2xl p-5 text-left">
+      <p class="text-gray-400 text-xs font-bold mb-3 tracking-wider">DETAIL TRANSAKSI</p>
+      <div class="space-y-2.5 text-sm">
+        <div class="flex justify-between"><span class="text-gray-400">Event</span><span class="text-gray-700 font-semibold">${EVENT.name}</span></div>
+        <div class="flex justify-between"><span class="text-gray-400">Booth</span><span class="text-gray-700 font-semibold">${EVENT.booth}</span></div>
+        <div class="flex justify-between"><span class="text-gray-400">Metode</span><span class="text-gray-700 font-semibold">${EVENT.method}</span></div>
+        <div class="flex justify-between items-center pt-1 border-t border-gray-200">
+          <span class="text-gray-700 font-bold">Total</span>
+          <span class="text-emerald-600 font-extrabold text-lg">Rp ${EVENT.fee}</span>
         </div>
-        <p id="bca-timer" class="text-red-700 font-extrabold text-sm tabular-nums">23:59:46</p>
-      </div>
-      <div class="bg-red-100 rounded-full h-1.5 overflow-hidden">
-        <div class="h-full bg-red-500 rounded-full" style="width:99.98%; transition:width 1s linear;"></div>
       </div>
     </div>
 
-    <!-- Rekening Card -->
-    <div class="border-2 border-gray-100 rounded-2xl overflow-hidden mb-5">
-      <div class="bg-gray-50 px-5 py-3 border-b border-gray-100">
-        <p class="text-gray-400 text-xs font-bold tracking-wider">REKENING TUJUAN</p>
+    <p class="text-gray-400 text-xs mt-5">Biasanya selesai dalam <strong class="text-gray-600">10–30 detik</strong></p>
+  </div>`;
+}
+
+// ─── Template: Success ───────────────────────────────────
+function tplSuccess() {
+  const now = new Date();
+  const fmt = now.toLocaleString('id-ID', {
+    day: '2-digit', month: 'short', year: 'numeric',
+    hour: '2-digit', minute: '2-digit'
+  });
+
+  return `
+  <div class="flex flex-col items-center">
+
+    <!-- Check icon -->
+    <div class="relative w-28 h-28 mb-6 anim-float">
+      <div class="w-28 h-28 bg-emerald-100 rounded-full flex items-center justify-center anim-scale">
+        <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="32" cy="32" r="32" fill="#d1fae5"/>
+          <polyline class="check-path" points="16,32 27,43 48,22"
+            fill="none" stroke="#10b981" stroke-width="4.5"
+            stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
       </div>
-      <div class="px-5">
-        <div class="info-row">
-          <div><p class="text-gray-400 text-xs mb-0.5">Bank</p><p class="text-gray-900 font-bold">Bank Central Asia</p></div>
-          <div class="w-10 h-7 bg-blue-600 rounded-lg flex items-center justify-center"><span class="text-white text-xs font-black">BCA</span></div>
-        </div>
-        <div class="info-row">
-          <div>
-            <p class="text-gray-400 text-xs mb-0.5">Nomor Rekening</p>
-            <p class="text-gray-900 font-extrabold text-xl tracking-widest">8800 1234 5678</p>
+    </div>
+
+    <p class="text-emerald-500 text-xs font-extrabold tracking-widest mb-1.5">PEMBAYARAN BERHASIL</p>
+    <p class="text-gray-900 font-extrabold text-3xl mb-1">Rp ${EVENT.fee}</p>
+    <p class="text-gray-400 text-sm mb-8">via ${EVENT.method}</p>
+
+    <!-- Receipt card -->
+    <div class="w-full border border-gray-200 rounded-3xl overflow-hidden mb-6 shadow-sm">
+
+      <!-- Receipt header -->
+      <div class="bg-gradient-to-r from-emerald-500 to-teal-500 px-5 py-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/>
+              <rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/>
+              <path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/>
+              <path d="M3 12h.01"/><path d="M12 3h.01"/><path d="M12 16v.01"/>
+              <path d="M16 12h1"/><path d="M21 12v.01"/><path d="M12 21v-1"/>
+            </svg>
           </div>
-          ${copyBtn('88001234567890','Nomor rekening')}
-        </div>
-        <div class="info-row">
-          <div><p class="text-gray-400 text-xs mb-0.5">Atas Nama</p><p class="text-gray-900 font-semibold">PT UMKMate Indonesia</p></div>
-        </div>
-        <div class="info-row">
           <div>
-            <p class="text-gray-400 text-xs mb-0.5">Jumlah Transfer</p>
-            <p class="text-emerald-600 font-extrabold text-2xl">Rp ${EVENT.fee}</p>
+            <p class="text-white font-bold text-sm">Event Pass Aktif</p>
+            <p class="text-emerald-100 text-xs">${EVENT.booth} · ${EVENT.date}</p>
           </div>
-          ${copyBtn(EVENT.fee.replace(/\./g,''),'Nominal','bg-emerald-50 text-emerald-700 border border-emerald-200')}
+          <span class="ml-auto bg-white/25 text-white text-xs font-bold px-2.5 py-1 rounded-full">✓ AKTIF</span>
+        </div>
+      </div>
+
+      <!-- Tear line -->
+      <div class="tear-line">
+        <div class="tear-circle-l"></div>
+        <div class="tear-circle-r"></div>
+      </div>
+
+      <!-- Receipt body -->
+      <div class="px-5 py-4">
+        <div class="info-row">
+          <span class="text-gray-400 text-xs">Event</span>
+          <span class="text-gray-800 font-semibold text-sm">${EVENT.name}</span>
         </div>
         <div class="info-row">
-          <div><p class="text-gray-400 text-xs mb-0.5">Berita Transfer</p><p class="text-gray-900 font-bold">${EVENT.code}</p></div>
-          ${copyBtn(EVENT.code,'Kode')}
+          <span class="text-gray-400 text-xs">Tanggal</span>
+          <span class="text-gray-800 font-semibold text-sm">${EVENT.date}</span>
+        </div>
+        <div class="info-row">
+          <span class="text-gray-400 text-xs">Lokasi</span>
+          <span class="text-gray-800 font-semibold text-sm">${EVENT.loc}</span>
+        </div>
+        <div class="info-row">
+          <span class="text-gray-400 text-xs">No. Transaksi</span>
+          <span class="text-gray-700 font-semibold text-xs">${EVENT.trx}</span>
+        </div>
+        <div class="info-row">
+          <span class="text-gray-400 text-xs">Waktu</span>
+          <span class="text-gray-700 font-semibold text-xs">${fmt}</span>
+        </div>
+        <div class="info-row">
+          <span class="text-gray-400 text-xs">Metode</span>
+          <span class="text-gray-700 font-semibold text-sm">${EVENT.method}</span>
+        </div>
+        <div class="info-row" style="border-bottom:none; padding-top:14px; border-top:2px dashed #f3f4f6; margin-top:4px;">
+          <span class="text-gray-800 font-bold">Total Dibayar</span>
+          <span class="text-emerald-600 font-extrabold text-xl">Rp ${EVENT.fee}</span>
         </div>
       </div>
     </div>
 
-    <!-- Warning -->
-    <div class="bg-yellow-50 border border-yellow-200 rounded-xl px-4 py-3 flex gap-2.5 mb-5">
-      <span class="text-base flex-shrink-0">⚠️</span>
-      <p class="text-yellow-700 text-xs leading-relaxed">Transfer <strong>harus tepat sesuai nominal</strong>. Kelebihan atau kekurangan 1 rupiah menyebabkan verifikasi otomatis gagal.</p>
-    </div>
-
-    <!-- How to -->
-    <div class="bg-gray-50 rounded-2xl p-4 mb-6">
-      <p class="text-gray-600 text-xs font-bold mb-3">📱 CARA TRANSFER BCA MOBILE</p>
-      <div class="space-y-2.5">
-        ${['Buka aplikasi BCA Mobile','Pilih m-Transfer → BCA Virtual Account atau Antar Rekening BCA','Masukkan nomor rekening di atas','Masukkan nominal transfer persis sama','Isi kolom Berita Transfer dengan kode di atas','Periksa kembali & konfirmasi transaksi'].map((s,i)=>`
-        <div class="flex items-start gap-2.5">
-          <div class="w-5 h-5 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">${i+1}</div>
-          <p class="text-gray-500 text-xs leading-relaxed">${s}</p>
+    <!-- Next steps -->
+    <div class="w-full bg-gray-50 rounded-2xl p-5 mb-6">
+      <p class="text-gray-600 text-xs font-bold mb-3 tracking-wider">LANGKAH SELANJUTNYA</p>
+      <div class="space-y-3">
+        ${[
+          ['📲', 'Nomor booth dikirim via WhatsApp dalam 1×24 jam'],
+          ['📦', 'Siapkan produk & perlengkapan boothmu'],
+          ['🎟️', 'Download Event Pass dari menu Eventku saat sudah aktif'],
+        ].map(([ic, tx]) => `
+        <div class="flex items-start gap-3">
+          <span class="text-base mt-0.5">${ic}</span>
+          <p class="text-gray-500 text-xs leading-relaxed">${tx}</p>
         </div>`).join('')}
       </div>
     </div>
 
-    <button onclick="showToast('Pembayaran dikonfirmasi ✓')" class="w-full py-4 bg-gray-900 text-white rounded-2xl font-bold text-sm">
-      Saya Sudah Transfer ✓
+    <!-- CTA buttons -->
+    <button onclick="showToast('Membuka Eventku...')" class="w-full py-4 bg-emerald-500 text-white rounded-2xl font-bold mb-3 flex items-center justify-center gap-2">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      Lihat Eventku 🎉
     </button>
+    <button onclick="shareReceipt()" class="w-full py-3.5 border-2 border-gray-200 rounded-2xl text-gray-600 font-semibold text-sm flex items-center justify-center gap-2">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+      Bagikan Bukti Pembayaran
+    </button>
+
   </div>`;
 }
 
-// ─── Template: E-Wallet (GoPay / OVO / Dana / ShopeePay) ──
-function tplEwallet(method) {
-  const m = METHODS[method];
-  const timerLabel = { gopay:'14:59', ovo:'14:59', dana:'14:59', shopee:'14:59' };
-  const appName = { gopay:'Gojek', ovo:'OVO', dana:'Dana', shopee:'Shopee' };
-
-  return `
-  <div>
-    <div class="flex items-center gap-3 mb-5">
-      <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-2xl" style="background:${m.bg}; border:1.5px solid ${m.bdr}">
-        ${m.icon}
-      </div>
-      <div>
-        <p class="text-gray-900 font-bold">${m.label}</p>
-        <p class="text-gray-400 text-xs">Scan QR atau buka aplikasi ${appName[method]||m.label}</p>
-      </div>
-    </div>
-
-    <!-- Amount banner -->
-    <div class="rounded-2xl p-4 mb-5 flex items-center justify-between" style="background:${m.bg}; border:1.5px solid ${m.bdr}">
-      <div>
-        <p class="text-xs font-semibold mb-0.5" style="color:${m.color}">TOTAL PEMBAYARAN</p>
-        <p class="text-gray-900 font-extrabold text-xl">Rp ${EVENT.fee}</p>
-      </div>
-      <div class="text-right">
-        <p class="text-gray-400 text-xs mb-0.5">${EVENT.name}</p>
-        <p class="text-gray-500 text-xs">${EVENT.date}</p>
-      </div>
-    </div>
-
-    <!-- QR Countdown -->
-    <div class="flex items-center justify-between mb-1.5">
-      <p class="text-gray-400 text-xs">QR kedaluwarsa dalam</p>
-      <p id="ew-timer" class="font-extrabold text-sm tabular-nums" style="color:${m.color}">${timerLabel[method]}</p>
-    </div>
-    <div class="rounded-full h-1.5 mb-5 overflow-hidden" style="background:${m.bdr}">
-      <div class="h-full rounded-full" style="background:${m.color}; width:99.9%; transition:width 1s linear;"></div>
-    </div>
-
-    <!-- QR Box -->
-    <div class="flex flex-col items-center py-7 rounded-2xl mb-5" style="background:${m.bg}; border:2px solid ${m.bdr}">
-      <div class="bg-white rounded-2xl p-4 shadow-sm mb-4" style="border:2px solid ${m.bdr}">
-        ${buildQR(m.color, 152)}
-      </div>
-      <div class="flex items-center gap-2 px-4 py-2 rounded-full mb-2" style="background:${m.color}20">
-        <span>${m.icon}</span>
-        <p class="text-xs font-bold" style="color:${m.color}">Rp ${EVENT.fee} · ${m.label}</p>
-      </div>
-      <p class="text-gray-400 text-xs text-center px-8">Buka <strong>${appName[method]||m.label}</strong> → Bayar → Pindai QR ini</p>
-    </div>
-
-    <!-- OR Divider -->
-    <div class="dot-divider text-gray-300 text-xs font-semibold">ATAU</div>
-
-    <!-- Deep link button -->
-    <button onclick="showToast('Membuka ${m.label}...')" class="w-full py-4 rounded-2xl font-bold text-white mb-3 flex items-center justify-center gap-2" style="background:${m.color}">
-      <span class="text-xl">${m.icon}</span> Buka Aplikasi ${m.label}
-    </button>
-    <button onclick="showToast('Pembayaran dikonfirmasi ✓')" class="w-full py-3.5 rounded-2xl font-semibold text-gray-500 border-2 border-gray-200 text-sm">
-      Saya Sudah Bayar ✓
-    </button>
-  </div>`;
+function shareReceipt() {
+  navigator.clipboard?.writeText(window.location.href).catch(() => {});
+  showToast('Link disalin ke clipboard 🔗');
 }
 
-// ─── Template: QRIS ──────────────────────────────────────
-function tplQRIS() {
-  return `
-  <div>
-    <div class="flex items-center gap-3 mb-5">
-      <div class="w-11 h-11 rounded-2xl flex items-center justify-center bg-red-600">
-        <span class="text-white text-xs font-black tracking-tight">QRIS</span>
-      </div>
-      <div>
-        <p class="text-gray-900 font-bold">QRIS Universal</p>
-        <p class="text-gray-400 text-xs">Berlaku di semua aplikasi dompet digital</p>
-      </div>
-    </div>
-
-    <!-- Supported apps -->
-    <div class="bg-gray-50 rounded-2xl px-4 py-3 mb-5">
-      <p class="text-gray-400 text-xs font-bold mb-2.5">DIDUKUNG OLEH</p>
-      <div class="flex flex-wrap gap-1.5">
-        ${['💚 GoPay','💜 OVO','🔵 Dana','🟠 ShopeePay','🟢 LinkAja','📱 BCA Mobile','🏦 Livin\' Mandiri','💳 Jenius'].map(a=>`
-        <span class="bg-white border border-gray-200 text-gray-600 text-xs px-2.5 py-1 rounded-lg font-medium">${a}</span>`).join('')}
-      </div>
-    </div>
-
-    <!-- QR + amount -->
-    <div class="flex flex-col items-center py-7 bg-white rounded-2xl border-2 border-dashed border-gray-200 mb-5">
-      <div class="bg-white rounded-2xl p-4 shadow-md border border-gray-100 mb-4">
-        ${buildQR('#111827', 168)}
-      </div>
-      <div class="bg-emerald-500 px-6 py-2.5 rounded-full mb-2">
-        <p class="text-white text-sm font-extrabold">Rp ${EVENT.fee}</p>
-      </div>
-      <p class="text-gray-500 text-xs font-semibold">${EVENT.name}</p>
-      <p class="text-gray-400 text-xs mt-0.5">UMKMate · Booth Registration</p>
-    </div>
-
-    <!-- Info -->
-    <div class="bg-blue-50 border border-blue-100 rounded-xl px-4 py-3 flex gap-2.5 mb-5">
-      <span class="text-sm flex-shrink-0 mt-0.5">ℹ️</span>
-      <p class="text-blue-700 text-xs leading-relaxed">Pastikan nominal di aplikasmu <strong>Rp ${EVENT.fee}</strong> sebelum konfirmasi. QRIS berlaku <strong>satu kali</strong> per transaksi.</p>
-    </div>
-
-    <!-- How to -->
-    <div class="bg-gray-50 rounded-2xl p-4 mb-6">
-      <p class="text-gray-600 text-xs font-bold mb-3">📲 CARA BAYAR VIA QRIS</p>
-      <div class="space-y-2.5">
-        ${['Buka aplikasi dompet digitalmu','Pilih menu Scan / Bayar','Arahkan kamera ke QR di atas','Pastikan nominal sudah benar','Konfirmasi & selesaikan pembayaran'].map((s,i)=>`
-        <div class="flex items-start gap-2.5">
-          <div class="w-5 h-5 rounded-full bg-red-600 text-white text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">${i+1}</div>
-          <p class="text-gray-500 text-xs leading-relaxed">${s}</p>
-        </div>`).join('')}
-      </div>
-    </div>
-
-    <button onclick="showToast('Pembayaran dikonfirmasi ✓')" class="w-full py-4 bg-gray-900 text-white rounded-2xl font-bold text-sm">
-      Saya Sudah Scan ✓
-    </button>
-  </div>`;
-}
-
-// ─── Init ─────────────────────────────────────────────────
-render(getMethodFromHash());
+// ─── Init ────────────────────────────────────────────────
+render(getStepFromHash());
 </script>
 </body>
 </html>
