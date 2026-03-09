@@ -2,899 +2,404 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>UMKMate — Onboarding</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fraunces:ital,wght@0,300;0,700;1,300&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UMKMate — Misi Selesai</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root {
-  --g1: #3cc68a;
-  --g2: #5dddb0;
-  --g3: #8eefd0;
-  --g4: #c4f7e8;
-  --g5: #edfaf5;
-  --dark: #0d2b1e;
-  --mid:  #1e5c3a;
-  --text: #0f3324;
-  --muted: #6b9e88;
-  --white: #ffffff;
-  --card-r: 32px;
-  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-}
+* { margin:0; padding:0; box-sizing:border-box; }
 
-* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-
-html, body {
-  width:100%; height:100%;
+body {
+  min-height: 100vh;
+  background: #e8f5ee;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-family: 'Plus Jakarta Sans', sans-serif;
-  background: var(--dark);
-  overflow: hidden;
-  user-select: none;
+  padding: 24px;
 }
 
-/* ═══════════════════════════════
-   WRAPPER
-═══════════════════════════════ */
-#app {
+/* ── CARD ── */
+.card {
   width: 100%;
-  max-width: 420px;
-  height: 100vh;
-  margin: 0 auto;
-  position: relative;
+  max-width: 380px;
+  border-radius: 28px;
   overflow: hidden;
-  background: var(--dark);
+  box-shadow:
+    0 24px 64px rgba(30,120,70,0.22),
+    0 4px 16px rgba(0,0,0,0.08);
+  animation: cardPop 0.55s cubic-bezier(0.34,1.56,0.64,1) both;
 }
 
-/* ═══════════════════════════════
-   BG BLOB
-═══════════════════════════════ */
-.bg-blob {
+@keyframes cardPop {
+  from { opacity:0; transform: scale(0.82) translateY(24px); }
+  to   { opacity:1; transform: scale(1) translateY(0); }
+}
+
+/* ── TOP SECTION (green) ── */
+.card-top {
+  background: linear-gradient(160deg, #2ecc71 0%, #27ae60 60%, #1e9954 100%);
+  padding: 32px 24px 28px;
+  position: relative;
+  text-align: center;
+  overflow: hidden;
+}
+
+/* Decorative circles in bg */
+.card-top::before {
+  content: '';
+  position: absolute;
+  width: 220px; height: 220px;
+  border-radius: 50%;
+  border: 40px solid rgba(255,255,255,0.07);
+  top: -60px; left: -50px;
+}
+.card-top::after {
+  content: '';
+  position: absolute;
+  width: 160px; height: 160px;
+  border-radius: 50%;
+  border: 30px solid rgba(255,255,255,0.06);
+  bottom: -50px; right: -30px;
+}
+
+/* Confetti dots */
+.confetti-dot {
   position: absolute;
   border-radius: 50%;
-  filter: blur(60px);
-  transition: all 0.9s var(--ease-out);
-  pointer-events: none;
-  z-index: 0;
+  animation: confettiFall linear infinite;
+  opacity: 0;
 }
-.blob-a {
-  width: 320px; height: 320px;
-  top: -80px; left: -60px;
-  background: radial-gradient(circle, rgba(60,198,138,0.35) 0%, transparent 70%);
-}
-.blob-b {
-  width: 260px; height: 260px;
-  bottom: 80px; right: -60px;
-  background: radial-gradient(circle, rgba(93,221,176,0.25) 0%, transparent 70%);
+@keyframes confettiFall {
+  0%   { opacity:0; transform: translateY(-10px) rotate(0deg); }
+  10%  { opacity:1; }
+  90%  { opacity:1; }
+  100% { opacity:0; transform: translateY(120px) rotate(360deg); }
 }
 
-/* ═══════════════════════════════
-   SLIDES TRACK
-═══════════════════════════════ */
-.slides-track {
-  display: flex;
-  width: 400%;
-  height: 100%;
-  transition: transform 0.65s var(--ease-out);
+/* Close button */
+.close-btn {
+  position: absolute;
+  top: 16px; right: 16px;
+  width: 36px; height: 36px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.22);
+  border: none;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  transition: background 0.2s, transform 0.15s;
+  z-index: 2;
+}
+.close-btn:hover { background: rgba(255,255,255,0.35); transform: scale(1.08); }
+
+/* Trophy circle */
+.trophy-wrap {
   position: relative;
   z-index: 1;
-}
-
-.slide {
-  width: 25%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 0 28px 40px;
-  position: relative;
-}
-
-/* ═══════════════════════════════
-   TOP NAV
-═══════════════════════════════ */
-.top-nav {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 56px 0 0;
-  position: relative;
-  z-index: 2;
-}
-
-.logo-small {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.logo-small svg { width: 28px; height: 28px; }
-.logo-small span {
-  font-size: 1rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  color: var(--white);
-}
-
-.skip-btn {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--muted);
-  cursor: pointer;
-  letter-spacing: 0.04em;
-  transition: color 0.2s;
-}
-.skip-btn:hover { color: var(--g2); }
-
-/* ═══════════════════════════════
-   ILLUSTRATION AREA
-═══════════════════════════════ */
-.illus-wrap {
-  flex: 1;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  margin-top: 8px;
-}
-
-.illus-card {
-  width: 100%;
-  max-width: 340px;
-  aspect-ratio: 1 / 1.05;
-  border-radius: 36px;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 32px 80px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.06);
-}
-
-/* Card backgrounds per slide */
-.slide-1 .illus-card { background: linear-gradient(145deg, #1a4a30 0%, #0d2b1e 60%, #0a2218 100%); }
-.slide-2 .illus-card { background: linear-gradient(145deg, #193d2c 0%, #0e2a1e 60%, #091f17 100%); }
-.slide-3 .illus-card { background: linear-gradient(145deg, #1c4535 0%, #0f2e23 60%, #091f17 100%); }
-.slide-4 .illus-card { background: linear-gradient(135deg, #3cc68a 0%, #2aab76 50%, #1a8f5e 100%); }
-
-.illus-card svg {
-  width: 100%;
-  height: 100%;
-}
-
-/* Floating badge on card */
-.float-badge {
-  position: absolute;
-  background: rgba(255,255,255,0.12);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255,255,255,0.18);
-  border-radius: 16px;
-  padding: 8px 14px;
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 0.72rem;
-  font-weight: 700;
-  color: white;
-  letter-spacing: 0.02em;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
-}
-.badge-dot {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  background: #3cc68a;
-  box-shadow: 0 0 8px #3cc68a;
-  animation: pulse 1.8s ease-in-out infinite;
-}
-@keyframes pulse {
-  0%,100% { opacity:1; transform:scale(1); }
-  50% { opacity:0.6; transform:scale(1.3); }
-}
-
-/* ═══════════════════════════════
-   TEXT CONTENT
-═══════════════════════════════ */
-.text-block {
-  width: 100%;
-  margin-top: 28px;
-  text-align: left;
-}
-
-.slide-tag {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--g2);
-  margin-bottom: 10px;
-}
-.slide-tag::before {
-  content: '';
-  display: block;
-  width: 18px; height: 2px;
-  background: var(--g2);
-  border-radius: 2px;
-}
-
-.slide-title {
-  font-family: 'Fraunces', serif;
-  font-size: 2rem;
-  font-weight: 700;
-  line-height: 1.15;
-  color: var(--white);
-  margin-bottom: 12px;
-}
-.slide-title em {
-  font-style: italic;
-  font-weight: 300;
-  color: var(--g2);
-}
-
-.slide-desc {
-  font-size: 0.875rem;
-  font-weight: 400;
-  line-height: 1.65;
-  color: #7ab898;
-  max-width: 320px;
-}
-
-/* ═══════════════════════════════
-   BOTTOM CONTROLS
-═══════════════════════════════ */
-.bottom-ctrl {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 28px;
-  position: relative;
-  z-index: 2;
-}
-
-/* Dots */
-.dots {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-}
-.dot {
-  height: 6px;
-  border-radius: 3px;
-  background: rgba(255,255,255,0.2);
-  transition: all 0.4s var(--ease-spring);
-  cursor: pointer;
-}
-.dot.active {
-  width: 24px;
-  background: var(--g1);
-  box-shadow: 0 0 12px rgba(60,198,138,0.6);
-}
-.dot:not(.active) { width: 6px; }
-
-/* Next / CTA button */
-.next-btn {
-  width: 56px; height: 56px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--g1), var(--g2));
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
   justify-content: center;
-  box-shadow: 0 8px 28px rgba(60,198,138,0.45);
-  transition: all 0.3s var(--ease-spring);
-  outline: none;
-  position: relative;
-  overflow: hidden;
-}
-.next-btn::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: white;
+  width: 90px; height: 90px;
   border-radius: 50%;
-  opacity: 0;
-  transition: opacity 0.2s;
+  background: rgba(255,255,255,0.18);
+  border: 3px solid rgba(255,255,255,0.3);
+  margin-bottom: 18px;
+  animation: trophyFloat 2.8s ease-in-out infinite;
+  box-shadow: 0 0 0 8px rgba(255,255,255,0.07);
 }
-.next-btn:active::after { opacity: 0.15; }
-.next-btn:hover { transform: scale(1.08); box-shadow: 0 12px 36px rgba(60,198,138,0.55); }
-.next-btn svg { position: relative; z-index: 1; }
+@keyframes trophyFloat {
+  0%,100% { transform: translateY(0); }
+  50%     { transform: translateY(-6px); }
+}
 
-/* CTA Full button (last slide) */
-.cta-btn {
-  display: none;
-  width: 100%;
-  padding: 17px;
-  border-radius: 18px;
-  background: white;
-  border: none;
-  cursor: pointer;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 1rem;
+.trophy-icon { font-size: 42px; line-height: 1; }
+
+/* Title */
+.congrats-title {
+  position: relative;
+  z-index: 1;
+  font-size: 1.75rem;
   font-weight: 800;
-  color: var(--dark);
-  letter-spacing: 0.02em;
-  box-shadow: 0 12px 40px rgba(255,255,255,0.2);
-  transition: all 0.3s var(--ease-spring);
-  outline: none;
-  margin-top: 16px;
+  color: white;
+  letter-spacing: -0.01em;
+  margin-bottom: 8px;
+  animation: fadeUp 0.5s ease 0.2s both;
 }
-.cta-btn:hover { transform: scale(1.02); }
-.cta-btn.show { display: block; }
+.congrats-emoji { margin-right: 4px; }
 
-.sub-cta {
-  text-align: center;
-  font-size: 0.78rem;
-  color: rgba(255,255,255,0.4);
-  margin-top: 10px;
-  display: none;
+.congrats-sub {
+  position: relative;
+  z-index: 1;
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: rgba(255,255,255,0.85);
+  line-height: 1.5;
+  animation: fadeUp 0.5s ease 0.32s both;
 }
-.sub-cta.show { display: block; }
-.sub-cta span { color: rgba(255,255,255,0.7); font-weight: 600; cursor: pointer; }
 
-/* ═══════════════════════════════
-   SLIDE ENTRY ANIMATION
-═══════════════════════════════ */
-.illus-card,
-.text-block,
-.bottom-ctrl {
-  opacity: 0;
-  transform: translateY(24px);
-  animation: none;
-}
-.slide.active .illus-card { animation: slideUp 0.65s var(--ease-out) 0.05s both; }
-.slide.active .text-block  { animation: slideUp 0.65s var(--ease-out) 0.18s both; }
-.slide.active .bottom-ctrl { animation: slideUp 0.65s var(--ease-out) 0.28s both; }
-
-.slide.active .top-nav { opacity: 1; }
-
-@keyframes slideUp {
-  from { opacity:0; transform:translateY(28px); }
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(12px); }
   to   { opacity:1; transform:translateY(0); }
 }
 
-/* ═══════════════════════════════
-   SWIPE HINT
-═══════════════════════════════ */
-.swipe-hint {
-  position: absolute;
-  bottom: 100px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
+/* XP badge */
+.xp-badge {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
   align-items: center;
   gap: 6px;
-  opacity: 0;
-  animation: hintFade 2s ease 2s forwards;
-  pointer-events: none;
+  background: rgba(255,255,255,0.2);
+  border: 1.5px solid rgba(255,255,255,0.35);
+  border-radius: 999px;
+  padding: 6px 16px;
+  margin-top: 14px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: white;
+  letter-spacing: 0.02em;
+  animation: fadeUp 0.5s ease 0.44s both;
 }
-@keyframes hintFade {
-  0%   { opacity:0; transform:translateX(-50%) translateY(8px); }
-  30%  { opacity:0.7; transform:translateX(-50%) translateY(0); }
-  70%  { opacity:0.7; }
-  100% { opacity:0; }
-}
-.swipe-arrow { animation: swipeBounce 1s ease-in-out infinite; }
-@keyframes swipeBounce {
-  0%,100% { transform: translateX(0); }
-  50%     { transform: translateX(8px); }
+.xp-star { font-size: 14px; }
+
+/* ── BOTTOM SECTION (white) ── */
+.card-bottom {
+  background: #ffffff;
+  padding: 20px 22px 22px;
 }
 
+/* Mission info row */
+.mission-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 16px;
+  border-bottom: 1.5px solid #f0f0f0;
+  margin-bottom: 16px;
+  animation: fadeUp 0.5s ease 0.5s both;
+}
+
+.mission-icon-wrap {
+  flex-shrink: 0;
+  width: 54px; height: 54px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #2ecc71, #27ae60);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px;
+  box-shadow: 0 6px 16px rgba(39,174,96,0.3);
+}
+
+.mission-info { flex: 1; }
+.mission-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #aaa;
+  margin-bottom: 2px;
+}
+.mission-name {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #1a1a1a;
+  line-height: 1.2;
+}
+.mission-status {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #2ecc71;
+  margin-top: 2px;
+}
+
+/* Feature list */
+.features-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #bbb;
+  margin-bottom: 10px;
+  animation: fadeUp 0.5s ease 0.58s both;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 20px;
+  animation: fadeUp 0.5s ease 0.64s both;
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 12px;
+  background: #f8fdf9;
+  border: 1.5px solid #e8f5ee;
+  border-radius: 14px;
+  transition: border-color 0.2s, transform 0.15s;
+  cursor: default;
+}
+.feature-item:hover {
+  border-color: #2ecc71;
+  transform: translateY(-1px);
+}
+
+.feature-emoji { font-size: 18px; flex-shrink: 0; }
+.feature-name {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #333;
+  line-height: 1.3;
+}
+
+/* Buttons */
+.btn-primary {
+  width: 100%;
+  padding: 15px 20px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #2ecc71 0%, #1faa5a 100%);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: white;
+  letter-spacing: 0.01em;
+  box-shadow: 0 8px 24px rgba(39,174,96,0.35);
+  transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1);
+  margin-bottom: 10px;
+  animation: fadeUp 0.5s ease 0.72s both;
+}
+.btn-primary:hover { transform: scale(1.02); box-shadow: 0 12px 32px rgba(39,174,96,0.45); }
+.btn-primary:active { transform: scale(0.98); }
+
+.btn-secondary {
+  width: 100%;
+  padding: 14px 20px;
+  border-radius: 16px;
+  background: white;
+  border: 2px solid #e5e5e5;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1);
+  animation: fadeUp 0.5s ease 0.8s both;
+}
+.btn-secondary:hover { border-color: #2ecc71; color: #2ecc71; transform: scale(1.02); }
+.btn-secondary:active { transform: scale(0.98); }
+
+.btn-icon { font-size: 18px; }
 </style>
 </head>
 <body>
-<div id="app">
 
-  <!-- BG Blobs -->
-  <div class="bg-blob blob-a" id="blobA"></div>
-  <div class="bg-blob blob-b" id="blobB"></div>
+<div class="card">
 
-  <!-- Slides Track -->
-  <div class="slides-track" id="track">
+  <!-- ── TOP: Green celebration area ── -->
+  <div class="card-top" id="cardTop">
 
-    <!-- ══ SLIDE 1: Kelola Bisnis ══ -->
-    <div class="slide slide-1 active" data-index="0">
-      <div class="top-nav">
-        <div class="logo-small">
-          <svg viewBox="0 0 40 40" fill="none">
-            <circle cx="8" cy="7" r="5" fill="#8ee8c8"/>
-            <circle cx="32" cy="7" r="5" fill="#8ee8c8"/>
-            <circle cx="8" cy="33" r="5" fill="#8ee8c8"/>
-            <circle cx="32" cy="33" r="5" fill="#8ee8c8"/>
-            <path d="M8 14 Q8 20 14 20 Q8 20 8 26" stroke="#6eda9e" stroke-width="5" stroke-linecap="round" fill="none"/>
-            <path d="M32 14 Q32 20 26 20 Q32 20 32 26" stroke="#7de5c8" stroke-width="5" stroke-linecap="round" fill="none"/>
-            <polygon points="20,13 27,20 20,27 13,20" fill="#5ecf8e"/>
-            <rect x="17" y="17" width="6" height="6" rx="1" fill="white" opacity="0.85"/>
-          </svg>
-          <span>UMKMate</span>
-        </div>
-        <div class="skip-btn" onclick="goToSlide(3)">Lewati</div>
-      </div>
+    <!-- Confetti dots (injected by JS) -->
 
-      <div class="illus-wrap">
-        <div class="illus-card">
-          <!-- Illustration: Dashboard/Kelola Bisnis -->
-          <svg viewBox="0 0 340 360" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <!-- BG pattern -->
-            <circle cx="280" cy="60" r="80" fill="rgba(60,198,138,0.08)"/>
-            <circle cx="60" cy="300" r="60" fill="rgba(93,221,176,0.06)"/>
+    <button class="close-btn" onclick="this.closest('.card').style.animation='cardPop 0.3s reverse forwards'">✕</button>
 
-            <!-- Phone frame -->
-            <rect x="80" y="40" width="180" height="280" rx="24" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
-            
-            <!-- Status bar -->
-            <rect x="90" y="52" width="160" height="8" rx="4" fill="rgba(255,255,255,0.08)"/>
-            
-            <!-- Header card -->
-            <rect x="90" y="70" width="160" height="60" rx="16" fill="rgba(60,198,138,0.2)"/>
-            <circle cx="112" cy="100" r="14" fill="rgba(60,198,138,0.4)"/>
-            <text x="112" y="105" text-anchor="middle" font-size="12" fill="#3cc68a" font-family="sans-serif" font-weight="bold">Rp</text>
-            <rect x="130" y="90" width="80" height="8" rx="4" fill="rgba(255,255,255,0.2)"/>
-            <rect x="130" y="104" width="55" height="6" rx="3" fill="rgba(60,198,138,0.5)"/>
-            <text x="200" y="107" font-size="8" fill="#3cc68a" font-family="sans-serif" font-weight="bold">+12%</text>
-
-            <!-- Stat cards row -->
-            <rect x="90" y="142" width="74" height="56" rx="14" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
-            <rect x="176" y="142" width="74" height="56" rx="14" fill="rgba(60,198,138,0.15)" stroke="rgba(60,198,138,0.25)" stroke-width="1"/>
-            
-            <text x="127" y="163" text-anchor="middle" font-size="18" fill="white" font-family="sans-serif" font-weight="bold">24</text>
-            <text x="127" y="176" text-anchor="middle" font-size="7" fill="rgba(255,255,255,0.45)" font-family="sans-serif">Produk</text>
-            
-            <text x="213" y="163" text-anchor="middle" font-size="18" fill="#3cc68a" font-family="sans-serif" font-weight="bold">87</text>
-            <text x="213" y="176" text-anchor="middle" font-size="7" fill="rgba(60,198,138,0.7)" font-family="sans-serif">Transaksi</text>
-
-            <!-- Chart area -->
-            <rect x="90" y="210" width="160" height="80" rx="14" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
-            <text x="102" y="225" font-size="7" fill="rgba(255,255,255,0.4)" font-family="sans-serif">Penjualan Minggu Ini</text>
-            
-            <!-- Bar chart -->
-            <rect x="104" y="255" width="14" height="22" rx="4" fill="rgba(60,198,138,0.3)"/>
-            <rect x="124" y="243" width="14" height="34" rx="4" fill="rgba(60,198,138,0.5)"/>
-            <rect x="144" y="249" width="14" height="28" rx="4" fill="rgba(60,198,138,0.4)"/>
-            <rect x="164" y="238" width="14" height="39" rx="4" fill="#3cc68a"/>
-            <rect x="184" y="246" width="14" height="31" rx="4" fill="rgba(60,198,138,0.45)"/>
-            <rect x="204" y="240" width="14" height="37" rx="4" fill="rgba(60,198,138,0.55)"/>
-            <rect x="224" y="233" width="14" height="44" rx="4" fill="#5dddb0"/>
-
-            <!-- Bottom nav -->
-            <rect x="90" y="302" width="160" height="8" rx="4" fill="rgba(255,255,255,0.06)"/>
-          </svg>
-
-          <!-- Float badge -->
-          <div class="float-badge" style="top:18px;right:16px">
-            <div class="badge-dot"></div>
-            Live Dashboard
-          </div>
-          <div class="float-badge" style="bottom:18px;left:16px;font-size:0.68rem">
-            📈 Omzet +28% bulan ini
-          </div>
-        </div>
-      </div>
-
-      <div class="text-block">
-        <div class="slide-tag">Kelola Bisnis</div>
-        <h2 class="slide-title">Pantau bisnis kamu <em>real-time</em></h2>
-        <p class="slide-desc">Semua data penjualan, stok, dan keuangan dalam satu layar. Tidak perlu lagi repot mencatat manual.</p>
-      </div>
-
-      <div class="bottom-ctrl">
-        <div class="dots">
-          <div class="dot active" onclick="goToSlide(0)"></div>
-          <div class="dot" onclick="goToSlide(1)"></div>
-          <div class="dot" onclick="goToSlide(2)"></div>
-          <div class="dot" onclick="goToSlide(3)"></div>
-        </div>
-        <button class="next-btn" onclick="nextSlide()">
-          <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-            <path d="M4 11H18M18 11L12 5M18 11L12 17" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
-      </div>
+    <div class="trophy-wrap">
+      <span class="trophy-icon">🏆</span>
     </div>
 
-    <!-- ══ SLIDE 2: Laporan Keuangan ══ -->
-    <div class="slide slide-2" data-index="1">
-      <div class="top-nav">
-        <div class="logo-small">
-          <svg viewBox="0 0 40 40" fill="none">
-            <circle cx="8" cy="7" r="5" fill="#8ee8c8"/>
-            <circle cx="32" cy="7" r="5" fill="#8ee8c8"/>
-            <circle cx="8" cy="33" r="5" fill="#8ee8c8"/>
-            <circle cx="32" cy="33" r="5" fill="#8ee8c8"/>
-            <path d="M8 14 Q8 20 14 20 Q8 20 8 26" stroke="#6eda9e" stroke-width="5" stroke-linecap="round" fill="none"/>
-            <path d="M32 14 Q32 20 26 20 Q32 20 32 26" stroke="#7de5c8" stroke-width="5" stroke-linecap="round" fill="none"/>
-            <polygon points="20,13 27,20 20,27 13,20" fill="#5ecf8e"/>
-            <rect x="17" y="17" width="6" height="6" rx="1" fill="white" opacity="0.85"/>
-          </svg>
-          <span>UMKMate</span>
-        </div>
-        <div class="skip-btn" onclick="goToSlide(3)">Lewati</div>
-      </div>
-
-      <div class="illus-wrap">
-        <div class="illus-card">
-          <svg viewBox="0 0 340 360" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="290" cy="80" r="90" fill="rgba(93,221,176,0.07)"/>
-            <circle cx="50" cy="280" r="70" fill="rgba(60,198,138,0.06)"/>
-
-            <!-- Donut chart center -->
-            <circle cx="170" cy="155" r="80" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
-            
-            <!-- Donut segments -->
-            <circle cx="170" cy="155" r="64" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="28"/>
-            <!-- Pemasukan segment -->
-            <circle cx="170" cy="155" r="64" fill="none" stroke="#3cc68a" stroke-width="28"
-              stroke-dasharray="201 201" stroke-dashoffset="50" stroke-linecap="round"
-              transform="rotate(-90 170 155)"/>
-            <!-- Pengeluaran segment -->
-            <circle cx="170" cy="155" r="64" fill="none" stroke="#5dddb0" stroke-width="28"
-              stroke-dasharray="100 302" stroke-dashoffset="-151" stroke-linecap="round"
-              transform="rotate(-90 170 155)" opacity="0.7"/>
-            <!-- Tabungan segment -->
-            <circle cx="170" cy="155" r="64" fill="none" stroke="#8eefd0" stroke-width="28"
-              stroke-dasharray="60 342" stroke-dashoffset="-251" stroke-linecap="round"
-              transform="rotate(-90 170 155)" opacity="0.5"/>
-
-            <!-- Center text -->
-            <circle cx="170" cy="155" r="38" fill="#0d2318"/>
-            <text x="170" y="150" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.5)" font-family="sans-serif">Total</text>
-            <text x="170" y="164" text-anchor="middle" font-size="13" fill="white" font-family="sans-serif" font-weight="bold">4,2 Jt</text>
-
-            <!-- Legend -->
-            <rect x="55" y="252" width="10" height="10" rx="3" fill="#3cc68a"/>
-            <text x="70" y="261" font-size="8" fill="rgba(255,255,255,0.6)" font-family="sans-serif">Pemasukan</text>
-            <text x="180" y="261" font-size="8" fill="#3cc68a" font-family="sans-serif" font-weight="bold">Rp 2,8Jt</text>
-
-            <rect x="55" y="270" width="10" height="10" rx="3" fill="#5dddb0"/>
-            <text x="70" y="279" font-size="8" fill="rgba(255,255,255,0.6)" font-family="sans-serif">Pengeluaran</text>
-            <text x="180" y="279" font-size="8" fill="#5dddb0" font-family="sans-serif" font-weight="bold">Rp 1,1Jt</text>
-
-            <rect x="55" y="288" width="10" height="10" rx="3" fill="#8eefd0"/>
-            <text x="70" y="297" font-size="8" fill="rgba(255,255,255,0.6)" font-family="sans-serif">Tabungan</text>
-            <text x="180" y="297" font-size="8" fill="#8eefd0" font-family="sans-serif" font-weight="bold">Rp 1,3Jt</text>
-
-            <!-- Report card top -->
-            <rect x="55" y="35" width="230" height="48" rx="14" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
-            <text x="72" y="55" font-size="8" fill="rgba(255,255,255,0.4)" font-family="sans-serif">Laporan Otomatis</text>
-            <text x="72" y="70" font-size="11" fill="white" font-family="sans-serif" font-weight="bold">Mei 2025</text>
-            <rect x="230" y="48" width="44" height="22" rx="8" fill="rgba(60,198,138,0.25)"/>
-            <text x="252" y="63" text-anchor="middle" font-size="8" fill="#3cc68a" font-family="sans-serif" font-weight="bold">Export</text>
-          </svg>
-
-          <div class="float-badge" style="top:18px;right:16px">
-            <div class="badge-dot"></div>
-            Auto Laporan
-          </div>
-          <div class="float-badge" style="bottom:18px;right:16px;font-size:0.68rem">
-            🧾 PDF siap download
-          </div>
-        </div>
-      </div>
-
-      <div class="text-block">
-        <div class="slide-tag">Keuangan</div>
-        <h2 class="slide-title">Laporan <em>otomatis</em>, akurat & rapi</h2>
-        <p class="slide-desc">Rekap pemasukan & pengeluaran tersaji otomatis setiap hari. Bisa langsung ekspor ke PDF atau Excel.</p>
-      </div>
-
-      <div class="bottom-ctrl">
-        <div class="dots">
-          <div class="dot" onclick="goToSlide(0)"></div>
-          <div class="dot active" onclick="goToSlide(1)"></div>
-          <div class="dot" onclick="goToSlide(2)"></div>
-          <div class="dot" onclick="goToSlide(3)"></div>
-        </div>
-        <button class="next-btn" onclick="nextSlide()">
-          <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-            <path d="M4 11H18M18 11L12 5M18 11L12 17" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
-      </div>
+    <div class="congrats-title">
+      <span class="congrats-emoji">🎉</span>Selamat!
+    </div>
+    <div class="congrats-sub">
+      Misi pertamamu berhasil diselesaikan!<br>Kamu luar biasa 🌟
     </div>
 
-    <!-- ══ SLIDE 3: AI Assistant ══ -->
-    <div class="slide slide-3" data-index="2">
-      <div class="top-nav">
-        <div class="logo-small">
-          <svg viewBox="0 0 40 40" fill="none">
-            <circle cx="8" cy="7" r="5" fill="#8ee8c8"/>
-            <circle cx="32" cy="7" r="5" fill="#8ee8c8"/>
-            <circle cx="8" cy="33" r="5" fill="#8ee8c8"/>
-            <circle cx="32" cy="33" r="5" fill="#8ee8c8"/>
-            <path d="M8 14 Q8 20 14 20 Q8 20 8 26" stroke="#6eda9e" stroke-width="5" stroke-linecap="round" fill="none"/>
-            <path d="M32 14 Q32 20 26 20 Q32 20 32 26" stroke="#7de5c8" stroke-width="5" stroke-linecap="round" fill="none"/>
-            <polygon points="20,13 27,20 20,27 13,20" fill="#5ecf8e"/>
-            <rect x="17" y="17" width="6" height="6" rx="1" fill="white" opacity="0.85"/>
-          </svg>
-          <span>UMKMate</span>
-        </div>
-        <div class="skip-btn" onclick="goToSlide(3)">Lewati</div>
-      </div>
-
-      <div class="illus-wrap">
-        <div class="illus-card">
-          <svg viewBox="0 0 340 360" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="260" cy="70" r="100" fill="rgba(60,198,138,0.07)"/>
-
-            <!-- Chat bubbles -->
-            <!-- User message 1 -->
-            <rect x="130" y="45" width="165" height="38" rx="14" rx="14"
-              fill="rgba(60,198,138,0.25)" />
-            <rect x="133" y="48" width="159" height="32" rx="12"
-              fill="rgba(60,198,138,0.2)"/>
-            <text x="145" y="62" font-size="8.5" fill="white" font-family="sans-serif">"Stok mie ayam</text>
-            <text x="145" y="74" font-size="8.5" fill="white" font-family="sans-serif">hampir habis 🍜"</text>
-            <!-- tail -->
-            <polygon points="285,83 295,83 295,95" fill="rgba(60,198,138,0.2)"/>
-            <!-- Avatar -->
-            <circle cx="310" cy="60" r="14" fill="rgba(60,198,138,0.3)"/>
-            <text x="310" y="65" text-anchor="middle" font-size="11" font-family="sans-serif">👤</text>
-
-            <!-- AI message 1 -->
-            <circle cx="32" cy="130" r="18" fill="rgba(255,255,255,0.08)"/>
-            <text x="32" y="135" text-anchor="middle" font-size="14" font-family="sans-serif">🤖</text>
-            <rect x="56" y="110" width="180" height="58" rx="14" fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
-            <text x="68" y="128" font-size="8.5" fill="rgba(255,255,255,0.8)" font-family="sans-serif">Saya sudah reorder otomatis!</text>
-            <text x="68" y="142" font-size="8" fill="rgba(255,255,255,0.5)" font-family="sans-serif">Supplier: Pak Budi</text>
-            <text x="68" y="155" font-size="8" fill="rgba(255,255,255,0.5)" font-family="sans-serif">ETA: Besok pagi ✅</text>
-            <polygon points="56,130 46,130 46,142" fill="rgba(255,255,255,0.07)"/>
-
-            <!-- User message 2 -->
-            <rect x="130" y="188" width="165" height="38" rx="14"
-              fill="rgba(60,198,138,0.2)"/>
-            <text x="145" y="203" font-size="8.5" fill="white" font-family="sans-serif">"Gimana cara naikkan</text>
-            <text x="145" y="217" font-size="8.5" fill="white" font-family="sans-serif">omzet bulan ini?"</text>
-            <polygon points="285,226 295,226 295,238" fill="rgba(60,198,138,0.2)"/>
-            <circle cx="310" cy="203" r="14" fill="rgba(60,198,138,0.3)"/>
-            <text x="310" y="208" text-anchor="middle" font-size="11" font-family="sans-serif">👤</text>
-
-            <!-- AI message 2 -->
-            <circle cx="32" cy="274" r="18" fill="rgba(255,255,255,0.08)"/>
-            <text x="32" y="279" text-anchor="middle" font-size="14" font-family="sans-serif">🤖</text>
-            <rect x="56" y="254" width="200" height="72" rx="14" fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
-            <text x="68" y="272" font-size="8.5" fill="rgba(255,255,255,0.8)" font-family="sans-serif">3 tips untukmu:</text>
-            <text x="68" y="288" font-size="8" fill="#3cc68a" font-family="sans-serif">① Promo bundle hemat 20%</text>
-            <text x="68" y="302" font-size="8" fill="#3cc68a" font-family="sans-serif">② Post di jam 11-13 WIB</text>
-            <text x="68" y="316" font-size="8" fill="#3cc68a" font-family="sans-serif">③ Aktifkan GoFood & GrabFood</text>
-            <polygon points="56,274 46,274 46,286" fill="rgba(255,255,255,0.07)"/>
-
-            <!-- Typing dots -->
-            <rect x="56" y="340" width="60" height="20" rx="10" fill="rgba(255,255,255,0.06)"/>
-            <circle cx="72" cy="350" r="3" fill="rgba(255,255,255,0.3)"/>
-            <circle cx="83" cy="350" r="3" fill="rgba(255,255,255,0.5)"/>
-            <circle cx="94" cy="350" r="3" fill="rgba(255,255,255,0.3)"/>
-          </svg>
-
-          <div class="float-badge" style="top:18px;left:16px">
-            <div class="badge-dot"></div>
-            AI Aktif
-          </div>
-        </div>
-      </div>
-
-      <div class="text-block">
-        <div class="slide-tag">Asisten AI</div>
-        <h2 class="slide-title">Konsultan bisnis <em>24 jam</em></h2>
-        <p class="slide-desc">Tanya apa saja soal bisnis kamu. AI kami bantu analisis, beri saran, bahkan reorder stok secara otomatis.</p>
-      </div>
-
-      <div class="bottom-ctrl">
-        <div class="dots">
-          <div class="dot" onclick="goToSlide(0)"></div>
-          <div class="dot" onclick="goToSlide(1)"></div>
-          <div class="dot active" onclick="goToSlide(2)"></div>
-          <div class="dot" onclick="goToSlide(3)"></div>
-        </div>
-        <button class="next-btn" onclick="nextSlide()">
-          <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-            <path d="M4 11H18M18 11L12 5M18 11L12 17" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
-      </div>
+    <div class="xp-badge">
+      <span class="xp-star">⭐</span>
+      +50 XP Diraih
     </div>
 
-    <!-- ══ SLIDE 4: Get Started ══ -->
-    <div class="slide slide-4" data-index="3">
-      <div class="top-nav" style="justify-content:center;">
-        <div class="logo-small" style="gap:10px;">
-          <svg viewBox="0 0 40 40" fill="none" style="width:36px;height:36px">
-            <circle cx="8" cy="7" r="5" fill="#0d2318"/>
-            <circle cx="32" cy="7" r="5" fill="#0d2318"/>
-            <circle cx="8" cy="33" r="5" fill="#0d2318"/>
-            <circle cx="32" cy="33" r="5" fill="#0d2318"/>
-            <path d="M8 14 Q8 20 14 20 Q8 20 8 26" stroke="#1a5c3a" stroke-width="5" stroke-linecap="round" fill="none"/>
-            <path d="M32 14 Q32 20 26 20 Q32 20 32 26" stroke="#1e6b44" stroke-width="5" stroke-linecap="round" fill="none"/>
-            <polygon points="20,13 27,20 20,27 13,20" fill="#2a8a58"/>
-            <rect x="17" y="17" width="6" height="6" rx="1" fill="white" opacity="0.5"/>
-          </svg>
-          <span style="color:var(--dark);font-size:1.1rem">UMKMate</span>
-        </div>
-      </div>
-
-      <div class="illus-wrap">
-        <div class="illus-card">
-          <!-- Green celebration card -->
-          <svg viewBox="0 0 340 360" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <!-- Confetti / particles -->
-            <circle cx="60" cy="50" r="6" fill="white" opacity="0.3"/>
-            <circle cx="280" cy="80" r="4" fill="white" opacity="0.25"/>
-            <circle cx="300" cy="200" r="8" fill="white" opacity="0.15"/>
-            <circle cx="40" cy="250" r="5" fill="white" opacity="0.2"/>
-            <rect x="120" y="30" width="8" height="8" rx="2" fill="white" opacity="0.25" transform="rotate(20 124 34)"/>
-            <rect x="260" y="140" width="6" height="6" rx="1" fill="white" opacity="0.2" transform="rotate(35 263 143)"/>
-            <rect x="50" y="180" width="7" height="7" rx="2" fill="white" opacity="0.2" transform="rotate(-15 54 184)"/>
-            <rect x="290" y="300" width="9" height="9" rx="2" fill="white" opacity="0.15" transform="rotate(10 295 305)"/>
-
-            <!-- Star sparkles -->
-            <text x="80" y="110" font-size="18" opacity="0.6">✦</text>
-            <text x="260" y="60" font-size="12" opacity="0.5">✦</text>
-            <text x="290" y="250" font-size="16" opacity="0.4">✦</text>
-            <text x="30" y="300" font-size="10" opacity="0.5">✦</text>
-
-            <!-- Big center illustration -->
-            <circle cx="170" cy="160" r="85" fill="rgba(255,255,255,0.12)"/>
-            <circle cx="170" cy="160" r="65" fill="rgba(255,255,255,0.14)"/>
-            
-            <!-- Big logo in center -->
-            <g transform="translate(125, 115) scale(2.2)">
-              <circle cx="8" cy="7" r="5" fill="rgba(255,255,255,0.5)"/>
-              <circle cx="32" cy="7" r="5" fill="rgba(255,255,255,0.5)"/>
-              <circle cx="8" cy="33" r="5" fill="rgba(255,255,255,0.5)"/>
-              <circle cx="32" cy="33" r="5" fill="rgba(255,255,255,0.5)"/>
-              <path d="M8 14 Q8 20 14 20 Q8 20 8 26" stroke="rgba(255,255,255,0.7)" stroke-width="5" stroke-linecap="round" fill="none"/>
-              <path d="M32 14 Q32 20 26 20 Q32 20 32 26" stroke="rgba(255,255,255,0.7)" stroke-width="5" stroke-linecap="round" fill="none"/>
-              <polygon points="20,13 27,20 20,27 13,20" fill="white"/>
-              <rect x="17" y="17" width="6" height="6" rx="1" fill="rgba(60,198,138,0.8)" />
-            </g>
-
-            <!-- Bottom text on card -->
-            <text x="170" y="270" text-anchor="middle" font-size="22" fill="white" font-family="sans-serif" font-weight="800" letter-spacing="2">UMKMate</text>
-            <text x="170" y="292" text-anchor="middle" font-size="10" fill="rgba(255,255,255,0.65)" font-family="sans-serif" letter-spacing="1">Solusi Cerdas UMKM Indonesia</text>
-
-            <!-- Stars rating -->
-            <text x="130" y="320" font-size="14">⭐⭐⭐⭐⭐</text>
-            <text x="170" y="340" text-anchor="middle" font-size="8" fill="rgba(255,255,255,0.5)" font-family="sans-serif">50.000+ UMKM sudah bergabung</text>
-          </svg>
-        </div>
-      </div>
-
-      <div class="text-block" style="text-align:center;align-items:center;display:flex;flex-direction:column;">
-        <div class="slide-tag" style="justify-content:center;">
-          <span style="width:0"></span>Mulai Sekarang
-        </div>
-        <h2 class="slide-title" style="text-align:center;">Siap majukan <em>bisnis kamu?</em></h2>
-        <p class="slide-desc" style="text-align:center;">Bergabung bersama ribuan UMKM yang sudah berkembang dengan UMKMate.</p>
-      </div>
-
-      <div class="bottom-ctrl" style="flex-direction:column;gap:0">
-        <div class="dots" style="margin-bottom:20px">
-          <div class="dot" onclick="goToSlide(0)"></div>
-          <div class="dot" onclick="goToSlide(1)"></div>
-          <div class="dot" onclick="goToSlide(2)"></div>
-          <div class="dot active" onclick="goToSlide(3)"></div>
-        </div>
-        <button class="cta-btn show">🚀 Daftar Gratis Sekarang</button>
-        <div class="sub-cta show">Sudah punya akun? <span>Masuk di sini</span></div>
-      </div>
-    </div>
-
-  </div><!-- /slides-track -->
-
-  <!-- Swipe hint (shown once) -->
-  <div class="swipe-hint" id="swipeHint">
-    <svg class="swipe-arrow" width="32" height="32" viewBox="0 0 32 32" fill="none">
-      <path d="M8 16H24M24 16L18 10M24 16L18 22" stroke="rgba(255,255,255,0.4)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-    <span style="font-size:0.65rem;color:rgba(255,255,255,0.3);letter-spacing:0.1em">GESER</span>
   </div>
 
-</div><!-- /app -->
+  <!-- ── BOTTOM: White content area ── -->
+  <div class="card-bottom">
+
+    <!-- Mission info -->
+    <div class="mission-row">
+      <div class="mission-icon-wrap">👣</div>
+      <div class="mission-info">
+        <div class="mission-label">Misi Selesai</div>
+        <div class="mission-name">Langkah Pertama</div>
+        <div class="mission-status">✓ Bade Terbuka</div>
+      </div>
+    </div>
+
+    <!-- Feature unlocked -->
+    <div class="features-title">Fitur yang terbuka</div>
+    <div class="features-grid">
+      <div class="feature-item">
+        <span class="feature-emoji">📊</span>
+        <span class="feature-name">Ringkasan harian</span>
+      </div>
+      <div class="feature-item">
+        <span class="feature-emoji">📈</span>
+        <span class="feature-name">Laporan keuangan</span>
+      </div>
+      <div class="feature-item">
+        <span class="feature-emoji">📷</span>
+        <span class="feature-name">Scan struk</span>
+      </div>
+      <div class="feature-item">
+        <span class="feature-emoji">🔄</span>
+        <span class="feature-name">Sinkron bank</span>
+      </div>
+    </div>
+
+    <!-- CTAs -->
+    <button class="btn-primary">
+      <span class="btn-icon">📊</span>
+      Lihat Ringkasan Hari Ini
+    </button>
+    <button class="btn-secondary">
+      <span class="btn-icon">⚡</span>
+      Mulai Tantangan 7 Hari
+    </button>
+
+  </div>
+</div>
 
 <script>
-let current = 0;
-const total = 4;
-const track = document.getElementById('track');
-const slides = document.querySelectorAll('.slide');
-const blobA = document.getElementById('blobA');
-const blobB = document.getElementById('blobB');
-
-const blobConfig = [
-  { aTop:'-80px', aLeft:'-60px', bBot:'80px', bRight:'-60px' },
-  { aTop:'-40px', aLeft:'60px',  bBot:'120px', bRight:'-30px' },
-  { aTop:'20px',  aLeft:'-80px', bBot:'60px',  bRight:'20px' },
-  { aTop:'0px',   aLeft:'0px',   bBot:'0px',   bRight:'0px' },
-];
-
-// ── Slide names for URL hash ──────────────────────────────
-// Accessible via:
-//   #slide=1  or  #slide=2  etc.       (1-based index)
-//   #dashboard  #keuangan  #ai  #mulai  (named slugs)
-const slugs = ['dashboard', 'keuangan', 'ai', 'mulai'];
-
-function getIndexFromHash() {
-  const hash = location.hash.replace('#', '').toLowerCase().trim();
-  if (!hash) return 0;
-  // Named slug
-  const slugIdx = slugs.indexOf(hash);
-  if (slugIdx !== -1) return slugIdx;
-  // slide=N  or  just N
-  const match = hash.match(/(?:slide=)?(\d+)/);
-  if (match) {
-    const n = parseInt(match[1], 10);
-    // support both 0-based and 1-based
-    if (n >= 1 && n <= total) return n - 1;
-    if (n >= 0 && n < total) return n;
-  }
-  return 0;
+// Generate confetti dots
+const top = document.getElementById('cardTop');
+const colors = ['#fff', '#ffd700', '#a8f0c8', '#ffe066', '#b5f5d5'];
+for (let i = 0; i < 18; i++) {
+  const d = document.createElement('div');
+  d.className = 'confetti-dot';
+  const size = Math.random() * 7 + 4;
+  d.style.cssText = `
+    width:${size}px; height:${size}px;
+    background:${colors[Math.floor(Math.random()*colors.length)]};
+    left:${Math.random()*100}%;
+    top:${Math.random()*60}%;
+    animation-duration:${Math.random()*2+2}s;
+    animation-delay:${Math.random()*2}s;
+    opacity:0;
+  `;
+  top.appendChild(d);
 }
-
-function goToSlide(index, pushHistory = true) {
-  if (index < 0 || index >= total) return;
-  slides[current].classList.remove('active');
-  current = index;
-  slides[current].classList.add('active');
-  track.style.transform = `translateX(-${current * 25}%)`;
-
-  // Move blobs
-  const b = blobConfig[current];
-  blobA.style.top = b.aTop;
-  blobA.style.left = b.aLeft;
-  blobB.style.bottom = b.bBot;
-  blobB.style.right = b.bRight;
-
-  // Tint bg on last slide
-  document.body.style.background = current === 3 ? '#0a2218' : '#0d2b1e';
-
-  // Sync URL hash without triggering hashchange listener
-  if (pushHistory) {
-    history.pushState(null, '', `#${slugs[current]}`);
-  }
-}
-
-function nextSlide() {
-  if (current < total - 1) goToSlide(current + 1);
-}
-
-// ── Listen for hash changes (browser back/forward or direct URL) ──
-window.addEventListener('hashchange', () => {
-  const idx = getIndexFromHash();
-  if (idx !== current) goToSlide(idx, false); // don't re-push
-});
-
-// ── Read hash on initial load ─────────────────────────────
-(function initFromHash() {
-  const idx = getIndexFromHash();
-  if (idx !== 0) goToSlide(idx, false);
-  else history.replaceState(null, '', `#${slugs[0]}`);
-})();
-
-// Touch / swipe support
-let startX = 0;
-document.getElementById('app').addEventListener('touchstart', e => {
-  startX = e.touches[0].clientX;
-}, { passive: true });
-document.getElementById('app').addEventListener('touchend', e => {
-  const dx = e.changedTouches[0].clientX - startX;
-  if (Math.abs(dx) > 50) {
-    if (dx < 0 && current < total - 1) nextSlide();
-    else if (dx > 0 && current > 0) goToSlide(current - 1);
-  }
-}, { passive: true });
-
-// Mouse drag support (desktop)
-let mouseStart = 0, dragging = false;
-document.getElementById('app').addEventListener('mousedown', e => { mouseStart = e.clientX; dragging = true; });
-document.getElementById('app').addEventListener('mouseup', e => {
-  if (!dragging) return;
-  dragging = false;
-  const dx = e.clientX - mouseStart;
-  if (Math.abs(dx) > 60) {
-    if (dx < 0 && current < total - 1) nextSlide();
-    else if (dx > 0 && current > 0) goToSlide(current - 1);
-  }
-});
 </script>
 </body>
 </html>
