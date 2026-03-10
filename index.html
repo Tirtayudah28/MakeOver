@@ -1,405 +1,807 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>UMKMate — Misi Selesai</title>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<style>
-* { margin:0; padding:0; box-sizing:border-box; }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Laporan & Analisis · UMKMate</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    * { font-family: 'Plus Jakarta Sans', sans-serif; box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: #f1f5f9; max-width: 430px; margin: 0 auto; min-height: 100vh; }
 
-body {
-  min-height: 100vh;
-  background: #e8f5ee;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  padding: 24px;
-}
+    /* ── Animations ── */
+    @keyframes slideInRight { from { opacity:0; transform:translateX(32px); } to { opacity:1; transform:translateX(0); } }
+    @keyframes slideInUp    { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes fadeIn       { from { opacity:0; }                             to { opacity:1; } }
+    @keyframes scaleIn      { from { opacity:0; transform:scale(.94); }      to { opacity:1; transform:scale(1); } }
+    @keyframes fillBar      { from { width:0; } to { width:var(--w); } }
+    @keyframes strokeAnim   { from { stroke-dashoffset:314; } to { stroke-dashoffset:var(--offset); } }
 
-/* ── CARD ── */
-.card {
-  width: 100%;
-  max-width: 380px;
-  border-radius: 28px;
-  overflow: hidden;
-  box-shadow:
-    0 24px 64px rgba(30,120,70,0.22),
-    0 4px 16px rgba(0,0,0,0.08);
-  animation: cardPop 0.55s cubic-bezier(0.34,1.56,0.64,1) both;
-}
+    .anim-right { animation: slideInRight .32s cubic-bezier(.25,.46,.45,.94) both; }
+    .anim-up    { animation: slideInUp    .32s cubic-bezier(.25,.46,.45,.94) both; }
+    .anim-fade  { animation: fadeIn       .24s ease both; }
+    .anim-scale { animation: scaleIn      .28s cubic-bezier(.25,.46,.45,.94) both; }
 
-@keyframes cardPop {
-  from { opacity:0; transform: scale(0.82) translateY(24px); }
-  to   { opacity:1; transform: scale(1) translateY(0); }
-}
+    .delay-1 { animation-delay: .05s; }
+    .delay-2 { animation-delay: .10s; }
+    .delay-3 { animation-delay: .15s; }
+    .delay-4 { animation-delay: .20s; }
+    .delay-5 { animation-delay: .25s; }
 
-/* ── TOP SECTION (green) ── */
-.card-top {
-  background: linear-gradient(160deg, #2ecc71 0%, #27ae60 60%, #1e9954 100%);
-  padding: 32px 24px 28px;
-  position: relative;
-  text-align: center;
-  overflow: hidden;
-}
+    /* ── Screens ── */
+    .screen { display:none; }
+    .screen.active { display:block; }
 
-/* Decorative circles in bg */
-.card-top::before {
-  content: '';
-  position: absolute;
-  width: 220px; height: 220px;
-  border-radius: 50%;
-  border: 40px solid rgba(255,255,255,0.07);
-  top: -60px; left: -50px;
-}
-.card-top::after {
-  content: '';
-  position: absolute;
-  width: 160px; height: 160px;
-  border-radius: 50%;
-  border: 30px solid rgba(255,255,255,0.06);
-  bottom: -50px; right: -30px;
-}
+    /* ── Misc ── */
+    button:active { transform:scale(.97); }
+    .no-scrollbar::-webkit-scrollbar { display:none; }
+    .no-scrollbar { -ms-overflow-style:none; scrollbar-width:none; }
 
-/* Confetti dots */
-.confetti-dot {
-  position: absolute;
-  border-radius: 50%;
-  animation: confettiFall linear infinite;
-  opacity: 0;
-}
-@keyframes confettiFall {
-  0%   { opacity:0; transform: translateY(-10px) rotate(0deg); }
-  10%  { opacity:1; }
-  90%  { opacity:1; }
-  100% { opacity:0; transform: translateY(120px) rotate(360deg); }
-}
+    /* ── Progress bar ── */
+    .progress-bar {
+      height: 6px; border-radius: 99px; background: #f1f5f9; overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%; border-radius: 99px;
+      animation: fillBar .9s cubic-bezier(.25,.46,.45,.94) .4s both;
+    }
 
-/* Close button */
-.close-btn {
-  position: absolute;
-  top: 16px; right: 16px;
-  width: 36px; height: 36px;
-  border-radius: 12px;
-  background: rgba(255,255,255,0.22);
-  border: none;
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  color: white;
-  font-size: 16px;
-  font-weight: 700;
-  transition: background 0.2s, transform 0.15s;
-  z-index: 2;
-}
-.close-btn:hover { background: rgba(255,255,255,0.35); transform: scale(1.08); }
+    /* ── Score ring ── */
+    .score-circle {
+      stroke-dasharray: 314;
+      stroke-dashoffset: 314;
+      transition: stroke-dashoffset 1.2s cubic-bezier(.25,.46,.45,.94) .3s;
+    }
 
-/* Trophy circle */
-.trophy-wrap {
-  position: relative;
-  z-index: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 90px; height: 90px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.18);
-  border: 3px solid rgba(255,255,255,0.3);
-  margin-bottom: 18px;
-  animation: trophyFloat 2.8s ease-in-out infinite;
-  box-shadow: 0 0 0 8px rgba(255,255,255,0.07);
-}
-@keyframes trophyFloat {
-  0%,100% { transform: translateY(0); }
-  50%     { transform: translateY(-6px); }
-}
+    /* ── Period selector ── */
+    .period-pill {
+      flex: 1; padding: 10px 0; border-radius: 14px; font-size: 13px; font-weight: 400;
+      color: #6b7280; background: transparent; border: none; cursor: pointer; transition: all .18s;
+    }
+    .period-pill.active {
+      background: white; color: #111827; font-weight: 600;
+      box-shadow: 0 1px 6px rgba(0,0,0,.08);
+    }
 
-.trophy-icon { font-size: 42px; line-height: 1; }
+    /* ── Month pill ── */
+    .month-pill {
+      padding: 8px 16px; border-radius: 12px; font-size: 13px; font-weight: 400;
+      color: #6b7280; background: white; border: 2px solid #e5e7eb; cursor: pointer; transition: all .18s;
+    }
+    .month-pill.active {
+      background: #f0fdf4; border-color: #10b981; color: #065f46; font-weight: 700;
+    }
 
-/* Title */
-.congrats-title {
-  position: relative;
-  z-index: 1;
-  font-size: 1.75rem;
-  font-weight: 800;
-  color: white;
-  letter-spacing: -0.01em;
-  margin-bottom: 8px;
-  animation: fadeUp 0.5s ease 0.2s both;
-}
-.congrats-emoji { margin-right: 4px; }
+    /* ── Bank export period ── */
+    .period-card {
+      flex: 1; padding: 16px 12px; border-radius: 16px; font-size: 13px; font-weight: 400;
+      color: #6b7280; background: white; border: 2px solid #e5e7eb; cursor: pointer; transition: all .18s;
+      text-align: center;
+    }
+    .period-card.active { background:#eff6ff; border-color:#3b82f6; color:#1d4ed8; font-weight:700; }
 
-.congrats-sub {
-  position: relative;
-  z-index: 1;
-  font-size: 0.92rem;
-  font-weight: 500;
-  color: rgba(255,255,255,0.85);
-  line-height: 1.5;
-  animation: fadeUp 0.5s ease 0.32s both;
-}
+    /* ── Toast ── */
+    .toast {
+      position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%);
+      background: #111827; color: white; padding: 11px 22px; border-radius: 99px;
+      font-size: 13px; font-weight: 600; z-index: 9999;
+      opacity: 0; pointer-events: none; transition: opacity .3s;
+      white-space: nowrap; box-shadow: 0 4px 20px rgba(0,0,0,.25);
+    }
+    .toast.show { opacity: 1; }
 
-@keyframes fadeUp {
-  from { opacity:0; transform:translateY(12px); }
-  to   { opacity:1; transform:translateY(0); }
-}
+    /* ── Report grid card ── */
+    .report-card { transition: transform .15s; cursor: pointer; }
+    .report-card:active { transform: scale(.97); }
 
-/* XP badge */
-.xp-badge {
-  position: relative;
-  z-index: 1;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: rgba(255,255,255,0.2);
-  border: 1.5px solid rgba(255,255,255,0.35);
-  border-radius: 999px;
-  padding: 6px 16px;
-  margin-top: 14px;
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: white;
-  letter-spacing: 0.02em;
-  animation: fadeUp 0.5s ease 0.44s both;
-}
-.xp-star { font-size: 14px; }
+    /* ── Checklist item ── */
+    .check-item-done { background: #f0fdf4; }
+    .check-item-miss { background: #fffbeb; }
 
-/* ── BOTTOM SECTION (white) ── */
-.card-bottom {
-  background: #ffffff;
-  padding: 20px 22px 22px;
-}
+    /* ── Info row (neraca / labarugi) ── */
+    .info-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 11px 0; border-bottom: 1px solid #f9fafb;
+    }
+    .info-row:last-child { border-bottom: none; }
 
-/* Mission info row */
-.mission-row {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding-bottom: 16px;
-  border-bottom: 1.5px solid #f0f0f0;
-  margin-bottom: 16px;
-  animation: fadeUp 0.5s ease 0.5s both;
-}
-
-.mission-icon-wrap {
-  flex-shrink: 0;
-  width: 54px; height: 54px;
-  border-radius: 18px;
-  background: linear-gradient(135deg, #2ecc71, #27ae60);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 24px;
-  box-shadow: 0 6px 16px rgba(39,174,96,0.3);
-}
-
-.mission-info { flex: 1; }
-.mission-label {
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: #aaa;
-  margin-bottom: 2px;
-}
-.mission-name {
-  font-size: 1rem;
-  font-weight: 800;
-  color: #1a1a1a;
-  line-height: 1.2;
-}
-.mission-status {
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: #2ecc71;
-  margin-top: 2px;
-}
-
-/* Feature list */
-.features-title {
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: #bbb;
-  margin-bottom: 10px;
-  animation: fadeUp 0.5s ease 0.58s both;
-}
-
-.features-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-bottom: 20px;
-  animation: fadeUp 0.5s ease 0.64s both;
-}
-
-.feature-item {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  padding: 10px 12px;
-  background: #f8fdf9;
-  border: 1.5px solid #e8f5ee;
-  border-radius: 14px;
-  transition: border-color 0.2s, transform 0.15s;
-  cursor: default;
-}
-.feature-item:hover {
-  border-color: #2ecc71;
-  transform: translateY(-1px);
-}
-
-.feature-emoji { font-size: 18px; flex-shrink: 0; }
-.feature-name {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #333;
-  line-height: 1.3;
-}
-
-/* Buttons */
-.btn-primary {
-  width: 100%;
-  padding: 15px 20px;
-  border-radius: 16px;
-  background: linear-gradient(135deg, #2ecc71 0%, #1faa5a 100%);
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: white;
-  letter-spacing: 0.01em;
-  box-shadow: 0 8px 24px rgba(39,174,96,0.35);
-  transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1);
-  margin-bottom: 10px;
-  animation: fadeUp 0.5s ease 0.72s both;
-}
-.btn-primary:hover { transform: scale(1.02); box-shadow: 0 12px 32px rgba(39,174,96,0.45); }
-.btn-primary:active { transform: scale(0.98); }
-
-.btn-secondary {
-  width: 100%;
-  padding: 14px 20px;
-  border-radius: 16px;
-  background: white;
-  border: 2px solid #e5e5e5;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: #1a1a1a;
-  transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1);
-  animation: fadeUp 0.5s ease 0.8s both;
-}
-.btn-secondary:hover { border-color: #2ecc71; color: #2ecc71; transform: scale(1.02); }
-.btn-secondary:active { transform: scale(0.98); }
-
-.btn-icon { font-size: 18px; }
-</style>
+    canvas { display: block; }
+  </style>
 </head>
 <body>
 
-<div class="card">
+<div id="toast" class="toast"></div>
 
-  <!-- ── TOP: Green celebration area ── -->
-  <div class="card-top" id="cardTop">
+<!-- ══════════════════════════════════════════════
+     SCREEN: DASHBOARD (main)   #dashboard
+══════════════════════════════════════════════ -->
+<div id="screen-dashboard" class="screen active no-scrollbar" style="overflow-y:auto; max-height:100vh; padding-bottom:24px;">
 
-    <!-- Confetti dots (injected by JS) -->
-
-    <button class="close-btn" onclick="this.closest('.card').style.animation='cardPop 0.3s reverse forwards'">✕</button>
-
-    <div class="trophy-wrap">
-      <span class="trophy-icon">🏆</span>
+  <!-- Header -->
+  <div class="bg-white px-5 pb-4" style="padding-top:48px;">
+    <div class="flex items-center justify-between mb-4">
+      <div>
+        <h1 class="text-gray-900" style="font-size:22px;font-weight:800;margin:0 0 2px;">Laporan &amp; Analisis</h1>
+        <p class="text-gray-500 text-sm">Pantau pertumbuhan usahamu</p>
+      </div>
+      <button onclick="showToast('Laporan PDF sedang disiapkan... 📄')" class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      </button>
     </div>
-
-    <div class="congrats-title">
-      <span class="congrats-emoji">🎉</span>Selamat!
+    <!-- Period selector -->
+    <div class="flex gap-1 p-1 bg-gray-100 rounded-2xl" id="period-tabs">
+      <button class="period-pill active" data-period="hari"   onclick="setPeriod('hari',this)">Harian</button>
+      <button class="period-pill"        data-period="minggu" onclick="setPeriod('minggu',this)">Mingguan</button>
+      <button class="period-pill"        data-period="bulan"  onclick="setPeriod('bulan',this)">Bulanan</button>
     </div>
-    <div class="congrats-sub">
-      Misi pertamamu berhasil diselesaikan!<br>Kamu luar biasa 🌟
-    </div>
-
-    <div class="xp-badge">
-      <span class="xp-star">⭐</span>
-      +50 XP Diraih
-    </div>
-
   </div>
 
-  <!-- ── BOTTOM: White content area ── -->
-  <div class="card-bottom">
+  <div class="px-4 py-4 space-y-4">
 
-    <!-- Mission info -->
-    <div class="mission-row">
-      <div class="mission-icon-wrap">👣</div>
-      <div class="mission-info">
-        <div class="mission-label">Misi Selesai</div>
-        <div class="mission-name">Langkah Pertama</div>
-        <div class="mission-status">✓ Bade Terbuka</div>
+    <!-- Growth Score Card -->
+    <div class="bg-white rounded-3xl p-5 shadow-sm border border-gray-100 anim-up">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <p class="text-gray-500 text-xs font-semibold mb-1.5">BUSINESS GROWTH SCORE</p>
+          <span class="bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold px-3 py-1 rounded-full">Sangat Baik 🚀</span>
+        </div>
+        <div class="flex items-center gap-1.5 bg-emerald-100 px-3 py-1.5 rounded-full">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+          <span class="text-emerald-600 text-xs font-semibold">+6 poin</span>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-5">
+        <!-- Score ring -->
+        <div class="relative flex-shrink-0" style="width:110px;height:110px;">
+          <svg class="w-full h-full" viewBox="0 0 120 120" style="transform:rotate(-90deg)">
+            <circle cx="60" cy="60" r="50" stroke="#f1f5f9" stroke-width="10" fill="none"/>
+            <circle id="score-ring" cx="60" cy="60" r="50" stroke="#10b981" stroke-width="10" fill="none"
+              stroke-linecap="round" class="score-circle"/>
+          </svg>
+          <div class="absolute inset-0 flex items-center justify-center flex-col">
+            <span class="text-gray-900 font-extrabold" style="font-size:28px;line-height:1;">84</span>
+            <span class="text-gray-400 text-xs">/ 100</span>
+          </div>
+        </div>
+        <!-- Indicators -->
+        <div class="flex-1 space-y-2.5">
+          <div>
+            <div class="flex justify-between mb-1"><span class="text-gray-500 text-xs">Pertumbuhan Pendapatan</span><span class="text-emerald-600 text-xs font-semibold">92%</span></div>
+            <div class="progress-bar"><div class="progress-fill bg-emerald-500" style="--w:92%;"></div></div>
+          </div>
+          <div>
+            <div class="flex justify-between mb-1"><span class="text-gray-500 text-xs">Konsistensi Pencatatan</span><span class="text-blue-600 text-xs font-semibold">85%</span></div>
+            <div class="progress-bar"><div class="progress-fill bg-blue-500" style="--w:85%;"></div></div>
+          </div>
+          <div>
+            <div class="flex justify-between mb-1"><span class="text-gray-500 text-xs">Efisiensi Biaya</span><span class="text-yellow-600 text-xs font-semibold">78%</span></div>
+            <div class="progress-bar"><div class="progress-fill bg-yellow-500" style="--w:78%;"></div></div>
+          </div>
+          <div>
+            <div class="flex justify-between mb-1"><span class="text-gray-500 text-xs">Kelengkapan Data</span><span class="text-purple-600 text-xs font-semibold">70%</span></div>
+            <div class="progress-bar"><div class="progress-fill bg-purple-500" style="--w:70%;"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Score trend mini chart -->
+      <div class="mt-4 pt-4 border-t border-gray-100">
+        <p class="text-gray-500 text-xs font-medium mb-2">Tren Score</p>
+        <canvas id="score-trend-chart" height="60"></canvas>
       </div>
     </div>
 
-    <!-- Feature unlocked -->
-    <div class="features-title">Fitur yang terbuka</div>
-    <div class="features-grid">
-      <div class="feature-item">
-        <span class="feature-emoji">📊</span>
-        <span class="feature-name">Ringkasan harian</span>
+    <!-- Summary cards -->
+    <div class="grid grid-cols-3 gap-3 anim-up delay-1">
+      <div id="card-masuk"  class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
+        <div class="w-8 h-8 rounded-xl bg-emerald-100 flex items-center justify-center mb-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+        </div>
+        <p class="text-gray-500 text-xs mb-1">Uang Masuk</p>
+        <p class="text-emerald-600 font-bold text-sm" id="val-masuk">Rp 18.2jt</p>
       </div>
-      <div class="feature-item">
-        <span class="feature-emoji">📈</span>
-        <span class="feature-name">Laporan keuangan</span>
+      <div id="card-keluar" class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
+        <div class="w-8 h-8 rounded-xl bg-red-100 flex items-center justify-center mb-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>
+        </div>
+        <p class="text-gray-500 text-xs mb-1">Uang Keluar</p>
+        <p class="text-red-500 font-bold text-sm" id="val-keluar">Rp 5.75jt</p>
       </div>
-      <div class="feature-item">
-        <span class="feature-emoji">📷</span>
-        <span class="feature-name">Scan struk</span>
-      </div>
-      <div class="feature-item">
-        <span class="feature-emoji">🔄</span>
-        <span class="feature-name">Sinkron bank</span>
+      <div id="card-profit" class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
+        <div class="w-8 h-8 rounded-xl bg-blue-100 flex items-center justify-center mb-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </div>
+        <p class="text-gray-500 text-xs mb-1">Keuntungan</p>
+        <p class="text-blue-600 font-bold text-sm" id="val-profit">Rp 12.45jt</p>
       </div>
     </div>
 
-    <!-- CTAs -->
-    <button class="btn-primary">
-      <span class="btn-icon">📊</span>
-      Lihat Ringkasan Hari Ini
-    </button>
-    <button class="btn-secondary">
-      <span class="btn-icon">⚡</span>
-      Mulai Tantangan 7 Hari
-    </button>
+    <!-- Bar chart -->
+    <div class="bg-white rounded-3xl p-5 shadow-sm border border-gray-100 anim-up delay-2">
+      <h3 class="text-gray-900 font-semibold mb-4">Uang Masuk vs Keluar</h3>
+      <canvas id="bar-chart" height="180"></canvas>
+      <div class="flex justify-center gap-5 mt-3">
+        <div class="flex items-center gap-1.5"><div class="w-3 h-3 rounded-full bg-emerald-500"></div><span class="text-xs text-gray-600">Uang Masuk</span></div>
+        <div class="flex items-center gap-1.5"><div class="w-3 h-3 rounded-full bg-red-300"></div><span class="text-xs text-gray-600">Uang Keluar</span></div>
+      </div>
+    </div>
 
+    <!-- Reports banner -->
+    <div class="anim-up delay-3" style="background:linear-gradient(135deg,#6366f1,#3b82f6); border-radius:24px; padding:20px;">
+      <p class="text-indigo-200 text-xs font-semibold mb-1">LAPORAN KEUANGAN</p>
+      <p class="text-white font-bold mb-1" style="font-size:16px;">Laba Rugi · Arus Kas · Neraca</p>
+      <p class="text-indigo-200 text-xs mb-4">Laporan siap untuk pengajuan pinjaman bank</p>
+      <div class="flex gap-2">
+        <button onclick="navigate('labarugi')" class="flex-1 py-2.5 rounded-xl text-xs font-semibold text-white" style="background:rgba(255,255,255,.2);">Laba Rugi</button>
+        <button onclick="navigate('aruskas')"  class="flex-1 py-2.5 rounded-xl text-xs font-semibold text-white" style="background:rgba(255,255,255,.2);">Arus Kas</button>
+        <button onclick="navigate('neraca')"   class="flex-1 py-2.5 rounded-xl text-xs font-semibold text-white" style="background:rgba(255,255,255,.2);">Neraca</button>
+      </div>
+    </div>
+
+    <!-- Report cards grid -->
+    <div class="anim-up delay-3">
+      <p class="text-gray-500 text-xs font-semibold px-1 mb-3">PILIH LAPORAN</p>
+      <div class="grid grid-cols-2 gap-3">
+        <div class="report-card bg-emerald-50 border border-emerald-200 rounded-2xl p-4" onclick="navigate('labarugi')">
+          <div class="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center mb-3"><span style="font-size:20px;">📈</span></div>
+          <p class="text-emerald-700 text-sm font-bold">Laba Rugi</p>
+          <p class="text-gray-500 text-xs mt-0.5">Pendapatan & biaya bulan ini</p>
+        </div>
+        <div class="report-card bg-blue-50 border border-blue-200 rounded-2xl p-4" onclick="navigate('aruskas')">
+          <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center mb-3"><span style="font-size:20px;">💸</span></div>
+          <p class="text-blue-700 text-sm font-bold">Arus Kas</p>
+          <p class="text-gray-500 text-xs mt-0.5">Aliran uang masuk & keluar</p>
+        </div>
+        <div class="report-card bg-purple-50 border border-purple-200 rounded-2xl p-4" onclick="navigate('neraca')">
+          <div class="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center mb-3"><span style="font-size:20px;">⚖️</span></div>
+          <p class="text-purple-700 text-sm font-bold">Neraca</p>
+          <p class="text-gray-500 text-xs mt-0.5">Aset, kewajiban & modal</p>
+        </div>
+        <div class="report-card bg-amber-50 border border-amber-200 rounded-2xl p-4" onclick="navigate('bankexport')">
+          <div class="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center mb-3"><span style="font-size:20px;">🏦</span></div>
+          <p class="text-amber-700 text-sm font-bold">Export Bank</p>
+          <p class="text-gray-500 text-xs mt-0.5">Paket laporan siap bank</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Data ready banner -->
+    <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 flex items-center gap-3 anim-up delay-4">
+      <div class="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center flex-shrink-0">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div>
+        <p class="text-emerald-800 text-sm font-bold">Data cukup untuk laporan bank-ready</p>
+        <p class="text-emerald-600 text-xs">Laporan keuangan siap untuk pengajuan pinjaman</p>
+      </div>
+    </div>
+
+    <!-- Insights -->
+    <div class="space-y-3 anim-up delay-4">
+      <p class="text-gray-500 text-xs font-semibold px-1">INSIGHT UTAMA</p>
+      <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 flex items-start gap-3">
+        <span style="font-size:22px;">🚀</span>
+        <div><p class="text-emerald-900 text-sm font-semibold">Pendapatan Naik 10.3%</p><p class="text-emerald-700 text-xs mt-0.5">Hebat! Penjualanmu meningkat dibanding bulan lalu.</p></div>
+      </div>
+      <div class="bg-blue-50 border border-blue-200 rounded-2xl p-4 flex items-start gap-3">
+        <span style="font-size:22px;">💡</span>
+        <div><p class="text-blue-900 text-sm font-semibold">Biaya Berkurang 23.3%</p><p class="text-blue-700 text-xs mt-0.5">Efisiensi biaya kamu sangat baik bulan ini!</p></div>
+      </div>
+      <div class="bg-purple-50 border border-purple-200 rounded-2xl p-4 flex items-start gap-3">
+        <span style="font-size:22px;">🎯</span>
+        <div><p class="text-purple-900 text-sm font-semibold">Target: Score 90</p><p class="text-purple-700 text-xs mt-0.5">Catat 5 transaksi lagi untuk naik level!</p></div>
+      </div>
+    </div>
+
+    <!-- Action buttons -->
+    <div class="grid grid-cols-2 gap-3 anim-up delay-5">
+      <button onclick="navigate('bankexport')" class="bg-white rounded-2xl py-4 flex items-center justify-center gap-2 border-2 border-gray-200 text-gray-700 font-semibold">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Export Bank
+      </button>
+      <button onclick="showToast('Membuka halaman pendanaan...')" class="bg-emerald-500 rounded-2xl py-4 flex items-center justify-center gap-2 text-white font-semibold shadow-md">
+        Ajukan Dana
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
   </div>
 </div>
 
+<!-- ══════════════════════════════════════════════
+     SCREEN: LABA RUGI   #labarugi
+══════════════════════════════════════════════ -->
+<div id="screen-labarugi" class="screen no-scrollbar" style="overflow-y:auto;max-height:100vh;padding-bottom:32px;">
+  <div class="bg-white px-5 pb-5 shadow-sm sticky top-0 z-10" style="padding-top:48px;">
+    <div class="flex items-center gap-3 mb-4">
+      <button onclick="navigate('dashboard')" class="w-9 h-9 bg-gray-100 rounded-xl flex items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      </button>
+      <h1 class="text-gray-900 text-xl font-bold flex-1">Laba Rugi</h1>
+    </div>
+    <div class="flex gap-2" id="lr-months">
+      <button class="month-pill" data-m="Des 2025" onclick="setLRMonth('Des 2025',this)">Des 2025</button>
+      <button class="month-pill" data-m="Jan 2026" onclick="setLRMonth('Jan 2026',this)">Jan 2026</button>
+      <button class="month-pill active" data-m="Feb 2026" onclick="setLRMonth('Feb 2026',this)">Feb 2026</button>
+    </div>
+  </div>
+  <div class="px-4 py-4 space-y-4">
+    <!-- Highlight -->
+    <div class="rounded-2xl p-5 anim-right" style="background:linear-gradient(135deg,#10b981,#0d9488);">
+      <p class="text-emerald-100 text-xs font-semibold mb-1" id="lr-title">LABA BERSIH FEB 2026</p>
+      <p class="text-white font-extrabold mb-2" id="lr-net" style="font-size:28px;">Rp 12.450.000</p>
+      <div class="flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a7f3d0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+        <p class="text-emerald-200 text-xs">+10.3% dari bulan lalu</p>
+      </div>
+    </div>
+
+    <!-- Line items -->
+    <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 anim-right delay-1">
+      <div class="space-y-1">
+        <div class="info-row"><div><p class="text-gray-600 text-sm">Pendapatan</p><p class="text-gray-400 text-xs">Total penjualan</p></div><p class="text-emerald-600 text-sm font-semibold" id="lr-pendapatan">Rp 18.200.000</p></div>
+        <div class="info-row"><div><p class="text-gray-600 text-sm">HPP</p><p class="text-gray-400 text-xs">Harga Pokok Penjualan</p></div><p class="text-red-500 text-sm font-semibold" id="lr-hpp">-Rp 5.200.000</p></div>
+        <div style="border-top:2px solid #f3f4f6;margin:8px 0;"></div>
+        <div class="info-row"><div><p class="text-gray-900 text-sm font-bold">Laba Kotor</p></div><p class="text-emerald-600 text-sm font-bold" id="lr-kotor">Rp 13.000.000</p></div>
+        <div class="info-row"><div><p class="text-gray-600 text-sm">Beban Operasional</p><p class="text-gray-400 text-xs">Listrik, marketing, dll</p></div><p class="text-red-500 text-sm font-semibold" id="lr-beban">-Rp 550.000</p></div>
+        <div style="border-top:2px solid #f3f4f6;margin:8px 0;"></div>
+        <div class="info-row"><div><p class="text-gray-900 text-sm font-bold">Laba Bersih</p><p class="text-gray-400 text-xs">Bulan ini</p></div><p class="text-emerald-600 text-sm font-bold" id="lr-bersih">Rp 12.450.000</p></div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="grid grid-cols-2 gap-3 anim-right delay-2">
+      <button onclick="showToast('PDF Laba Rugi sedang diunduh... 📄')" class="flex items-center justify-center gap-2 bg-white border-2 border-gray-200 text-gray-700 py-4 rounded-2xl font-semibold">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download PDF
+      </button>
+      <button onclick="showToast('Mengirim ke FUND-Link... 🔗')" class="flex items-center justify-center gap-2 bg-purple-500 text-white py-4 rounded-2xl font-semibold shadow-sm">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        Kirim FUND-Link
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN: ARUS KAS   #aruskas
+══════════════════════════════════════════════ -->
+<div id="screen-aruskas" class="screen no-scrollbar" style="overflow-y:auto;max-height:100vh;padding-bottom:32px;">
+  <div class="bg-white px-5 pb-5 shadow-sm sticky top-0 z-10" style="padding-top:48px;">
+    <div class="flex items-center gap-3">
+      <button onclick="navigate('dashboard')" class="w-9 h-9 bg-gray-100 rounded-xl flex items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      </button>
+      <h1 class="text-gray-900 text-xl font-bold">Arus Kas</h1>
+    </div>
+  </div>
+  <div class="px-4 py-4 space-y-4">
+    <!-- Summary cards -->
+    <div class="grid grid-cols-3 gap-2 anim-right">
+      <div class="bg-emerald-50 border border-emerald-100 rounded-2xl p-3 text-center">
+        <p class="text-gray-500 text-xs mb-1">Uang Masuk</p>
+        <p class="text-emerald-600 text-xs font-bold">Rp 18.2jt</p>
+      </div>
+      <div class="bg-red-50 border border-red-100 rounded-2xl p-3 text-center">
+        <p class="text-gray-500 text-xs mb-1">Uang Keluar</p>
+        <p class="text-red-500 text-xs font-bold">Rp 5.75jt</p>
+      </div>
+      <div class="bg-blue-50 border border-blue-100 rounded-2xl p-3 text-center">
+        <p class="text-gray-500 text-xs mb-1">Saldo Akhir</p>
+        <p class="text-blue-600 text-xs font-bold">Rp 12.45jt</p>
+      </div>
+    </div>
+
+    <!-- Area chart -->
+    <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 anim-right delay-1">
+      <p class="text-gray-900 text-sm font-semibold mb-3">Arus Kas 3 Bulan Terakhir</p>
+      <canvas id="area-chart" height="160"></canvas>
+      <div class="flex justify-center gap-5 mt-3">
+        <div class="flex items-center gap-1.5"><div class="w-3 h-3 rounded-full bg-emerald-500"></div><span class="text-xs text-gray-600">Masuk</span></div>
+        <div class="flex items-center gap-1.5"><div class="w-3 h-3 rounded-full bg-red-400"></div><span class="text-xs text-gray-600">Keluar</span></div>
+      </div>
+    </div>
+
+    <!-- Monthly breakdown -->
+    <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 anim-right delay-2">
+      <p class="text-gray-900 text-sm font-semibold mb-3">Rincian Per Bulan</p>
+      <div class="space-y-3">
+        ${[
+          {m:'Des', inflow:15000000, outflow:8000000, net:7000000},
+          {m:'Jan', inflow:16500000, outflow:7500000, net:9000000},
+          {m:'Feb', inflow:18200000, outflow:5750000, net:12450000},
+        ].map(d => `
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
+              <span class="text-blue-700 text-xs font-bold">${d.m}</span>
+            </div>
+            <div class="flex-1">
+              <div class="flex justify-between text-xs text-gray-500 mb-1">
+                <span>Masuk: <span class="text-emerald-600 font-semibold">${(d.inflow/1000000).toFixed(1)}jt</span></span>
+                <span>Keluar: <span class="text-red-500 font-semibold">${(d.outflow/1000000).toFixed(1)}jt</span></span>
+              </div>
+              <div class="progress-bar"><div class="progress-fill bg-emerald-500" style="--w:${Math.round(d.net/d.inflow*100)}%;"></div></div>
+            </div>
+            <p class="text-blue-600 text-xs font-bold">${(d.net/1000000).toFixed(1)}jt</p>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-3 anim-right delay-3">
+      <button onclick="showToast('PDF Arus Kas sedang diunduh... 📄')" class="flex items-center justify-center gap-2 bg-white border-2 border-gray-200 text-gray-700 py-4 rounded-2xl font-semibold">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download PDF
+      </button>
+      <button onclick="showToast('Mengirim ke FUND-Link... 🔗')" class="flex items-center justify-center gap-2 bg-purple-500 text-white py-4 rounded-2xl font-semibold shadow-sm">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        Kirim FUND-Link
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN: NERACA   #neraca
+══════════════════════════════════════════════ -->
+<div id="screen-neraca" class="screen no-scrollbar" style="overflow-y:auto;max-height:100vh;padding-bottom:32px;">
+  <div class="bg-white px-5 pb-5 shadow-sm sticky top-0 z-10" style="padding-top:48px;">
+    <div class="flex items-center gap-3">
+      <button onclick="navigate('dashboard')" class="w-9 h-9 bg-gray-100 rounded-xl flex items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      </button>
+      <h1 class="text-gray-900 text-xl font-bold">Neraca Sederhana</h1>
+    </div>
+  </div>
+  <div class="px-4 py-4 space-y-4">
+    <div class="grid grid-cols-3 gap-2 anim-right">
+      <div class="bg-emerald-50 border border-emerald-100 rounded-2xl p-3 text-center"><p class="text-gray-500 text-xs mb-0.5">Total Aset</p><p class="text-emerald-600 text-xs font-bold">Rp 26.95jt</p></div>
+      <div class="bg-red-50 border border-red-100 rounded-2xl p-3 text-center"><p class="text-gray-500 text-xs mb-0.5">Kewajiban</p><p class="text-red-500 text-xs font-bold">Rp 4.5jt</p></div>
+      <div class="bg-blue-50 border border-blue-100 rounded-2xl p-3 text-center"><p class="text-gray-500 text-xs mb-0.5">Modal</p><p class="text-blue-600 text-xs font-bold">Rp 22.45jt</p></div>
+    </div>
+
+    <!-- Aset -->
+    <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 anim-right delay-1">
+      <p class="text-emerald-700 text-sm font-bold mb-3">ASET</p>
+      <div class="space-y-2.5">
+        <div class="flex justify-between"><span class="text-gray-600 text-sm">Kas & Bank</span><span class="text-gray-900 text-sm font-semibold">Rp 12.450.000</span></div>
+        <div class="flex justify-between"><span class="text-gray-600 text-sm">Piutang Usaha</span><span class="text-gray-900 text-sm font-semibold">Rp 2.000.000</span></div>
+        <div class="flex justify-between"><span class="text-gray-600 text-sm">Persediaan Stok</span><span class="text-gray-900 text-sm font-semibold">Rp 4.500.000</span></div>
+        <div class="flex justify-between"><span class="text-gray-600 text-sm">Peralatan</span><span class="text-gray-900 text-sm font-semibold">Rp 8.000.000</span></div>
+        <div class="border-t border-gray-100 pt-2 flex justify-between">
+          <span class="text-emerald-700 text-sm font-bold">Total Aset</span>
+          <span class="text-emerald-700 text-sm font-bold">Rp 26.950.000</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Kewajiban -->
+    <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 anim-right delay-2">
+      <p class="text-red-600 text-sm font-bold mb-3">KEWAJIBAN</p>
+      <div class="space-y-2.5">
+        <div class="flex justify-between"><span class="text-gray-600 text-sm">Utang Usaha</span><span class="text-gray-900 text-sm font-semibold">Rp 1.500.000</span></div>
+        <div class="flex justify-between"><span class="text-gray-600 text-sm">Pinjaman Jangka Pendek</span><span class="text-gray-900 text-sm font-semibold">Rp 3.000.000</span></div>
+        <div class="border-t border-gray-100 pt-2 flex justify-between">
+          <span class="text-red-600 text-sm font-bold">Total Kewajiban</span>
+          <span class="text-red-600 text-sm font-bold">Rp 4.500.000</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="bg-blue-50 border border-blue-100 rounded-2xl p-4 anim-right delay-3">
+      <div class="flex justify-between">
+        <p class="text-blue-700 text-sm font-bold">MODAL BERSIH</p>
+        <p class="text-blue-700 text-sm font-extrabold">Rp 22.450.000</p>
+      </div>
+      <p class="text-blue-600 text-xs mt-1">Aset - Kewajiban = Modal</p>
+    </div>
+
+    <div class="grid grid-cols-2 gap-3 anim-right delay-4">
+      <button onclick="showToast('PDF Neraca sedang diunduh... 📄')" class="flex items-center justify-center gap-2 bg-white border-2 border-gray-200 text-gray-700 py-4 rounded-2xl font-semibold">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download PDF
+      </button>
+      <button onclick="showToast('Mengirim ke FUND-Link... 🔗')" class="flex items-center justify-center gap-2 bg-purple-500 text-white py-4 rounded-2xl font-semibold shadow-sm">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        Kirim FUND-Link
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN: BANK EXPORT   #bankexport
+══════════════════════════════════════════════ -->
+<div id="screen-bankexport" class="screen no-scrollbar" style="overflow-y:auto;max-height:100vh;padding-bottom:32px;">
+  <div class="bg-white px-5 pb-5 shadow-sm sticky top-0 z-10" style="padding-top:48px;">
+    <div class="flex items-center gap-3">
+      <button onclick="navigate('dashboard')" class="w-9 h-9 bg-gray-100 rounded-xl flex items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      </button>
+      <h1 class="text-gray-900 text-xl font-bold">Export Bank-Ready</h1>
+    </div>
+  </div>
+  <div class="px-4 py-4 space-y-4">
+    <!-- Banner -->
+    <div class="rounded-2xl p-4 text-center anim-right" style="background:linear-gradient(135deg,#3b82f6,#6366f1);">
+      <p class="text-blue-200 text-xs font-semibold mb-1">PAKET LAPORAN BANK</p>
+      <p class="text-white font-bold mb-1" style="font-size:18px;">Bank-Ready Package</p>
+      <p class="text-blue-200 text-xs">Semua dokumen yang dibutuhkan bank dalam 1 file</p>
+    </div>
+
+    <!-- Period picker -->
+    <div class="anim-right delay-1">
+      <p class="text-gray-500 text-xs font-semibold px-1 mb-2">PILIH PERIODE</p>
+      <div class="flex gap-3" id="period-cards">
+        <button class="period-card active" data-p="3bulan" onclick="setBankPeriod('3bulan',this)">3 Bulan<br><span class="text-xs font-normal text-gray-500">Des 25 – Feb 26</span></button>
+        <button class="period-card"        data-p="6bulan" onclick="setBankPeriod('6bulan',this)">6 Bulan<br><span class="text-xs font-normal text-gray-500">Sep 25 – Feb 26</span></button>
+      </div>
+    </div>
+
+    <!-- Checklist -->
+    <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 anim-right delay-2">
+      <div class="flex items-center justify-between mb-3">
+        <p class="text-gray-900 text-sm font-bold">Kelengkapan Dokumen</p>
+        <span class="text-xs px-2.5 py-1 rounded-full bg-amber-100 text-amber-700 font-semibold">4/6</span>
+      </div>
+      <div class="space-y-2">
+        ${[
+          {label:'Laporan Laba Rugi', done:true},
+          {label:'Laporan Arus Kas', done:true},
+          {label:'Neraca Sederhana', done:true},
+          {label:'Ringkasan Transaksi', done:true},
+          {label:'Kategori Transaksi Lengkap', done:false},
+          {label:'Pisah Pribadi vs Usaha', done:false},
+        ].map(c => `
+          <div class="flex items-center gap-3 p-3 rounded-xl ${c.done ? 'check-item-done' : 'check-item-miss'}">
+            <div class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ${c.done ? 'bg-emerald-500' : 'bg-amber-400'}">
+              ${c.done
+                ? `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`
+                : `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`
+              }
+            </div>
+            <span class="text-sm ${c.done ? 'text-emerald-800' : 'text-amber-800 font-medium'}">${c.label}</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <!-- Warning incomplete -->
+    <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-start gap-3 anim-right delay-3">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 mt-0.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <div>
+        <p class="text-amber-800 text-sm font-bold">Data Belum Lengkap</p>
+        <ul class="mt-1.5 space-y-0.5">
+          <li class="text-amber-700 text-xs">• Tambahkan minimal 5 transaksi lagi</li>
+          <li class="text-amber-700 text-xs">• Lengkapi kategori semua transaksi</li>
+          <li class="text-amber-700 text-xs">• Pisahkan transaksi pribadi vs usaha</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <button onclick="showToast('Melengkapi data transaksi...')" class="w-full bg-amber-500 text-white py-4 rounded-2xl flex items-center justify-center gap-2 font-bold shadow-md anim-right delay-4">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+      Lengkapi Sekarang
+    </button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════════ -->
 <script>
-// Generate confetti dots
-const top = document.getElementById('cardTop');
-const colors = ['#fff', '#ffd700', '#a8f0c8', '#ffe066', '#b5f5d5'];
-for (let i = 0; i < 18; i++) {
-  const d = document.createElement('div');
-  d.className = 'confetti-dot';
-  const size = Math.random() * 7 + 4;
-  d.style.cssText = `
-    width:${size}px; height:${size}px;
-    background:${colors[Math.floor(Math.random()*colors.length)]};
-    left:${Math.random()*100}%;
-    top:${Math.random()*60}%;
-    animation-duration:${Math.random()*2+2}s;
-    animation-delay:${Math.random()*2}s;
-    opacity:0;
-  `;
-  top.appendChild(d);
+// ── Data ─────────────────────────────────────
+const DATA = {
+  hari:   { masuk:18200000, keluar:5750000, labels:['Sen','Sel','Rab','Kam','Jum','Sab','Min'], income:[2200000,1800000,2900000,1500000,3200000,4100000,2500000], expense:[800000,600000,1100000,500000,900000,1400000,750000] },
+  minggu: { masuk:74700000, keluar:25350000, labels:['M1','M2','M3','M4'], income:[16000000,18200000,21000000,19500000], expense:[6000000,5750000,7200000,6400000] },
+  bulan:  { masuk:49700000, keluar:21250000, labels:['Des','Jan','Feb'], income:[15000000,16500000,18200000], expense:[8000000,7500000,5750000] },
+};
+
+const fmtRp = v => {
+  if (v >= 1e6) return `Rp ${(v/1e6).toFixed(1)}jt`;
+  if (v >= 1e3) return `Rp ${(v/1e3).toFixed(0)}rb`;
+  return `Rp ${v}`;
+};
+
+// ── Screens ──────────────────────────────────
+const SCREENS = ['dashboard','labarugi','aruskas','neraca','bankexport'];
+let currentScreen = 'dashboard';
+let barChartInst = null;
+let areaChartInst = null;
+let scoreTrendInst = null;
+let currentPeriod = 'minggu';
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
 }
+
+function navigate(screen) {
+  if (!SCREENS.includes(screen)) screen = 'dashboard';
+  history.pushState(null, '', '#' + screen);
+  render(screen);
+}
+
+function render(screen) {
+  if (!SCREENS.includes(screen)) screen = 'dashboard';
+  currentScreen = screen;
+
+  SCREENS.forEach(s => {
+    const el = document.getElementById('screen-' + s);
+    el.classList.remove('active');
+  });
+
+  const el = document.getElementById('screen-' + screen);
+  el.classList.add('active');
+  el.scrollTop = 0;
+
+  // Re-animate children
+  el.querySelectorAll('[class*="anim-"]').forEach(c => {
+    c.style.animation = 'none';
+    void c.offsetWidth;
+    c.style.animation = '';
+  });
+
+  // Trigger progress bars
+  el.querySelectorAll('.progress-fill').forEach(b => {
+    b.style.animation = 'none'; void b.offsetWidth;
+    b.style.animation = `fillBar .9s cubic-bezier(.25,.46,.45,.94) .4s both`;
+  });
+
+  if (screen === 'dashboard') {
+    setTimeout(() => {
+      initScoreRing();
+      initScoreTrend();
+      initBarChart(currentPeriod);
+    }, 60);
+  }
+  if (screen === 'aruskas') {
+    setTimeout(initAreaChart, 60);
+  }
+}
+
+window.addEventListener('popstate', () => {
+  const h = location.hash.replace('#','') || 'dashboard';
+  render(h);
+});
+
+// ── Period (dashboard) ────────────────────────
+function setPeriod(p, btn) {
+  currentPeriod = p;
+  document.querySelectorAll('.period-pill').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  const d = DATA[p];
+  document.getElementById('val-masuk').textContent  = fmtRp(d.masuk);
+  document.getElementById('val-keluar').textContent = fmtRp(d.keluar);
+  document.getElementById('val-profit').textContent = fmtRp(d.masuk - d.keluar);
+
+  initBarChart(p);
+}
+
+// ── Laba Rugi month ───────────────────────────
+const LR_DATA = {
+  'Des 2025': { pendapatan:15000000, hpp:4500000, beban:480000 },
+  'Jan 2026': { pendapatan:16500000, hpp:4800000, beban:510000 },
+  'Feb 2026': { pendapatan:18200000, hpp:5200000, beban:550000 },
+};
+function setLRMonth(m, btn) {
+  document.querySelectorAll('.month-pill').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const d = LR_DATA[m];
+  const kotor  = d.pendapatan - d.hpp;
+  const bersih = kotor - d.beban;
+  const short  = m.toUpperCase().replace(' ','%20');
+  document.getElementById('lr-title').textContent       = `LABA BERSIH ${m.toUpperCase()}`;
+  document.getElementById('lr-pendapatan').textContent  = `Rp ${d.pendapatan.toLocaleString('id-ID')}`;
+  document.getElementById('lr-hpp').textContent         = `-Rp ${d.hpp.toLocaleString('id-ID')}`;
+  document.getElementById('lr-kotor').textContent       = `Rp ${kotor.toLocaleString('id-ID')}`;
+  document.getElementById('lr-beban').textContent       = `-Rp ${d.beban.toLocaleString('id-ID')}`;
+  document.getElementById('lr-bersih').textContent      = `Rp ${bersih.toLocaleString('id-ID')}`;
+  document.getElementById('lr-net').textContent         = `Rp ${bersih.toLocaleString('id-ID')}`;
+}
+
+// ── Bank export period ────────────────────────
+function setBankPeriod(p, btn) {
+  document.querySelectorAll('.period-card').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// ── Score ring ────────────────────────────────
+function initScoreRing() {
+  const ring = document.getElementById('score-ring');
+  if (!ring) return;
+  const score = 84;
+  const offset = 314 - (score / 100) * 314;
+  ring.style.strokeDashoffset = offset;
+}
+
+// ── Score trend chart ─────────────────────────
+function initScoreTrend() {
+  const canvas = document.getElementById('score-trend-chart');
+  if (!canvas) return;
+  if (scoreTrendInst) { scoreTrendInst.destroy(); scoreTrendInst = null; }
+  scoreTrendInst = new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels: ['Des','Jan','Feb','Mar'],
+      datasets: [{
+        data: [65,72,78,84],
+        borderColor: '#10b981', borderWidth: 2.5,
+        pointBackgroundColor: '#10b981', pointRadius: 4,
+        tension: 0.4, fill: false
+      }]
+    },
+    options: {
+      plugins: { legend:{ display:false }, tooltip:{ callbacks:{ label: ctx => 'Score: '+ctx.raw } } },
+      scales: {
+        x: { ticks:{ font:{size:10}, color:'#9ca3af' }, grid:{display:false}, border:{display:false} },
+        y: { display:false }
+      },
+      animation: { duration: 900 }
+    }
+  });
+}
+
+// ── Bar chart ─────────────────────────────────
+function initBarChart(p) {
+  const canvas = document.getElementById('bar-chart');
+  if (!canvas) return;
+  if (barChartInst) { barChartInst.destroy(); barChartInst = null; }
+  const d = DATA[p];
+  barChartInst = new Chart(canvas, {
+    type: 'bar',
+    data: {
+      labels: d.labels,
+      datasets: [
+        { label:'Uang Masuk',  data:d.income,  backgroundColor:'#10b981', borderRadius:8 },
+        { label:'Uang Keluar', data:d.expense, backgroundColor:'#fca5a5', borderRadius:8 },
+      ]
+    },
+    options: {
+      plugins: { legend:{display:false}, tooltip:{ callbacks:{ label: ctx => `Rp ${ctx.raw.toLocaleString('id-ID')}` } } },
+      scales: {
+        x: { ticks:{ font:{size:11}, color:'#9ca3af' }, grid:{display:false}, border:{display:false} },
+        y: { ticks:{ font:{size:10}, color:'#9ca3af', callback: v => { if(v>=1e6) return (v/1e6)+'jt'; return v; } }, grid:{color:'#f1f5f9'}, border:{display:false} }
+      },
+      animation: { duration: 700 }
+    }
+  });
+}
+
+// ── Area chart (arus kas) ─────────────────────
+function initAreaChart() {
+  const canvas = document.getElementById('area-chart');
+  if (!canvas) return;
+  if (areaChartInst) { areaChartInst.destroy(); areaChartInst = null; }
+  areaChartInst = new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels: ['Des','Jan','Feb'],
+      datasets: [
+        { label:'Masuk',  data:[15000000,16500000,18200000], borderColor:'#10b981', backgroundColor:'rgba(16,185,129,.15)', fill:true, borderWidth:2, tension:0.4, pointBackgroundColor:'#10b981', pointRadius:4 },
+        { label:'Keluar', data:[8000000,7500000,5750000],   borderColor:'#f87171', backgroundColor:'rgba(248,113,113,.1)',  fill:true, borderWidth:2, tension:0.4, pointBackgroundColor:'#f87171', pointRadius:4 },
+      ]
+    },
+    options: {
+      plugins: { legend:{display:false}, tooltip:{ callbacks:{ label: ctx => `${ctx.dataset.label}: Rp ${ctx.raw.toLocaleString('id-ID')}` } } },
+      scales: {
+        x: { ticks:{ font:{size:11}, color:'#9ca3af' }, grid:{display:false}, border:{display:false} },
+        y: { ticks:{ font:{size:10}, color:'#9ca3af', callback: v => (v/1e6).toFixed(0)+'jt' }, grid:{color:'#f1f5f9'}, border:{display:false} }
+      },
+      animation: { duration: 800 }
+    }
+  });
+}
+
+// ── Init ──────────────────────────────────────
+const initHash = location.hash.replace('#','') || 'dashboard';
+render(initHash);
 </script>
 </body>
 </html>
