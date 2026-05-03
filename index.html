@@ -1,1228 +1,788 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-  <title>Profil · UMKMate</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <style>
-    * { font-family: 'Inter', sans-serif; }
-    html, body { max-width: 430px; margin: 0 auto; background: #f9fafb; min-height: 100vh; }
-
-    /* Screens */
-    .screen { display: none; min-height: 100vh; }
-    .screen.active { display: block; }
-
-    /* Animations */
-    @keyframes fadeUp   { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
-    @keyframes fadeIn   { from { opacity:0; } to { opacity:1; } }
-    @keyframes scaleIn  { from { opacity:0; transform:scale(0.93); } to { opacity:1; transform:scale(1); } }
-    @keyframes slideRight { from { opacity:0; transform:translateX(-16px); } to { opacity:1; transform:translateX(0); } }
-    .anim-fade-up    { animation: fadeUp    .3s ease forwards; }
-    .anim-fade-in    { animation: fadeIn    .2s ease forwards; }
-    .anim-scale-in   { animation: scaleIn   .25s ease forwards; }
-    .anim-slide-right { animation: slideRight .25s ease forwards; }
-
-    button:active { transform: scale(0.97); }
-    input, textarea, select { transition: border-color .2s, box-shadow .2s; }
-    input:focus, textarea:focus, select:focus { border-color: #10b981 !important; box-shadow: 0 0 0 3px rgba(16,185,129,0.1); outline: none; }
-    select { appearance: none; }
-
-    .toast {
-      position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%);
-      background: #111827; color: #fff; padding: 11px 22px;
-      border-radius: 99px; font-size: 13px; font-weight: 600;
-      z-index: 9999; opacity: 0; pointer-events: none; transition: opacity .3s;
-      white-space: nowrap; letter-spacing: -0.01em;
-    }
-    .toast.show { opacity: 1; }
-
-    /* Toggle switch */
-    .toggle-track { width: 44px; height: 24px; background: #e5e7eb; border-radius: 12px; position: relative; cursor: pointer; transition: background .2s; flex-shrink: 0; }
-    .toggle-track.on { background: #10b981; }
-    .toggle-thumb { width: 18px; height: 18px; background: white; border-radius: 50%; position: absolute; top: 3px; left: 3px; transition: left .2s; box-shadow: 0 1px 3px rgba(0,0,0,.2); }
-    .toggle-track.on .toggle-thumb { left: 23px; }
-
-    /* Avatar upload ring */
-    .avatar-ring { background: conic-gradient(#10b981 0% 78%, #e5e7eb 78% 100%); padding: 3px; border-radius: 50%; }
-    .avatar-inner { background: white; border-radius: 50%; padding: 2px; }
-
-    /* Menu row hover */
-    .menu-row { transition: background .15s; }
-    .menu-row:active { background: #f3f4f6; }
-  </style>
-</head>
-<body class="bg-gray-50">
-<div id="toast" class="toast"></div>
-
-<!-- ═══════════════════════════════════════════════
-     SCREEN: PROFIL UTAMA
-═══════════════════════════════════════════════ -->
-<div id="screen-profile" class="screen active">
-
-  <!-- Header -->
-  <div class="bg-white px-4 pt-12 pb-0 sticky top-0 z-10 border-b border-gray-100">
-    <div class="flex items-center justify-between mb-4">
-      <h1 class="text-gray-900 text-xl font-bold tracking-tight">Profil</h1>
-      <button onclick="setScreen('screen-settings')" class="w-9 h-9 bg-gray-100 rounded-xl flex items-center justify-center hover:bg-gray-200 transition-colors">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-      </button>
-    </div>
-  </div>
-
-  <div class="pb-24 anim-fade-up">
-
-    <!-- Profile Card -->
-    <div class="bg-white px-5 py-6 border-b border-gray-100">
-      <div class="flex items-start gap-4">
-        <!-- Avatar -->
-        <div class="avatar-ring flex-shrink-0 cursor-pointer" onclick="setScreen('screen-edit-profile')">
-          <div class="avatar-inner">
-            <div class="w-16 h-16 rounded-full bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center">
-              <span class="text-white text-xl font-bold">W</span>
-            </div>
-          </div>
-        </div>
-        <!-- Info -->
-        <div class="flex-1 min-w-0">
-          <div class="flex items-center gap-2 mb-0.5">
-            <h2 class="text-gray-900 font-bold text-base truncate">Warung Kopi Nusantara</h2>
-            <span class="bg-gradient-to-r from-amber-400 to-orange-500 text-white text-xs font-bold px-2 py-0.5 rounded-full flex-shrink-0">⭐ Grow</span>
-          </div>
-          <p class="text-gray-500 text-sm">Budi Santoso · Pemilik</p>
-          <p class="text-gray-400 text-xs mt-0.5">📍 Jakarta Selatan</p>
-          <div class="flex items-center gap-2 mt-2">
-            <div class="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-              <div class="h-full bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full" style="width:78%"></div>
-            </div>
-            <span class="text-emerald-600 text-xs font-semibold flex-shrink-0">78% Naik Kelas</span>
-          </div>
-        </div>
-        <!-- Edit btn -->
-        <button onclick="setScreen('screen-edit-profile')" class="flex-shrink-0 w-9 h-9 border border-gray-200 rounded-xl flex items-center justify-center hover:bg-gray-50 transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-        </button>
-      </div>
-
-      <!-- Stats row -->
-      <div class="grid grid-cols-3 gap-3 mt-4 pt-4 border-t border-gray-100">
-        <div class="text-center">
-          <p class="text-gray-900 font-bold text-base">247</p>
-          <p class="text-gray-400 text-xs mt-0.5">Transaksi</p>
-        </div>
-        <div class="text-center border-x border-gray-100">
-          <p class="text-emerald-600 font-bold text-base">82</p>
-          <p class="text-gray-400 text-xs mt-0.5">Growth Score</p>
-        </div>
-        <div class="text-center">
-          <p class="text-gray-900 font-bold text-base">14 hr</p>
-          <p class="text-gray-400 text-xs mt-0.5">Streak</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Growth Score Banner -->
-    <div class="mx-4 mt-4 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-2xl p-4 flex items-center gap-3">
-      <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
-        <span class="text-white text-xl font-black">82</span>
-      </div>
-      <div class="flex-1">
-        <p class="text-white font-bold text-sm">Growth Score kamu bagus!</p>
-        <p class="text-emerald-100 text-xs mt-0.5">18 poin lagi untuk tier Expand</p>
-      </div>
-      <button onclick="setScreen('screen-growth-score')" class="bg-white/20 hover:bg-white/30 transition-colors text-white text-xs font-semibold px-3 py-2 rounded-xl flex-shrink-0">Detail</button>
-    </div>
-
-    <!-- Badge -->
-    <div class="mx-4 mt-3">
-      <div class="bg-white rounded-2xl border border-gray-100 p-4">
-        <div class="flex items-center justify-between mb-3">
-          <p class="text-gray-900 font-semibold text-sm">Badge Kamu</p>
-          <button onclick="setScreen('screen-badges')" class="text-emerald-600 text-xs font-semibold">Lihat Semua</button>
-        </div>
-        <div class="flex gap-2" id="badge-list">
-          <!-- akan diisi JavaScript -->
-        </div>
-      </div>
-    </div>
-
-    <!-- Menu List -->
-    <div class="mx-4 mt-3 space-y-2">
-
-      <!-- Usaha -->
-      <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-        <p class="text-gray-400 text-xs font-semibold px-4 pt-4 pb-2 uppercase tracking-wide">Usaha</p>
-        
-        <button onclick="showToast('Profil Usaha — segera hadir!')" class="menu-row w-full flex items-center gap-3 px-4 py-4 border-b border-gray-50 last:border-0">
-          <div class="w-9 h-9 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0 text-lg">🏪</div>
-          <div class="flex-1 text-left"><p class="text-gray-800 text-sm font-semibold">Profil Usaha</p><p class="text-gray-400 text-xs">Warung Kopi Nusantara</p></div>
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-        </button>
-        
-        <button onclick="showToast('Laporan Keuangan — segera hadir!')" class="menu-row w-full flex items-center gap-3 px-4 py-4 border-b border-gray-50 last:border-0">
-          <div class="w-9 h-9 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0 text-lg">📊</div>
-          <div class="flex-1 text-left"><p class="text-gray-800 text-sm font-semibold">Laporan Keuangan</p><p class="text-gray-400 text-xs">Laba rugi, arus kas, neraca</p></div>
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-        </button>
-        
-        <button onclick="showToast('Sync Rekening — segera hadir!')" class="menu-row w-full flex items-center gap-3 px-4 py-4 border-b border-gray-50 last:border-0">
-          <div class="w-9 h-9 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0 text-lg">🔗</div>
-          <div class="flex-1 text-left"><p class="text-gray-800 text-sm font-semibold">Sync Rekening</p><p class="text-gray-400 text-xs">2 akun terhubung</p></div>
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-        </button>
-      </div>
-
-      <!-- Akun -->
-      <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-        <p class="text-gray-400 text-xs font-semibold px-4 pt-4 pb-2 uppercase tracking-wide">Akun</p>
-        
-        <button onclick="setScreen('screen-edit-profile')" class="menu-row w-full flex items-center gap-3 px-4 py-4 border-b border-gray-50 last:border-0">
-          <div class="w-9 h-9 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0 text-lg">👤</div>
-          <div class="flex-1 text-left"><p class="text-gray-800 text-sm font-semibold">Edit Profil</p><p class="text-gray-400 text-xs">Nama, foto, kontak</p></div>
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-        </button>
-        
-        <button onclick="setScreen('screen-keamanan')" class="menu-row w-full flex items-center gap-3 px-4 py-4 border-b border-gray-50 last:border-0">
-          <div class="w-9 h-9 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0 text-lg">🔐</div>
-          <div class="flex-1 text-left"><p class="text-gray-800 text-sm font-semibold">Keamanan</p><p class="text-gray-400 text-xs">PIN, biometrik, password</p></div>
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-        </button>
-        
-        <button onclick="setScreen('screen-notifikasi')" class="menu-row w-full flex items-center gap-3 px-4 py-4 border-b border-gray-50 last:border-0">
-          <div class="w-9 h-9 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0 text-lg">🔔</div>
-          <div class="flex-1 text-left"><p class="text-gray-800 text-sm font-semibold">Notifikasi</p><p class="text-gray-400 text-xs">Reminder & pengumuman</p></div>
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-        </button>
-        
-        <button onclick="setScreen('screen-bahasa')" class="menu-row w-full flex items-center gap-3 px-4 py-4 border-b border-gray-50 last:border-0">
-          <div class="w-9 h-9 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0 text-lg">🌐</div>
-          <div class="flex-1 text-left"><p class="text-gray-800 text-sm font-semibold">Bahasa</p><p class="text-gray-400 text-xs">Indonesia</p></div>
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-        </button>
-      </div>
-
-      <!-- Fitur -->
-      <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-        <p class="text-gray-400 text-xs font-semibold px-4 pt-4 pb-2 uppercase tracking-wide">Fitur</p>
-        
-        <button onclick="setScreen('screen-leaderboard')" class="menu-row w-full flex items-center gap-3 px-4 py-4 border-b border-gray-50 last:border-0">
-          <div class="w-9 h-9 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0 text-lg">🏅</div>
-          <div class="flex-1 text-left"><p class="text-gray-800 text-sm font-semibold">Leaderboard</p><p class="text-gray-400 text-xs">Rank #42 provinsimu</p></div>
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-        </button>
-        
-        <button onclick="setScreen('screen-membership')" class="menu-row w-full flex items-center gap-3 px-4 py-4 border-b border-gray-50 last:border-0">
-          <div class="w-9 h-9 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0 text-lg">💳</div>
-          <div class="flex-1 text-left"><p class="text-gray-800 text-sm font-semibold">Membership</p><p class="text-gray-400 text-xs">Tier Grow · Aktif</p></div>
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-        </button>
-        
-        <button onclick="setScreen('screen-referral')" class="menu-row w-full flex items-center gap-3 px-4 py-4 border-b border-gray-50 last:border-0">
-          <div class="w-9 h-9 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0 text-lg">🤝</div>
-          <div class="flex-1 text-left"><p class="text-gray-800 text-sm font-semibold">Referral</p><p class="text-gray-400 text-xs">Undang teman, dapat poin</p></div>
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-        </button>
-      </div>
-
-      <!-- Bantuan -->
-      <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-        <p class="text-gray-400 text-xs font-semibold px-4 pt-4 pb-2 uppercase tracking-wide">Bantuan</p>
-        
-        <button onclick="setScreen('screen-bantuan')" class="menu-row w-full flex items-center gap-3 px-4 py-4 border-b border-gray-50 last:border-0">
-          <div class="w-9 h-9 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0 text-lg">❓</div>
-          <div class="flex-1 text-left"><p class="text-gray-800 text-sm font-semibold">Pusat Bantuan</p><p class="text-gray-400 text-xs">FAQ & panduan</p></div>
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-        </button>
-        
-        <button onclick="setScreen('screen-kontak')" class="menu-row w-full flex items-center gap-3 px-4 py-4 border-b border-gray-50 last:border-0">
-          <div class="w-9 h-9 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0 text-lg">💬</div>
-          <div class="flex-1 text-left"><p class="text-gray-800 text-sm font-semibold">Hubungi Kami</p><p class="text-gray-400 text-xs">Chat & WhatsApp support</p></div>
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-        </button>
-        
-        <button onclick="showToast('Terima kasih! 🙏')" class="menu-row w-full flex items-center gap-3 px-4 py-4 border-b border-gray-50 last:border-0">
-          <div class="w-9 h-9 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0 text-lg">⭐</div>
-          <div class="flex-1 text-left"><p class="text-gray-800 text-sm font-semibold">Beri Rating Aplikasi</p><p class="text-gray-400 text-xs">Bantu kami berkembang</p></div>
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-        </button>
-        
-        <button onclick="setScreen('screen-tnc')" class="menu-row w-full flex items-center gap-3 px-4 py-4 border-b border-gray-50 last:border-0">
-          <div class="w-9 h-9 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0 text-lg">📄</div>
-          <div class="flex-1 text-left"><p class="text-gray-800 text-sm font-semibold">Syarat & Kebijakan</p><p class="text-gray-400 text-xs">Privasi & ketentuan layanan</p></div>
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-        </button>
-      </div>
-
-      <!-- Logout -->
-      <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden mb-2">
-        <button onclick="showLogoutConfirm()" class="menu-row w-full flex items-center gap-3 px-4 py-4">
-          <div class="w-9 h-9 bg-red-50 rounded-xl flex items-center justify-center flex-shrink-0">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-          </div>
-          <div class="flex-1 text-left">
-            <p class="text-red-500 font-semibold text-sm">Keluar</p>
-            <p class="text-gray-400 text-xs">Logout dari akun ini</p>
-          </div>
-        </button>
-      </div>
-
-      <p class="text-center text-gray-300 text-xs pb-2">UMKMate v2.1.0 · © 2026</p>
-    </div>
-  </div>
-</div>
-
-
-<!-- ═══════════════════════════════════════════════
-     SCREEN: EDIT PROFIL
-═══════════════════════════════════════════════ -->
-<div id="screen-edit-profile" class="screen">
-  <div class="bg-white px-4 pt-12 pb-4 sticky top-0 z-10 border-b border-gray-100">
-    <div class="flex items-center gap-3">
-      <button onclick="goBack()" class="p-2 hover:bg-gray-100 rounded-xl transition-colors">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-      </button>
-      <h1 class="text-gray-900 font-bold text-lg flex-1">Edit Profil</h1>
-      <button onclick="saveProfile()" class="bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-colors">Simpan</button>
-    </div>
-  </div>
-  <div class="pb-24 px-4 pt-6 anim-slide-right space-y-5">
-
-    <!-- Avatar -->
-    <div class="flex flex-col items-center gap-3">
-      <div class="relative">
-        <div class="w-24 h-24 rounded-full bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center">
-          <span class="text-white text-4xl font-bold">W</span>
-        </div>
-        <button class="absolute -bottom-1 -right-1 w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center border-2 border-white" onclick="showToast('Fitur upload foto segera hadir 📸')">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-        </button>
-      </div>
-      <p class="text-gray-400 text-xs">Ketuk untuk ubah foto profil</p>
-    </div>
-
-    <!-- Form Owner -->
-    <div class="bg-white rounded-2xl border border-gray-100 p-5 space-y-4">
-      <p class="text-gray-900 font-semibold text-sm">Informasi Pribadi</p>
-      <div>
-        <label class="text-xs text-gray-500 font-semibold mb-1.5 block">Nama Lengkap</label>
-        <input type="text" value="Budi Santoso" class="w-full px-4 py-3.5 border-2 border-gray-200 rounded-2xl text-sm" />
-      </div>
-      <div>
-        <label class="text-xs text-gray-500 font-semibold mb-1.5 block">Nomor HP</label>
-        <div class="flex gap-2">
-          <div class="w-16 px-3 py-3.5 border-2 border-gray-200 rounded-2xl text-sm text-gray-700 font-semibold bg-gray-50 flex items-center justify-center">🇮🇩</div>
-          <input type="tel" value="081234567890" class="flex-1 px-4 py-3.5 border-2 border-gray-200 rounded-2xl text-sm" />
-        </div>
-      </div>
-      <div>
-        <label class="text-xs text-gray-500 font-semibold mb-1.5 block">Email</label>
-        <input type="email" value="budi.santoso@email.com" class="w-full px-4 py-3.5 border-2 border-gray-200 rounded-2xl text-sm" />
-      </div>
-      <div>
-        <label class="text-xs text-gray-500 font-semibold mb-1.5 block">Peran</label>
-        <div class="relative">
-          <select class="w-full px-4 py-3.5 border-2 border-gray-200 rounded-2xl text-sm bg-white pr-10">
-            <option selected>Pemilik</option>
-            <option>Manajer</option>
-            <option>Karyawan</option>
-          </select>
-          <svg class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-        </div>
-      </div>
-    </div>
-
-    <!-- Form Usaha -->
-    <div class="bg-white rounded-2xl border border-gray-100 p-5 space-y-4">
-      <p class="text-gray-900 font-semibold text-sm">Informasi Usaha</p>
-      <div>
-        <label class="text-xs text-gray-500 font-semibold mb-1.5 block">Nama Usaha</label>
-        <input type="text" value="Warung Kopi Nusantara" class="w-full px-4 py-3.5 border-2 border-gray-200 rounded-2xl text-sm" />
-      </div>
-      <div>
-        <label class="text-xs text-gray-500 font-semibold mb-1.5 block">Jenis Usaha</label>
-        <div class="grid grid-cols-3 gap-2" id="jenis-usaha-container">
-          <!-- akan diisi JavaScript -->
-        </div>
-      </div>
-      <div>
-        <label class="text-xs text-gray-500 font-semibold mb-1.5 block">Lokasi Usaha</label>
-        <div class="relative">
-          <input type="text" value="Jakarta Selatan" class="w-full px-4 py-3.5 pl-10 border-2 border-gray-200 rounded-2xl text-sm" />
-          <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-        </div>
-      </div>
-      <div>
-        <label class="text-xs text-gray-500 font-semibold mb-1.5 block">Perkiraan Omzet / Bulan</label>
-        <div class="relative">
-          <select class="w-full px-4 py-3.5 border-2 border-gray-200 rounded-2xl text-sm bg-white pr-10">
-            <option>Di bawah Rp 5 juta</option>
-            <option>Rp 5 – 20 juta</option>
-            <option selected>Rp 20 – 50 juta</option>
-            <option>Rp 50 – 100 juta</option>
-            <option>Di atas Rp 100 juta</option>
-          </select>
-          <svg class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-        </div>
-      </div>
-      <div>
-        <label class="text-xs text-gray-500 font-semibold mb-1.5 block">Bio Singkat</label>
-        <textarea rows="3" placeholder="Ceritakan usahamu..." class="w-full px-4 py-3.5 border-2 border-gray-200 rounded-2xl text-sm resize-none">Warung kopi spesialis kopi susu gula aren dan jajanan tradisional. Buka sejak 2019.</textarea>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-<!-- ═══════════════════════════════════════════════
-     SCREEN: KEAMANAN
-═══════════════════════════════════════════════ -->
-<div id="screen-keamanan" class="screen">
-  <div class="bg-white px-4 pt-12 pb-4 sticky top-0 z-10 border-b border-gray-100">
-    <div class="flex items-center gap-3">
-      <button onclick="goBack()" class="p-2 hover:bg-gray-100 rounded-xl transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
-      <h1 class="text-gray-900 font-bold text-lg">Keamanan</h1>
-    </div>
-  </div>
-  <div class="pb-24 px-4 pt-6 anim-slide-right space-y-3">
-
-    <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-      <p class="text-gray-400 text-xs font-semibold px-4 pt-4 pb-2 uppercase tracking-wide">Autentikasi</p>
-      <div class="menu-row flex items-center gap-3 px-4 py-4 border-b border-gray-50">
-        <div class="w-9 h-9 bg-blue-50 rounded-xl flex items-center justify-center flex-shrink-0">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        </div>
-        <div class="flex-1"><p class="text-gray-800 text-sm font-semibold">Ubah PIN</p><p class="text-gray-400 text-xs">6 digit PIN untuk masuk</p></div>
-        <button onclick="setScreen('screen-ubah-pin')" class="text-xs text-emerald-600 font-semibold bg-emerald-50 px-3 py-1.5 rounded-lg">Ubah</button>
-      </div>
-      <div class="menu-row flex items-center gap-3 px-4 py-4 border-b border-gray-50">
-        <div class="w-9 h-9 bg-purple-50 rounded-xl flex items-center justify-center flex-shrink-0">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        </div>
-        <div class="flex-1"><p class="text-gray-800 text-sm font-semibold">Biometrik</p><p class="text-gray-400 text-xs">Sidik jari / Face ID</p></div>
-        <div class="toggle-track on" onclick="toggleTrack(this)"><div class="toggle-thumb"></div></div>
-      </div>
-      <div class="menu-row flex items-center gap-3 px-4 py-4">
-        <div class="w-9 h-9 bg-orange-50 rounded-xl flex items-center justify-center flex-shrink-0">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.1 3.18 2 2 0 0 1 3.08 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 8.91a16 16 0 0 0 5.91 5.91l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-        </div>
-        <div class="flex-1"><p class="text-gray-800 text-sm font-semibold">Verifikasi 2 Langkah</p><p class="text-gray-400 text-xs">OTP via SMS/WhatsApp</p></div>
-        <div class="toggle-track" onclick="toggleTrack(this)"><div class="toggle-thumb"></div></div>
-      </div>
-    </div>
-
-    <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-      <p class="text-gray-400 text-xs font-semibold px-4 pt-4 pb-2 uppercase tracking-wide">Privasi</p>
-      <div class="menu-row flex items-center gap-3 px-4 py-4 border-b border-gray-50">
-        <div class="w-9 h-9 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-        </div>
-        <div class="flex-1"><p class="text-gray-800 text-sm font-semibold">Sembunyikan Saldo</p><p class="text-gray-400 text-xs">Tampil bintang di beranda</p></div>
-        <div class="toggle-track" onclick="toggleTrack(this)"><div class="toggle-thumb"></div></div>
-      </div>
-      <button class="menu-row w-full flex items-center gap-3 px-4 py-4" onclick="showToast('Sesi lain berhasil diakhiri')">
-        <div class="w-9 h-9 bg-red-50 rounded-xl flex items-center justify-center flex-shrink-0">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-        </div>
-        <div class="flex-1 text-left"><p class="text-red-500 text-sm font-semibold">Akhiri Semua Sesi</p><p class="text-gray-400 text-xs">Logout dari semua perangkat</p></div>
-      </button>
-    </div>
-  </div>
-</div>
-
-
-<!-- ═══════════════════════════════════════════════
-     SCREEN: UBAH PIN
-═══════════════════════════════════════════════ -->
-<div id="screen-ubah-pin" class="screen">
-  <div class="bg-white px-4 pt-12 pb-4 sticky top-0 z-10 border-b border-gray-100">
-    <div class="flex items-center gap-3">
-      <button onclick="goBack()" class="p-2 hover:bg-gray-100 rounded-xl transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
-      <h1 class="text-gray-900 font-bold text-lg">Ubah PIN</h1>
-    </div>
-  </div>
-  <div class="pb-24 px-4 pt-8 anim-slide-right">
-    <div class="text-center mb-8">
-      <div class="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
-        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-      </div>
-      <p class="text-gray-900 font-bold text-lg mb-1">Masukkan PIN Lama</p>
-      <p class="text-gray-400 text-sm">Verifikasi identitasmu terlebih dahulu</p>
-    </div>
-    <div class="flex justify-center gap-4 mb-8" id="pin-dots">
-      <!-- akan diisi JavaScript -->
-    </div>
-    <!-- Keypad -->
-    <div class="grid grid-cols-3 gap-3 max-w-xs mx-auto" id="pin-keypad">
-      <!-- akan diisi JavaScript -->
-    </div>
-  </div>
-</div>
-
-
-<!-- ═══════════════════════════════════════════════
-     SCREEN: NOTIFIKASI
-═══════════════════════════════════════════════ -->
-<div id="screen-notifikasi" class="screen">
-  <div class="bg-white px-4 pt-12 pb-4 sticky top-0 z-10 border-b border-gray-100">
-    <div class="flex items-center gap-3">
-      <button onclick="goBack()" class="p-2 hover:bg-gray-100 rounded-xl transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
-      <h1 class="text-gray-900 font-bold text-lg">Notifikasi</h1>
-    </div>
-  </div>
-  <div class="pb-24 px-4 pt-6 anim-slide-right space-y-3" id="notifikasi-list">
-    <!-- akan diisi JavaScript -->
-  </div>
-</div>
-
-
-<!-- ═══════════════════════════════════════════════
-     SCREEN: BAHASA
-═══════════════════════════════════════════════ -->
-<div id="screen-bahasa" class="screen">
-  <div class="bg-white px-4 pt-12 pb-4 sticky top-0 z-10 border-b border-gray-100">
-    <div class="flex items-center gap-3">
-      <button onclick="goBack()" class="p-2 hover:bg-gray-100 rounded-xl transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
-      <h1 class="text-gray-900 font-bold text-lg">Bahasa</h1>
-    </div>
-  </div>
-  <div class="pb-24 px-4 pt-6 anim-slide-right">
-    <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden" id="bahasa-list">
-      <!-- akan diisi JavaScript -->
-    </div>
-  </div>
-</div>
-
-
-<!-- ═══════════════════════════════════════════════
-     SCREEN: LEADERBOARD (ringkasan)
-═══════════════════════════════════════════════ -->
-<div id="screen-leaderboard" class="screen">
-  <div class="bg-white px-4 pt-12 pb-4 sticky top-0 z-10 border-b border-gray-100">
-    <div class="flex items-center gap-3">
-      <button onclick="goBack()" class="p-2 hover:bg-gray-100 rounded-xl transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
-      <h1 class="text-gray-900 font-bold text-lg flex-1">Leaderboard</h1>
-      <span class="text-xs text-gray-400">DKI Jakarta</span>
-    </div>
-  </div>
-  <div class="pb-24 anim-slide-right">
-    <!-- Rank card -->
-    <div class="bg-gradient-to-br from-amber-400 to-orange-500 mx-4 mt-5 rounded-2xl p-5 text-white">
-      <p class="text-amber-100 text-xs font-semibold mb-1">RANKING KAMU MINGGU INI</p>
-      <div class="flex items-center gap-4">
-        <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center">
-          <span class="text-3xl font-black">#42</span>
-        </div>
-        <div>
-          <p class="font-bold text-lg">Warung Kopi Nusantara</p>
-          <p class="text-amber-100 text-sm">1.240 Progress Points</p>
-          <div class="flex items-center gap-1.5 mt-1">
-            <span class="text-sm">🔥</span><span class="text-sm font-semibold">14 hari streak</span>
-          </div>
-        </div>
-      </div>
-      <div class="mt-4 bg-white/20 rounded-xl p-3 flex items-center gap-2">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
-        <p class="text-xs text-white/90">+8 peringkat dari minggu lalu</p>
-      </div>
-    </div>
-
-    <!-- Top 3 -->
-    <div class="px-4 mt-4">
-      <p class="text-gray-500 text-xs font-semibold uppercase tracking-wide mb-3">Top 3 Minggu Ini</p>
-      <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden" id="top3-list">
-        <!-- akan diisi JavaScript -->
-      </div>
-    </div>
-
-    <!-- Privacy toggle -->
-    <div class="mx-4 mt-3 bg-white rounded-2xl border border-gray-100 px-4 py-4 flex items-center gap-3">
-      <div class="flex-1"><p class="text-gray-800 text-sm font-semibold">Tampilkan usahaku</p><p class="text-gray-400 text-xs">Nama usahamu tampil di ranking publik</p></div>
-      <div class="toggle-track on" onclick="toggleTrack(this)"><div class="toggle-thumb"></div></div>
-    </div>
-  </div>
-</div>
-
-
-<!-- ═══════════════════════════════════════════════
-     SCREEN: MEMBERSHIP
-═══════════════════════════════════════════════ -->
-<div id="screen-membership" class="screen">
-  <div class="bg-white px-4 pt-12 pb-4 sticky top-0 z-10 border-b border-gray-100">
-    <div class="flex items-center gap-3">
-      <button onclick="goBack()" class="p-2 hover:bg-gray-100 rounded-xl transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
-      <h1 class="text-gray-900 font-bold text-lg">Membership</h1>
-    </div>
-  </div>
-  <div class="pb-24 px-4 pt-5 anim-slide-right space-y-4" id="membership-list">
-    <!-- akan diisi JavaScript -->
-  </div>
-</div>
-
-
-<!-- ═══════════════════════════════════════════════
-     SCREEN: REFERRAL
-═══════════════════════════════════════════════ -->
-<div id="screen-referral" class="screen">
-  <div class="bg-white px-4 pt-12 pb-4 sticky top-0 z-10 border-b border-gray-100">
-    <div class="flex items-center gap-3">
-      <button onclick="goBack()" class="p-2 hover:bg-gray-100 rounded-xl transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
-      <h1 class="text-gray-900 font-bold text-lg">Referral</h1>
-    </div>
-  </div>
-  <div class="pb-24 px-4 pt-6 anim-slide-right space-y-4">
-    <div class="bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl p-6 text-white text-center">
-      <div class="text-5xl mb-3">🤝</div>
-      <p class="font-black text-xl mb-1">Ajak Temanmu!</p>
-      <p class="text-purple-100 text-sm leading-relaxed">Setiap teman yang daftar pakai kode kamu, kamu dapat <strong class="text-white">500 Progress Points</strong></p>
-    </div>
-
-    <!-- Kode referral -->
-    <div class="bg-white rounded-2xl border border-gray-100 p-5">
-      <p class="text-gray-500 text-xs font-semibold mb-2">KODE REFERRALMU</p>
-      <div class="flex items-center gap-3">
-        <div class="flex-1 bg-gray-50 border-2 border-dashed border-gray-200 rounded-2xl px-4 py-3 text-center">
-          <p class="text-gray-900 font-black text-xl tracking-widest">BUDI2026</p>
-        </div>
-        <button onclick="copyReferral()" class="bg-emerald-500 text-white px-4 py-3 rounded-2xl font-semibold text-sm flex items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-          Salin
-        </button>
-      </div>
-      <button onclick="shareReferral()" class="w-full mt-3 border-2 border-gray-200 rounded-2xl py-3 text-sm font-semibold text-gray-700 flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-        Bagikan via WhatsApp
-      </button>
-    </div>
-
-    <!-- Stats -->
-    <div class="grid grid-cols-2 gap-3">
-      <div class="bg-white rounded-2xl border border-gray-100 p-4 text-center">
-        <p class="text-gray-900 font-black text-2xl">3</p>
-        <p class="text-gray-400 text-xs mt-0.5">Teman Diundang</p>
-      </div>
-      <div class="bg-white rounded-2xl border border-gray-100 p-4 text-center">
-        <p class="text-emerald-600 font-black text-2xl">1.500</p>
-        <p class="text-gray-400 text-xs mt-0.5">Poin Didapat</p>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-<!-- ═══════════════════════════════════════════════
-     SCREEN: BADGES
-═══════════════════════════════════════════════ -->
-<div id="screen-badges" class="screen">
-  <div class="bg-white px-4 pt-12 pb-4 sticky top-0 z-10 border-b border-gray-100">
-    <div class="flex items-center gap-3">
-      <button onclick="goBack()" class="p-2 hover:bg-gray-100 rounded-xl transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
-      <h1 class="text-gray-900 font-bold text-lg">Badge Kamu</h1>
-    </div>
-  </div>
-  <div class="pb-24 px-4 pt-5 anim-slide-right">
-    <div class="text-center mb-5">
-      <p class="text-gray-900 font-bold text-2xl">3 <span class="text-gray-400 font-normal text-lg">/ 12</span></p>
-      <p class="text-gray-400 text-sm mt-0.5">Badge dikumpulkan</p>
-      <div class="h-2 bg-gray-100 rounded-full mx-8 mt-3 overflow-hidden"><div class="h-full bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full" style="width:25%"></div></div>
-    </div>
-    <div class="grid grid-cols-3 gap-3" id="badges-grid">
-      <!-- akan diisi JavaScript -->
-    </div>
-  </div>
-</div>
-
-
-<!-- ═══════════════════════════════════════════════
-     SCREEN: GROWTH SCORE
-═══════════════════════════════════════════════ -->
-<div id="screen-growth-score" class="screen">
-  <div class="bg-white px-4 pt-12 pb-4 sticky top-0 z-10 border-b border-gray-100">
-    <div class="flex items-center gap-3">
-      <button onclick="goBack()" class="p-2 hover:bg-gray-100 rounded-xl transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
-      <h1 class="text-gray-900 font-bold text-lg">Growth Score</h1>
-    </div>
-  </div>
-  <div class="pb-24 px-4 pt-6 anim-slide-right space-y-4">
-    <!-- Big score -->
-    <div class="bg-white rounded-2xl border border-gray-100 p-6 text-center">
-      <div class="relative w-32 h-32 mx-auto mb-4">
-        <svg class="w-full h-full -rotate-90" viewBox="0 0 120 120">
-          <circle cx="60" cy="60" r="50" fill="none" stroke="#f3f4f6" stroke-width="12"/>
-          <circle cx="60" cy="60" r="50" fill="none" stroke="url(#scoreGrad)" stroke-width="12" stroke-linecap="round" stroke-dasharray="314.159" stroke-dashoffset="56.5487"/>
-          <defs><linearGradient id="scoreGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#10b981"/><stop offset="100%" stop-color="#0d9488"/></linearGradient></defs>
-        </svg>
-        <div class="absolute inset-0 flex flex-col items-center justify-center">
-          <span class="text-gray-900 font-black text-3xl">82</span>
-          <span class="text-gray-400 text-xs">/100</span>
-        </div>
-      </div>
-      <p class="text-emerald-600 font-bold text-lg">Bagus! 🎉</p>
-      <p class="text-gray-400 text-sm mt-0.5">Skor kamu di atas rata-rata UMKM sejenis</p>
-    </div>
-
-    <!-- Breakdown -->
-    <div class="bg-white rounded-2xl border border-gray-100 p-5 space-y-4" id="score-breakdown">
-      <!-- akan diisi JavaScript -->
-    </div>
-
-    <!-- Tips -->
-    <div class="bg-amber-50 border border-amber-100 rounded-2xl p-4">
-      <p class="text-amber-800 font-semibold text-sm mb-2">💡 Tips Naikkan Skor</p>
-      <div class="space-y-1.5" id="tips-list">
-        <!-- akan diisi JavaScript -->
-      </div>
-    </div>
-  </div>
-</div>
-
-
-<!-- ═══════════════════════════════════════════════
-     SCREEN: BANTUAN
-═══════════════════════════════════════════════ -->
-<div id="screen-bantuan" class="screen">
-  <div class="bg-white px-4 pt-12 pb-4 sticky top-0 z-10 border-b border-gray-100">
-    <div class="flex items-center gap-3">
-      <button onclick="goBack()" class="p-2 hover:bg-gray-100 rounded-xl transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
-      <h1 class="text-gray-900 font-bold text-lg">Pusat Bantuan</h1>
-    </div>
-  </div>
-  <div class="pb-24 px-4 pt-5 anim-slide-right space-y-4">
-    <div class="bg-gradient-to-r from-emerald-500 to-teal-600 rounded-2xl p-4 flex items-center gap-3">
-      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <input type="text" placeholder="Cari pertanyaan..." class="flex-1 bg-white/20 placeholder-white/60 text-white text-sm px-4 py-2.5 rounded-xl border-none outline-none" />
-    </div>
-
-    <div class="grid grid-cols-2 gap-3" id="bantuan-grid">
-      <!-- akan diisi JavaScript -->
-    </div>
-
-    <!-- FAQ -->
-    <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden" id="faq-list">
-      <!-- akan diisi JavaScript -->
-    </div>
-  </div>
-</div>
-
-
-<!-- ═══════════════════════════════════════════════
-     SCREEN: HUBUNGI KAMI
-═══════════════════════════════════════════════ -->
-<div id="screen-kontak" class="screen">
-  <div class="bg-white px-4 pt-12 pb-4 sticky top-0 z-10 border-b border-gray-100">
-    <div class="flex items-center gap-3">
-      <button onclick="goBack()" class="p-2 hover:bg-gray-100 rounded-xl transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
-      <h1 class="text-gray-900 font-bold text-lg">Hubungi Kami</h1>
-    </div>
-  </div>
-  <div class="pb-24 px-4 pt-6 anim-slide-right space-y-4">
-    <!-- Channels -->
-    <div class="grid grid-cols-2 gap-3" id="kontak-grid">
-      <!-- akan diisi JavaScript -->
-    </div>
-
-    <!-- Form -->
-    <div class="bg-white rounded-2xl border border-gray-100 p-5 space-y-4">
-      <p class="text-gray-900 font-semibold text-sm">Kirim Pesan</p>
-      <div>
-        <label class="text-xs text-gray-500 font-semibold mb-1.5 block">Topik</label>
-        <div class="relative">
-          <select class="w-full px-4 py-3.5 border-2 border-gray-200 rounded-2xl text-sm bg-white pr-10">
-            <option>Pilih topik...</option>
-            <option>Masalah teknis</option>
-            <option>Pertanyaan fitur</option>
-            <option>Pengajuan dana</option>
-            <option>Lainnya</option>
-          </select>
-          <svg class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-        </div>
-      </div>
-      <div>
-        <label class="text-xs text-gray-500 font-semibold mb-1.5 block">Pesan</label>
-        <textarea rows="4" placeholder="Ceritakan masalahmu..." class="w-full px-4 py-3.5 border-2 border-gray-200 rounded-2xl text-sm resize-none"></textarea>
-      </div>
-      <button onclick="showToast('Pesan terkirim! Tim kami akan segera merespons 📨')" class="w-full py-4 bg-emerald-500 hover:bg-emerald-600 text-white rounded-2xl font-bold transition-colors">Kirim Pesan</button>
-    </div>
-  </div>
-</div>
-
-
-<!-- ═══════════════════════════════════════════════
-     SCREEN: SYARAT & KEBIJAKAN
-═══════════════════════════════════════════════ -->
-<div id="screen-tnc" class="screen">
-  <div class="bg-white px-4 pt-12 pb-4 sticky top-0 z-10 border-b border-gray-100">
-    <div class="flex items-center gap-3">
-      <button onclick="goBack()" class="p-2 hover:bg-gray-100 rounded-xl transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
-      <h1 class="text-gray-900 font-bold text-lg">Syarat & Kebijakan</h1>
-    </div>
-  </div>
-  <div class="pb-24 px-4 pt-5 anim-slide-right space-y-3" id="tnc-list">
-    <!-- akan diisi JavaScript -->
-  </div>
-</div>
-
-
-<!-- ═══════════════════════════════════════════════
-     SCREEN: PENGATURAN
-═══════════════════════════════════════════════ -->
-<div id="screen-settings" class="screen">
-  <div class="bg-white px-4 pt-12 pb-4 sticky top-0 z-10 border-b border-gray-100">
-    <div class="flex items-center gap-3">
-      <button onclick="goBack()" class="p-2 hover:bg-gray-100 rounded-xl transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
-      <h1 class="text-gray-900 font-bold text-lg">Pengaturan</h1>
-    </div>
-  </div>
-  <div class="pb-24 px-4 pt-5 anim-slide-right space-y-3">
-    <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-      <p class="text-gray-400 text-xs font-semibold px-4 pt-4 pb-2 uppercase tracking-wide">Tampilan</p>
-      <div class="menu-row flex items-center gap-3 px-4 py-4 border-b border-gray-50">
-        <div class="w-9 h-9 bg-gray-100 rounded-xl flex items-center justify-center text-base flex-shrink-0">🌙</div>
-        <div class="flex-1"><p class="text-gray-800 text-sm font-semibold">Mode Gelap</p><p class="text-gray-400 text-xs">Tema malam untuk hemat baterai</p></div>
-        <div class="toggle-track" onclick="toggleTrack(this)"><div class="toggle-thumb"></div></div>
-      </div>
-      <div class="menu-row flex items-center gap-3 px-4 py-4">
-        <div class="w-9 h-9 bg-gray-100 rounded-xl flex items-center justify-center text-base flex-shrink-0">🔤</div>
-        <div class="flex-1"><p class="text-gray-800 text-sm font-semibold">Ukuran Teks</p><p class="text-gray-400 text-xs">Normal</p></div>
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-      </div>
-    </div>
-    <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-      <p class="text-gray-400 text-xs font-semibold px-4 pt-4 pb-2 uppercase tracking-wide">Data & Penyimpanan</p>
-      <div class="menu-row flex items-center gap-3 px-4 py-4 border-b border-gray-50">
-        <div class="w-9 h-9 bg-blue-50 rounded-xl flex items-center justify-center text-base flex-shrink-0">☁️</div>
-        <div class="flex-1"><p class="text-gray-800 text-sm font-semibold">Backup Otomatis</p><p class="text-gray-400 text-xs">Setiap hari pukul 03.00</p></div>
-        <div class="toggle-track on" onclick="toggleTrack(this)"><div class="toggle-thumb"></div></div>
-      </div>
-      <div class="menu-row flex items-center gap-3 px-4 py-4 border-b border-gray-50">
-        <div class="w-9 h-9 bg-gray-100 rounded-xl flex items-center justify-center text-base flex-shrink-0">📶</div>
-        <div class="flex-1"><p class="text-gray-800 text-sm font-semibold">Sync Hanya via WiFi</p><p class="text-gray-400 text-xs">Hemat kuota data</p></div>
-        <div class="toggle-track" onclick="toggleTrack(this)"><div class="toggle-thumb"></div></div>
-      </div>
-      <button onclick="showToast('Cache berhasil dibersihkan (12 MB)')" class="menu-row w-full flex items-center gap-3 px-4 py-4">
-        <div class="w-9 h-9 bg-orange-50 rounded-xl flex items-center justify-center text-base flex-shrink-0">🗑️</div>
-        <div class="flex-1 text-left"><p class="text-gray-800 text-sm font-semibold">Bersihkan Cache</p><p class="text-gray-400 text-xs">12 MB tersimpan</p></div>
-      </button>
-    </div>
-    <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-      <p class="text-gray-400 text-xs font-semibold px-4 pt-4 pb-2 uppercase tracking-wide">Tentang</p>
-      <div class="flex items-center gap-3 px-4 py-4 border-b border-gray-50">
-        <div class="w-9 h-9 bg-emerald-50 rounded-xl flex items-center justify-center text-base flex-shrink-0">📱</div>
-        <div class="flex-1"><p class="text-gray-800 text-sm font-semibold">Versi Aplikasi</p><p class="text-gray-400 text-xs">2.1.0 (Build 210)</p></div>
-        <span class="text-xs text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full font-semibold">Terbaru</span>
-      </div>
-      <button onclick="showToast('Memeriksa pembaruan...')" class="menu-row w-full flex items-center gap-3 px-4 py-4">
-        <div class="w-9 h-9 bg-gray-100 rounded-xl flex items-center justify-center text-base flex-shrink-0">🔄</div>
-        <div class="flex-1 text-left"><p class="text-gray-800 text-sm font-semibold">Periksa Pembaruan</p><p class="text-gray-400 text-xs">Terakhir diperiksa: hari ini</p></div>
-      </button>
-    </div>
-  </div>
-</div>
-
-
-<!-- ═══════════════════════════════════════════════
-     LOGOUT CONFIRM MODAL
-═══════════════════════════════════════════════ -->
-<div id="logout-modal" class="hidden fixed inset-0 max-w-[430px] mx-auto z-50 flex items-end">
-  <div class="absolute inset-0 bg-black/60" onclick="hideLogoutConfirm()"></div>
-  <div class="relative bg-white w-full rounded-t-3xl p-6 anim-scale-in">
-    <div class="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-    </div>
-    <p class="text-gray-900 font-bold text-center text-lg mb-1">Keluar dari akun?</p>
-    <p class="text-gray-400 text-sm text-center mb-6">Kamu perlu login ulang untuk mengakses UMKMate</p>
-    <button onclick="hideLogoutConfirm(); showToast('Berhasil keluar. Sampai jumpa! 👋')" class="w-full py-4 bg-red-500 hover:bg-red-600 text-white rounded-2xl font-bold mb-3 transition-colors">Ya, Keluar</button>
-    <button onclick="hideLogoutConfirm()" class="w-full py-4 bg-gray-100 text-gray-700 rounded-2xl font-semibold">Batal</button>
-  </div>
-</div>
-
-
-<script>
-// ── Screen management ─────────────────────────────────────────────────────
-const history_stack = ['screen-profile'];
-
-function setScreen(id) {
-  const current = history_stack[history_stack.length - 1];
-  document.getElementById(current).classList.remove('active');
-  document.getElementById(id).classList.add('active');
-  history_stack.push(id);
-  window.scrollTo(0, 0);
-}
-
-function goBack() {
-  if (history_stack.length <= 1) return;
-  const current = history_stack.pop();
-  document.getElementById(current).classList.remove('active');
-  const prev = history_stack[history_stack.length - 1];
-  document.getElementById(prev).classList.add('active');
-  window.scrollTo(0, 0);
-}
-
-// Handle browser back
-window.addEventListener('popstate', function() {
-  goBack();
-});
-
-// ── Toast ─────────────────────────────────────────────────────────────────
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; 
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2500);
-}
-
-// ── Profile actions ───────────────────────────────────────────────────────
-function saveProfile() {
-  showToast('Profil berhasil disimpan ✓');
-  goBack();
-}
-
-function toggleTrack(element) {
-  element.classList.toggle('on');
-}
-
-function toggleJenis(btn) {
-  const wasActive = btn.classList.contains('border-emerald-500');
-  document.querySelectorAll('#jenis-usaha-container button').forEach(b => {
-    b.className = b.className.replace('border-emerald-500 bg-emerald-50 text-emerald-700', 'border-gray-200 text-gray-600');
-  });
-  if (!wasActive) {
-    btn.classList.remove('border-gray-200','text-gray-600');
-    btn.classList.add('border-emerald-500','bg-emerald-50','text-emerald-700');
-  }
-}
-
-// ── PIN input ─────────────────────────────────────────────────────────────
-let pinValue = '';
-function pinInput(k) {
-  if (k === '⌫') { 
-    pinValue = pinValue.slice(0, -1); 
-  }
-  else if (k === '') return;
-  else if (pinValue.length < 6) { 
-    pinValue += k; 
-  }
-  
-  for (let i = 0; i < 6; i++) {
-    const dot = document.getElementById('dot-' + i);
-    if (!dot) continue;
-    if (i < pinValue.length) {
-      dot.className = 'w-4 h-4 rounded-full bg-emerald-500 border-2 border-emerald-500 transition-all scale-110';
-    } else {
-      dot.className = 'w-4 h-4 rounded-full border-2 border-gray-300 transition-all';
-    }
-  }
-  
-  if (pinValue.length === 6) {
-    setTimeout(() => { 
-      showToast('PIN diverifikasi ✓'); 
-      goBack(); 
-      pinValue = ''; 
-      
-      // Reset dots
-      for (let i = 0; i < 6; i++) {
-        const dot = document.getElementById('dot-' + i);
-        if (dot) dot.className = 'w-4 h-4 rounded-full border-2 border-gray-300 transition-all';
-      }
-    }, 400);
-  }
-}
-
-// ── Language select ───────────────────────────────────────────────────────
-function selectLang(btn) {
-  document.querySelectorAll('#bahasa-list button').forEach(b => {
-    const dot = b.querySelector('.rounded-full');
-    if (dot) { 
-      dot.className = 'w-5 h-5 rounded-full border-2 flex items-center justify-center border-gray-300'; 
-      dot.innerHTML = ''; 
-    }
-  });
-  const dot = btn.querySelector('.rounded-full');
-  dot.className = 'w-5 h-5 rounded-full border-2 flex items-center justify-center border-emerald-500 bg-emerald-500';
-  dot.innerHTML = '<div class="w-2 h-2 bg-white rounded-full"></div>';
-  showToast('Bahasa berhasil diubah ✓');
-}
-
-// ── Referral ──────────────────────────────────────────────────────────────
-function copyReferral() { 
-  navigator.clipboard?.writeText('BUDI2026');
-  showToast('Kode BUDI2026 disalin! 📋'); 
-}
-function shareReferral() { 
-  showToast('Membuka WhatsApp... 💬'); 
-}
-
-// ── Logout modal ──────────────────────────────────────────────────────────
-function showLogoutConfirm() { 
-  document.getElementById('logout-modal').classList.remove('hidden'); 
-}
-function hideLogoutConfirm() { 
-  document.getElementById('logout-modal').classList.add('hidden'); 
-}
-
-// ── Initialize dynamic content ────────────────────────────────────────────
-window.addEventListener('DOMContentLoaded', function() {
-  
-  // Badge list
-  const badgeList = document.getElementById('badge-list');
-  if (badgeList) {
-    const badges = [
-      { emoji: '🏆', label: 'Langkah Pertama', color: 'bg-amber-50 border-amber-200' },
-      { emoji: '💧', label: 'Cashflow Pro', color: 'bg-blue-50 border-blue-200' },
-      { emoji: '📚', label: 'Basic Finance', color: 'bg-purple-50 border-purple-200' },
-      { emoji: '🔒', label: 'Terkunci', color: 'bg-gray-50 border-gray-200 opacity-40' },
-    ];
-    badgeList.innerHTML = badges.map(b => `
-      <div class="flex-1 ${b.color} border rounded-xl p-2 flex flex-col items-center gap-1">
-        <span class="text-xl">${b.emoji}</span>
-        <p class="text-gray-600 text-xs text-center leading-tight font-medium">${b.label}</p>
-      </div>
-    `).join('');
-  }
-  
-  // Jenis usaha container
-  const jenisContainer = document.getElementById('jenis-usaha-container');
-  if (jenisContainer) {
-    const jenisUsaha = [['☕','F&B',true],['🛍️','Retail',false],['🛠️','Jasa',false],['📦','Produksi',false],['💻','Digital',false],['🌾','Pertanian',false]];
-    jenisContainer.innerHTML = jenisUsaha.map(([e,l,a]) => `
-      <button onclick="toggleJenis(this)" class="py-2.5 px-2 rounded-xl border-2 text-xs font-semibold flex flex-col items-center gap-1 transition-all ${a ? 'border-emerald-500 bg-emerald-50 text-emerald-700' : 'border-gray-200 text-gray-600'}">
-        <span class="text-lg">${e}</span>${l}
-      </button>
-    `).join('');
-  }
-  
-  // PIN dots
-  const pinDots = document.getElementById('pin-dots');
-  if (pinDots) {
-    pinDots.innerHTML = [1,2,3,4,5,6].map((_,i) => 
-      `<div id="dot-${i}" class="w-4 h-4 rounded-full border-2 border-gray-300 transition-all"></div>`
-    ).join('');
-  }
-  
-  // PIN keypad
-  const pinKeypad = document.getElementById('pin-keypad');
-  if (pinKeypad) {
-    const keys = [1,2,3,4,5,6,7,8,9,'','0','⌫'];
-    pinKeypad.innerHTML = keys.map(k => `
-      <button onclick="pinInput('${k}')" class="${k === '' ? 'invisible' : ''} h-16 bg-white border border-gray-200 rounded-2xl text-gray-900 text-xl font-bold hover:bg-gray-50 active:scale-95 transition-all shadow-sm">${k}</button>
-    `).join('');
-  }
-  
-  // Notifikasi list
-  const notifList = document.getElementById('notifikasi-list');
-  if (notifList) {
-    const notifikasi = [
-      { title: 'Reminder Catat Transaksi', sub: 'Setiap hari pukul 20.00', on: true, color: 'bg-emerald-50', stroke: '#10b981' },
-      { title: 'Update Misi Harian', sub: 'Tantangan & streak harian', on: true, color: 'bg-amber-50', stroke: '#f59e0b' },
-      { title: 'Status Pengajuan Dana', sub: 'FUND-Link & dokumen', on: true, color: 'bg-blue-50', stroke: '#3b82f6' },
-      { title: 'Leaderboard Update', sub: 'Perubahan ranking mingguan', on: false, color: 'bg-purple-50', stroke: '#8b5cf6' },
-      { title: 'Promo & Penawaran', sub: 'Diskon & event terbaru', on: false, color: 'bg-pink-50', stroke: '#ec4899' },
-      { title: 'Pengumuman Aplikasi', sub: 'Fitur baru & pembaruan', on: true, color: 'bg-gray-100', stroke: '#6b7280' },
-    ];
-    notifList.innerHTML = notifikasi.map(n => `
-      <div class="bg-white rounded-2xl border border-gray-100 menu-row flex items-center gap-3 px-4 py-4">
-        <div class="w-9 h-9 ${n.color} rounded-xl flex items-center justify-center flex-shrink-0">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="${n.stroke}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-        </div>
-        <div class="flex-1"><p class="text-gray-800 text-sm font-semibold">${n.title}</p><p class="text-gray-400 text-xs">${n.sub}</p></div>
-        <div class="toggle-track ${n.on ? 'on' : ''}" onclick="toggleTrack(this)"><div class="toggle-thumb"></div></div>
-      </div>
-    `).join('');
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <title>Boothera - Booking Booth</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
-    // Waktu Reminder
-    notifList.innerHTML += `
-      <div class="bg-white rounded-2xl border border-gray-100 p-5">
-        <p class="text-gray-900 font-semibold text-sm mb-3">Waktu Reminder</p>
-        <div class="flex items-center gap-3">
-          <div class="flex-1 px-4 py-3 border-2 border-gray-200 rounded-2xl text-sm text-gray-700 font-semibold">20:00</div>
-          <button onclick="showToast('Waktu reminder disimpan ✓')" class="bg-emerald-500 text-white px-5 py-3 rounded-2xl text-sm font-semibold">Simpan</button>
-        </div>
-      </div>
-    `;
-  }
-  
-  // Bahasa list
-  const bahasaList = document.getElementById('bahasa-list');
-  if (bahasaList) {
-    const bahasa = [['🇮🇩','Bahasa Indonesia','Indonesia',true],['🇬🇧','English','English',false],['🇸🇦','العربية','Arabic',false],['🇲🇾','Bahasa Melayu','Malay',false]];
-    bahasaList.innerHTML = bahasa.map(([flag,name,sub,active]) => `
-      <button onclick="selectLang(this)" class="menu-row w-full flex items-center gap-3 px-4 py-4 border-b border-gray-50 last:border-0">
-        <span class="text-2xl">${flag}</span>
-        <div class="flex-1 text-left"><p class="text-gray-800 text-sm font-semibold">${name}</p><p class="text-gray-400 text-xs">${sub}</p></div>
-        <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center ${active ? 'border-emerald-500 bg-emerald-500' : 'border-gray-300'}">
-          ${active ? '<div class="w-2 h-2 bg-white rounded-full"></div>' : ''}
-        </div>
-      </button>
-    `).join('');
-  }
-  
-  // Top 3 list
-  const top3List = document.getElementById('top3-list');
-  if (top3List) {
-    const top3 = [
-      { rank:'🥇', name:'Toko Berkah Jaya', points:'3.820', badge:'⭐' },
-      { rank:'🥈', name:'Warung Bu Siti', points:'3.240', badge:'⭐' },
-      { rank:'🥉', name:'CV Maju Bersama', points:'2.910', badge:'🏅' },
-    ];
-    top3List.innerHTML = top3.map(r => `
-      <div class="flex items-center gap-3 px-4 py-3.5 border-b border-gray-50 last:border-0">
-        <span class="text-xl w-8 text-center">${r.rank}</span>
-        <div class="flex-1"><p class="text-gray-800 text-sm font-semibold">${r.name}</p><p class="text-gray-400 text-xs">${r.points} poin</p></div>
-        <span class="text-lg">${r.badge}</span>
-      </div>
-    `).join('');
-  }
-  
-  // Membership list
-  const membershipList = document.getElementById('membership-list');
-  if (membershipList) {
-    const tiers = [
-      { name:'Foundation', emoji:'🌱', color:'from-gray-100 to-gray-200', text:'text-gray-600', done: true, benefits:['Catat transaksi basic','Laporan sederhana','Akses komunitas'] },
-      { name:'Stabilization', emoji:'🏗️', color:'from-blue-50 to-blue-100', text:'text-blue-700', done: true, benefits:['Sync 1 rekening','Growth Score','Kelas basic gratis'] },
-      { name:'Grow', emoji:'⭐', color:'from-emerald-50 to-teal-100', text:'text-emerald-700', done: false, active: true, benefits:['Sync 3 rekening','Laporan PDF','Akses FUND-Link','Event Bazaar'] },
-      { name:'Expand', emoji:'🚀', color:'from-amber-50 to-yellow-100', text:'text-amber-700', done: false, benefits:['Sync unlimited','AI Supply Manager','Priority FUND-Link','Champion Bazaar'] },
-    ];
-    membershipList.innerHTML = tiers.map(t => `
-      <div class="bg-gradient-to-r ${t.color} rounded-2xl p-4 border ${t.active ? 'border-emerald-300' : 'border-transparent'}">
-        <div class="flex items-center gap-2 mb-2">
-          <span class="text-xl">${t.emoji}</span>
-          <p class="${t.text} font-bold">${t.name}</p>
-          ${t.active ? '<span class="ml-auto text-xs bg-emerald-500 text-white px-2 py-0.5 rounded-full font-semibold">Aktif</span>' : ''}
-          ${t.done && !t.active ? '<span class="ml-auto text-xs text-gray-400">✓ Selesai</span>' : ''}
-        </div>
-        <div class="space-y-1">
-          ${t.benefits.map(b => `<div class="flex items-center gap-2 text-xs ${t.text}"><span>•</span><span>${b}</span></div>`).join('')}
-        </div>
-      </div>
-    `).join('');
-  }
-  
-  // Badges grid
-  const badgesGrid = document.getElementById('badges-grid');
-  if (badgesGrid) {
-    const badges = [
-      { emoji:'🏆', name:'Langkah Pertama', desc:'Catat 3 transaksi', unlocked:true },
-      { emoji:'💧', name:'Cashflow Pro', desc:'Selesaikan kelas cashflow', unlocked:true },
-      { emoji:'📚', name:'Basic Finance', desc:'Kelas keuangan dasar', unlocked:true },
-      { emoji:'🔥', name:'7 Hari Konsisten', desc:'Streak 7 hari', unlocked:false },
-      { emoji:'⭐', name:'Loan Ready', desc:'Selesaikan track pinjaman', unlocked:false },
-      { emoji:'🚀', name:'Digital Growth', desc:'Kelas digital marketing', unlocked:false },
-      { emoji:'💎', name:'Top 10 Ranking', desc:'Masuk 10 besar provinsi', unlocked:false },
-      { emoji:'🌱', name:'Konsisten', desc:'30 hari aktif berturut', unlocked:false },
-      { emoji:'🤝', name:'Referral Pro', desc:'Ajak 5 teman', unlocked:false },
-    ];
-    badgesGrid.innerHTML = badges.map(b => `
-      <div class="bg-white rounded-2xl border border-gray-100 p-3 flex flex-col items-center gap-2 text-center ${!b.unlocked ? 'opacity-40' : ''}">
-        <span class="text-3xl">${b.emoji}</span>
-        <p class="text-gray-800 text-xs font-semibold leading-tight">${b.name}</p>
-        <p class="text-gray-400 text-xs leading-tight">${b.desc}</p>
-        ${b.unlocked ? '<span class="text-xs text-emerald-600 font-semibold bg-emerald-50 px-2 py-0.5 rounded-full">Diraih</span>' : '<span class="text-xs text-gray-300 font-medium">Terkunci</span>'}
-      </div>
-    `).join('');
-  }
-  
-  // Score breakdown
-  const scoreBreakdown = document.getElementById('score-breakdown');
-  if (scoreBreakdown) {
-    const scores = [
-      { label:'Konsistensi Pencatatan', score:90, color:'bg-emerald-500' },
-      { label:'Stabilitas Cashflow',    score:78, color:'bg-blue-500' },
-      { label:'Tren Laba',              score:85, color:'bg-teal-500' },
-      { label:'Kapasitas Bayar',        score:72, color:'bg-amber-500' },
-    ];
-    scoreBreakdown.innerHTML = '<p class="text-gray-900 font-semibold text-sm mb-4">Rincian Skor</p>' + 
-      scores.map(s => `
-        <div class="mb-3">
-          <div class="flex justify-between mb-1.5">
-            <p class="text-gray-600 text-sm">${s.label}</p>
-            <p class="text-gray-900 text-sm font-bold">${s.score}</p>
-          </div>
-          <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
-            <div class="h-full ${s.color} rounded-full transition-all" style="width:${s.score}%"></div>
-          </div>
-        </div>
-      `).join('');
-  }
-  
-  // Tips list
-  const tipsList = document.getElementById('tips-list');
-  if (tipsList) {
-    const tips = ['Catat min. 2 transaksi per hari','Lengkapi kategori transaksi','Pisahkan pengeluaran pribadi & usaha','Selesaikan 1 modul Learning Hub'];
-    tipsList.innerHTML = tips.map(t => 
-      `<p class="text-amber-700 text-xs flex items-start gap-1.5"><span>•</span>${t}</p>`
-    ).join('');
-  }
-  
-  // Bantuan grid
-  const bantuanGrid = document.getElementById('bantuan-grid');
-  if (bantuanGrid) {
-    const bantuan = [['📝','Cara catat transaksi'],['💳','Sync rekening bank'],['📊','Tentang Growth Score'],['🏦','Pengajuan FUND-Link'],['🔐','Keamanan akun'],['📱','Masalah teknis']];
-    bantuanGrid.innerHTML = bantuan.map(([e,t]) => `
-      <button onclick="showToast('Membuka artikel...')" class="bg-white rounded-2xl border border-gray-100 p-4 flex flex-col items-start gap-2 text-left hover:bg-gray-50 transition-colors">
-        <span class="text-2xl">${e}</span>
-        <p class="text-gray-700 text-xs font-semibold leading-tight">${t}</p>
-      </button>
-    `).join('');
-  }
-  
-  // FAQ list
-  const faqList = document.getElementById('faq-list');
-  if (faqList) {
-    const faq = [
-      'Bagaimana cara menghubungkan rekening bank?',
-      'Apa itu Growth Score dan bagaimana cara menaikkannya?',
-      'Kenapa transaksi saya tidak tersinkronisasi?',
-      'Bagaimana cara mengajukan pinjaman?',
-      'Apakah data keuangan saya aman?'
-    ];
-    faqList.innerHTML = '<p class="text-gray-400 text-xs font-semibold px-4 pt-4 pb-2 uppercase tracking-wide">FAQ Populer</p>' +
-      faq.map((q,i) => `
-        <button onclick="showToast('Membuka artikel: ${q}')" class="menu-row w-full flex items-center gap-3 px-4 py-4 border-b border-gray-50 last:border-0 text-left">
-          <p class="text-gray-700 text-sm flex-1">${q}</p>
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-      `).join('');
-  }
-  
-  // Kontak grid
-  const kontakGrid = document.getElementById('kontak-grid');
-  if (kontakGrid) {
-    const kontak = [
-      { emoji:'💬', label:'Live Chat', sub:'Respon < 5 menit', color:'bg-blue-50 border-blue-100' },
-      { emoji:'📱', label:'WhatsApp', sub:'+62 811 0000 1234', color:'bg-green-50 border-green-100' },
-      { emoji:'📧', label:'Email', sub:'help@umkmate.id', color:'bg-purple-50 border-purple-100' },
-      { emoji:'📞', label:'Telepon', sub:'Senin–Jumat 09–17', color:'bg-orange-50 border-orange-100' },
-    ];
-    kontakGrid.innerHTML = kontak.map(c => `
-      <button onclick="showToast('Membuka ${c.label}...')" class="${c.color} border rounded-2xl p-4 flex flex-col items-start gap-2 text-left hover:opacity-80 transition-opacity">
-        <span class="text-3xl">${c.emoji}</span>
-        <p class="text-gray-800 text-sm font-bold">${c.label}</p>
-        <p class="text-gray-500 text-xs">${c.sub}</p>
-      </button>
-    `).join('');
-  }
-  
-  // TNC list
-  const tncList = document.getElementById('tnc-list');
-  if (tncList) {
-    const tnc = [
-      { icon:'📄', title:'Syarat & Ketentuan Layanan', sub:'Terakhir diperbarui: 1 Jan 2026' },
-      { icon:'🔒', title:'Kebijakan Privasi', sub:'Bagaimana kami melindungi datamu' },
-      { icon:'🤝', title:'Kebijakan FUND-Link', sub:'Ketentuan fitur pendanaan' },
-      { icon:'🍪', title:'Kebijakan Cookie', sub:'Penggunaan data penelusuran' },
-      { icon:'©️', title:'Lisensi & Atribusi', sub:'Open source & pihak ketiga' },
-    ];
-    tncList.innerHTML = tnc.map(t => `
-      <button onclick="showToast('Membuka dokumen...')" class="menu-row bg-white w-full flex items-center gap-3 px-4 py-4 rounded-2xl border border-gray-100 text-left">
-        <span class="text-2xl">${t.icon}</span>
-        <div class="flex-1"><p class="text-gray-800 text-sm font-semibold">${t.title}</p><p class="text-gray-400 text-xs">${t.sub}</p></div>
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-      </button>
-    `).join('');
-    tncList.innerHTML += '<p class="text-center text-gray-300 text-xs pt-2">UMKMate v2.1.0 · © 2026 PT UMKMate Indonesia</p>';
-  }
-});
-</script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; background: #F0FDF4; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes scaleIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        .animate-fadeIn { animation: fadeIn 0.3s ease-out forwards; }
+        .animate-scaleIn { animation: scaleIn 0.3s ease-out forwards; }
+        
+        .package-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .package-card.selected {
+            border: 2px solid #10B981;
+            background: #ECFDF5;
+            transform: scale(1.01);
+        }
+        
+        .duration-btn {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .duration-btn.selected {
+            background: #10B981;
+            color: white;
+            border-color: #10B981;
+        }
+        
+        .step-indicator {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .step-indicator.active {
+            background: #10B981;
+            color: white;
+        }
+        .step-indicator.completed {
+            background: #10B981;
+            color: white;
+        }
+        
+        .addon-item {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .addon-item.selected {
+            border-color: #10B981;
+            background: #ECFDF5;
+        }
+        
+        /* Page transition */
+        .page-step {
+            display: none;
+        }
+        .page-step.active-step {
+            display: block;
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="bg-[#F0FDF4]">
 
+    <div class="max-w-[428px] mx-auto bg-white min-h-screen shadow-xl relative">
+        
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 pt-12 pb-6">
+            <div class="flex items-center gap-3">
+                <button onclick="goBack()" class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                    <i class="fas fa-arrow-left text-white"></i>
+                </button>
+                <div>
+                    <h1 class="text-2xl font-bold">Booking Booth</h1>
+                    <p class="text-green-100 text-sm mt-1" id="locationNameDisplay">Grand Indonesia, Jakarta Pusat</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step Progress (Clickable) -->
+        <div class="px-6 py-5 bg-white border-b border-gray-100">
+            <div class="flex items-center justify-between">
+                <div id="step1Indicator" class="step-indicator active w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center text-sm font-bold cursor-pointer" onclick="navigateToStep(1)">1</div>
+                <div class="flex-1 h-0.5 bg-gray-200 mx-2"></div>
+                <div id="step2Indicator" class="step-indicator w-8 h-8 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-sm font-bold cursor-pointer" onclick="navigateToStep(2)">2</div>
+                <div class="flex-1 h-0.5 bg-gray-200 mx-2"></div>
+                <div id="step3Indicator" class="step-indicator w-8 h-8 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-sm font-bold cursor-pointer" onclick="navigateToStep(3)">3</div>
+            </div>
+            <div class="flex justify-between mt-2">
+                <span class="text-xs text-green-600 font-medium cursor-pointer" onclick="navigateToStep(1)">Pilih Paket</span>
+                <span class="text-xs text-gray-400 cursor-pointer" onclick="navigateToStep(2)">Durasi & Add-ons</span>
+                <span class="text-xs text-gray-400 cursor-pointer" onclick="navigateToStep(3)">Konfirmasi</span>
+            </div>
+        </div>
+
+        <!-- ============================================ -->
+        <!-- STEP 1: Pilih Paket Booth -->
+        <!-- ============================================ -->
+        <div id="step1" class="page-step active-step px-6 py-5">
+            <h2 class="text-lg font-bold text-gray-800 mb-4">Pilih Tipe Booth</h2>
+            
+            <!-- Starter Package -->
+            <div class="package-card bg-white rounded-2xl p-4 mb-3 border border-gray-100 shadow-sm" data-package="starter" data-price="2500000" data-name="Starter Booth" onclick="selectPackage('starter')">
+                <div class="flex justify-between items-start">
+                    <div class="flex gap-3">
+                        <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-seedling text-blue-500 text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-800">Starter Booth</h3>
+                            <p class="text-xs text-gray-500">Mulai usaha dengan aman</p>
+                            <div class="flex gap-2 mt-1">
+                                <span class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">1 Booth</span>
+                                <span class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">Support 24/7</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-bold text-gray-800">Rp 2.5 Jt</p>
+                        <p class="text-[10px] text-gray-400">/bulan</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Standard Package (Popular) -->
+            <div class="package-card bg-white rounded-2xl p-4 mb-3 border-2 border-green-200 shadow-md relative" data-package="standard" data-price="4500000" data-name="Popular Booth" onclick="selectPackage('standard')">
+                <div class="absolute -top-2 right-4 bg-orange-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                    <i class="fas fa-fire mr-1"></i> PALING POPULER
+                </div>
+                <div class="flex justify-between items-start">
+                    <div class="flex gap-3">
+                        <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-chart-line text-green-500 text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-800">Popular Booth</h3>
+                            <p class="text-xs text-gray-500">Pilihan terbaik untuk bisnis berkembang</p>
+                            <div class="flex gap-2 mt-1">
+                                <span class="text-[10px] bg-green-50 text-green-600 px-2 py-0.5 rounded-full">2 Booth</span>
+                                <span class="text-[10px] bg-green-50 text-green-600 px-2 py-0.5 rounded-full">Premium Support</span>
+                                <span class="text-[10px] bg-green-50 text-green-600 px-2 py-0.5 rounded-full">Analytics</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-bold text-gray-800">Rp 4.5 Jt</p>
+                        <p class="text-[10px] text-gray-400">/bulan</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Premium Package -->
+            <div class="package-card bg-white rounded-2xl p-4 mb-3 border border-gray-100 shadow-sm" data-package="premium" data-price="7500000" data-name="Prime Booth" onclick="selectPackage('premium')">
+                <div class="flex justify-between items-start">
+                    <div class="flex gap-3">
+                        <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-crown text-purple-500 text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-800">Prime Booth</h3>
+                            <p class="text-xs text-gray-500">Tampil eksklusif di area premium</p>
+                            <div class="flex gap-2 mt-1">
+                                <span class="text-[10px] bg-purple-50 text-purple-600 px-2 py-0.5 rounded-full">3 Booth</span>
+                                <span class="text-[10px] bg-purple-50 text-purple-600 px-2 py-0.5 rounded-full">Dedicated Support</span>
+                                <span class="text-[10px] bg-purple-50 text-purple-600 px-2 py-0.5 rounded-full">Priority Location</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-bold text-gray-800">Rp 7.5 Jt</p>
+                        <p class="text-[10px] text-gray-400">/bulan</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Enterprise Package -->
+            <div class="package-card bg-white rounded-2xl p-4 mb-4 border border-gray-100 shadow-sm" data-package="enterprise" data-price="12000000" data-name="Icon Booth" onclick="selectPackage('enterprise')">
+                <div class="flex justify-between items-start">
+                    <div class="flex gap-3">
+                        <div class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-gem text-amber-500 text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-800">Icon Booth</h3>
+                            <p class="text-xs text-gray-500">Untuk brand terbaik & multi-location</p>
+                            <div class="flex gap-2 mt-1">
+                                <span class="text-[10px] bg-amber-50 text-amber-600 px-2 py-0.5 rounded-full">5+ Booth</span>
+                                <span class="text-[10px] bg-amber-50 text-amber-600 px-2 py-0.5 rounded-full">Concierge Service</span>
+                                <span class="text-[10px] bg-amber-50 text-amber-600 px-2 py-0.5 rounded-full">Best Location</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-bold text-gray-800">Rp 12 Jt</p>
+                        <p class="text-[10px] text-gray-400">/bulan</p>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="nextStep()" id="nextStep1Btn" class="w-full bg-gradient-to-r from-green-500 to-emerald-500 text-white font-semibold py-4 rounded-2xl mt-4 opacity-50 cursor-not-allowed" disabled>
+                Lanjut ke Durasi
+            </button>
+        </div>
+
+        <!-- ============================================ -->
+        <!-- STEP 2: Durasi & Add-ons -->
+        <!-- ============================================ -->
+        <div id="step2" class="page-step px-6 py-5">
+            <h2 class="text-lg font-bold text-gray-800 mb-4">Pilih Durasi & Add-ons</h2>
+            
+            <!-- Selected Package Info -->
+            <div class="bg-green-50 rounded-xl p-3 mb-5 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-check-circle text-green-500"></i>
+                    <span class="text-sm font-medium" id="selectedPackageName">-</span>
+                </div>
+                <div class="text-right">
+                    <p class="text-xs text-gray-500">Harga dasar</p>
+                    <p class="font-bold text-green-600" id="selectedPackagePrice">Rp 0</p>
+                </div>
+            </div>
+
+            <!-- Durasi Selection -->
+            <label class="block text-sm font-medium text-gray-700 mb-2">Pilih Durasi Sewa</label>
+            <div class="grid grid-cols-3 gap-3 mb-6">
+                <div class="duration-btn text-center py-3 rounded-xl border-2 border-gray-200 font-medium" data-duration="1" data-discount="0" onclick="selectDuration(1)">
+                    1 Bulan
+                </div>
+                <div class="duration-btn text-center py-3 rounded-xl border-2 border-gray-200 font-medium relative" data-duration="3" data-discount="5" onclick="selectDuration(3)">
+                    3 Bulan
+                    <span class="absolute -top-2 -right-1 bg-green-500 text-white text-[9px] px-1.5 py-0.5 rounded-full">hemat 5%</span>
+                </div>
+                <div class="duration-btn text-center py-3 rounded-xl border-2 border-gray-200 font-medium relative" data-duration="6" data-discount="10" onclick="selectDuration(6)">
+                    6 Bulan
+                    <span class="absolute -top-2 -right-1 bg-green-500 text-white text-[9px] px-1.5 py-0.5 rounded-full">hemat 10%</span>
+                </div>
+            </div>
+
+            <!-- Add-ons Selection -->
+            <label class="block text-sm font-medium text-gray-700 mb-2">Add-ons (Opsional)</label>
+            <div class="space-y-2 mb-6">
+                <div class="addon-item flex items-center justify-between p-3 border border-gray-200 rounded-xl cursor-pointer" data-addon="branding" data-price="500000" onclick="toggleAddon(this)">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-palette text-purple-500 text-sm"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium text-sm">Branding Booth Premium</p>
+                            <p class="text-[10px] text-gray-400">Custom desain booth sesuai brand Anda</p>
+                        </div>
+                    </div>
+                    <p class="font-semibold text-green-600 text-sm">+Rp 500k</p>
+                </div>
+
+                <div class="addon-item flex items-center justify-between p-3 border border-gray-200 rounded-xl cursor-pointer" data-addon="electricity" data-price="300000" onclick="toggleAddon(this)">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-bolt text-blue-500 text-sm"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium text-sm">Listrik & WiFi</p>
+                            <p class="text-[10px] text-gray-400">Akses listrik dan internet cepat</p>
+                        </div>
+                    </div>
+                    <p class="font-semibold text-green-600 text-sm">+Rp 300k</p>
+                </div>
+
+                <div class="addon-item flex items-center justify-between p-3 border border-gray-200 rounded-xl cursor-pointer" data-addon="equipment" data-price="1000000" onclick="toggleAddon(this)">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-kitchen-set text-orange-500 text-sm"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium text-sm">Peralatan Dapur</p>
+                            <p class="text-[10px] text-gray-400">Kompor, kulkas, dan peralatan masak</p>
+                        </div>
+                    </div>
+                    <p class="font-semibold text-green-600 text-sm">+Rp 1Jt</p>
+                </div>
+
+                <div class="addon-item flex items-center justify-between p-3 border border-gray-200 rounded-xl cursor-pointer" data-addon="staff" data-price="2000000" onclick="toggleAddon(this)">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 bg-teal-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-user-tie text-teal-500 text-sm"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium text-sm">Staff Booth</p>
+                            <p class="text-[10px] text-gray-400">1 orang staff terlatih</p>
+                        </div>
+                    </div>
+                    <p class="font-semibold text-green-600 text-sm">+Rp 2Jt</p>
+                </div>
+            </div>
+
+            <!-- Start Date -->
+            <label class="block text-sm font-medium text-gray-700 mb-2">Tanggal Mulai Sewa</label>
+            <input type="date" id="startDate" class="w-full border border-gray-200 rounded-xl px-4 py-3 mb-6 focus:outline-none focus:ring-2 focus:ring-green-500">
+
+            <!-- Price Summary -->
+            <div class="bg-gray-50 rounded-xl p-4 mb-6">
+                <div class="flex justify-between mb-2">
+                    <span class="text-gray-600 text-sm">Harga Paket</span>
+                    <span class="font-medium" id="summaryBasePrice">Rp 0</span>
+                </div>
+                <div class="flex justify-between mb-2" id="summaryDiscountRow" style="display: none;">
+                    <span class="text-gray-600 text-sm">Diskon</span>
+                    <span class="text-green-600" id="summaryDiscount">-Rp 0</span>
+                </div>
+                <div class="flex justify-between mb-2" id="summaryAddonRow" style="display: none;">
+                    <span class="text-gray-600 text-sm">Add-ons</span>
+                    <span class="font-medium" id="summaryAddon">Rp 0</span>
+                </div>
+                <div class="flex justify-between pt-2 border-t border-gray-200">
+                    <span class="font-bold text-gray-800">Total Harga</span>
+                    <span class="font-bold text-xl text-green-600" id="summaryTotal">Rp 0</span>
+                </div>
+                <p class="text-[10px] text-gray-400 mt-2">*Sudah termasuk pajak</p>
+            </div>
+
+            <div class="flex gap-3">
+                <button onclick="prevStep()" class="flex-1 py-4 rounded-2xl border border-gray-300 text-gray-600 font-semibold">
+                    Kembali
+                </button>
+                <button onclick="nextStep2()" class="flex-1 bg-gradient-to-r from-green-500 to-emerald-500 text-white font-semibold py-4 rounded-2xl">
+                    Lanjut ke Konfirmasi
+                </button>
+            </div>
+        </div>
+
+        <!-- ============================================ -->
+        <!-- STEP 3: Konfirmasi Booking -->
+        <!-- ============================================ -->
+        <div id="step3" class="page-step px-6 py-5">
+            <h2 class="text-lg font-bold text-gray-800 mb-4">Konfirmasi Booking</h2>
+
+            <!-- Location & Booth Info -->
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm mb-4 overflow-hidden">
+                <div class="p-4 border-b border-gray-100">
+                    <div class="flex gap-3">
+                        <img id="confirmImage" src="https://picsum.photos/id/96/80/80" class="w-16 h-16 rounded-xl object-cover">
+                        <div>
+                            <h3 class="font-bold" id="confirmBoothName">Grand Indonesia</h3>
+                            <p class="text-xs text-gray-500" id="confirmAddress">Jl. MH Thamrin No.1, Jakarta Pusat</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-4 space-y-3">
+                    <div class="flex justify-between">
+                        <span class="text-gray-500 text-sm">Tipe Booth</span>
+                        <span class="font-medium" id="confirmPackage">-</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-500 text-sm">Durasi Sewa</span>
+                        <span class="font-medium" id="confirmDuration">-</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-500 text-sm">Tanggal Mulai</span>
+                        <span class="font-medium" id="confirmDate">-</span>
+                    </div>
+                    <div class="flex justify-between" id="confirmAddonRow" style="display: none;">
+                        <span class="text-gray-500 text-sm">Add-ons</span>
+                        <span class="font-medium" id="confirmAddon">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Price Breakdown -->
+            <div class="bg-gray-50 rounded-xl p-4 mb-6">
+                <div class="flex justify-between mb-2">
+                    <span class="text-gray-600 text-sm">Harga Paket</span>
+                    <span class="font-medium" id="confirmBasePrice">Rp 0</span>
+                </div>
+                <div class="flex justify-between mb-2" id="confirmDiscountRow" style="display: none;">
+                    <span class="text-gray-600 text-sm">Diskon</span>
+                    <span class="text-green-600" id="confirmDiscount">-Rp 0</span>
+                </div>
+                <div class="flex justify-between mb-2" id="confirmAddonTotalRow" style="display: none;">
+                    <span class="text-gray-600 text-sm">Add-ons</span>
+                    <span class="font-medium" id="confirmAddonTotal">Rp 0</span>
+                </div>
+                <div class="flex justify-between pt-2 border-t border-gray-200">
+                    <span class="font-bold text-gray-800">Total yang Harus Dibayar</span>
+                    <span class="font-bold text-xl text-green-600" id="confirmTotal">Rp 0</span>
+                </div>
+            </div>
+
+            <!-- Payment Methods -->
+            <label class="block text-sm font-medium text-gray-700 mb-2">Metode Pembayaran</label>
+            <div class="space-y-2 mb-6">
+                <div class="flex items-center gap-3 p-3 border border-gray-200 rounded-xl cursor-pointer hover:border-green-300" onclick="selectPayment('bank')">
+                    <input type="radio" name="payment" value="bank" class="w-4 h-4 text-green-500">
+                    <i class="fas fa-university text-blue-500 text-lg w-6"></i>
+                    <span class="flex-1 text-sm">Transfer Bank (BCA, Mandiri, BRI)</span>
+                </div>
+                <div class="flex items-center gap-3 p-3 border border-gray-200 rounded-xl cursor-pointer hover:border-green-300" onclick="selectPayment('qris')">
+                    <input type="radio" name="payment" value="qris" class="w-4 h-4 text-green-500">
+                    <i class="fas fa-qrcode text-green-500 text-lg w-6"></i>
+                    <span class="flex-1 text-sm">QRIS (Scan QR Code)</span>
+                </div>
+                <div class="flex items-center gap-3 p-3 border border-gray-200 rounded-xl cursor-pointer hover:border-green-300" onclick="selectPayment('ewallet')">
+                    <input type="radio" name="payment" value="ewallet" class="w-4 h-4 text-green-500">
+                    <i class="fab fa-google-pay text-indigo-500 text-lg w-6"></i>
+                    <span class="flex-1 text-sm">E-Wallet (OVO, GoPay, Dana)</span>
+                </div>
+            </div>
+
+            <div class="flex gap-3">
+                <button onclick="prevStep2()" class="flex-1 py-4 rounded-2xl border border-gray-300 text-gray-600 font-semibold">
+                    Kembali
+                </button>
+                <button onclick="confirmBooking()" class="flex-1 bg-gradient-to-r from-green-500 to-emerald-500 text-white font-semibold py-4 rounded-2xl">
+                    Konfirmasi & Bayar
+                </button>
+            </div>
+        </div>
+
+        <!-- Success Modal -->
+        <div id="successModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center">
+            <div class="bg-white rounded-3xl mx-4 p-6 max-w-sm w-full animate-scaleIn text-center">
+                <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-check-circle text-green-500 text-4xl"></i>
+                </div>
+                <h3 class="text-2xl font-bold mb-2">Booking Berhasil!</h3>
+                <p class="text-gray-500 text-sm mb-4">Pembayaran Anda sedang diproses</p>
+                <div class="bg-gray-50 rounded-xl p-3 mb-4">
+                    <p class="text-xs text-gray-500">Kode Booking</p>
+                    <p class="font-bold text-green-600" id="bookingCode">BTH-2024-001234</p>
+                </div>
+                <button onclick="closeSuccessModal()" class="w-full bg-gradient-to-r from-green-500 to-emerald-500 text-white font-semibold py-3 rounded-xl">
+                    Kembali ke Beranda
+                </button>
+            </div>
+        </div>
+
+        <!-- Toast -->
+        <div id="toast" class="fixed bottom-24 left-4 right-4 max-w-[428px] mx-auto bg-gray-800 text-white rounded-xl p-3 z-50 hidden animate-fadeIn">
+            <div class="flex items-center gap-2">
+                <i class="fas fa-check-circle text-green-400"></i>
+                <span id="toastMessage" class="text-sm"></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // STATE VARIABLES
+        // ============================================
+        let selectedPackage = null;
+        let selectedPackagePrice = 0;
+        let selectedPackageName = '';
+        let selectedDuration = 1;
+        let selectedDiscount = 0;
+        let selectedAddons = [];
+        let selectedStartDate = '';
+        let selectedPayment = '';
+
+        // Location data (bisa dari URL parameter)
+        const urlParams = new URLSearchParams(window.location.search);
+        const locationData = {
+            name: urlParams.get('name') || "Grand Indonesia",
+            address: urlParams.get('address') || "Jl. MH Thamrin No.1, Jakarta Pusat",
+            image: urlParams.get('image') || "https://picsum.photos/id/96/400/300"
+        };
+
+        // ============================================
+        // URL ROUTING (Hash-based)
+        // ============================================
+        function updateURLStep(step) {
+            window.location.hash = `step-${step}`;
+        }
+
+        function getCurrentStepFromURL() {
+            const hash = window.location.hash;
+            if (hash === '#step-2') return 2;
+            if (hash === '#step-3') return 3;
+            return 1;
+        }
+
+        function navigateToStep(step) {
+            // Validate if can go to step
+            if (step === 2 && !selectedPackage) {
+                showToast('Pilih paket booth terlebih dahulu');
+                return;
+            }
+            if (step === 3 && (!selectedPackage || !selectedStartDate)) {
+                showToast('Lengkapi data durasi dan tanggal mulai');
+                return;
+            }
+            
+            updateURLStep(step);
+            showStep(step);
+        }
+
+        function showStep(step) {
+            // Hide all steps
+            document.querySelectorAll('.page-step').forEach(el => {
+                el.classList.remove('active-step');
+            });
+            
+            // Show selected step
+            document.getElementById(`step${step}`).classList.add('active-step');
+            
+            // Update step indicators
+            for (let i = 1; i <= 3; i++) {
+                const indicator = document.getElementById(`step${i}Indicator`);
+                if (i < step) {
+                    indicator.classList.remove('active');
+                    indicator.classList.add('completed');
+                } else if (i === step) {
+                    indicator.classList.remove('completed');
+                    indicator.classList.add('active');
+                } else {
+                    indicator.classList.remove('active', 'completed');
+                }
+            }
+            
+            // Update step 2 data if needed
+            if (step === 2 && selectedPackage) {
+                document.getElementById('selectedPackageName').innerText = selectedPackageName;
+                document.getElementById('selectedPackagePrice').innerHTML = formatRupiah(selectedPackagePrice);
+                updateSummary();
+            }
+            
+            // Update step 3 data if needed
+            if (step === 3) {
+                updateConfirmationData();
+            }
+        }
+
+        // Listen to hash change
+        window.addEventListener('hashchange', () => {
+            const step = getCurrentStepFromURL();
+            if (step === 1) showStep(1);
+            else if (step === 2 && selectedPackage) showStep(2);
+            else if (step === 3 && selectedPackage && selectedStartDate) showStep(3);
+            else showStep(1);
+        });
+
+        // ============================================
+        // STEP 1: SELECT PACKAGE
+        // ============================================
+        function selectPackage(packageType) {
+            // Remove selected class from all packages
+            document.querySelectorAll('.package-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Add selected class to clicked package
+            const selectedCard = document.querySelector(`.package-card[data-package="${packageType}"]`);
+            selectedCard.classList.add('selected');
+            
+            // Get package data
+            selectedPackage = packageType;
+            selectedPackagePrice = parseInt(selectedCard.getAttribute('data-price'));
+            selectedPackageName = selectedCard.getAttribute('data-name');
+            
+            // Enable next button
+            const nextBtn = document.getElementById('nextStep1Btn');
+            nextBtn.disabled = false;
+            nextBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+
+        function nextStep() {
+            if (!selectedPackage) {
+                showToast('Pilih tipe booth terlebih dahulu');
+                return;
+            }
+            navigateToStep(2);
+        }
+
+        // ============================================
+        // STEP 2: DURATION & ADD-ONS
+        // ============================================
+        function selectDuration(months) {
+            selectedDuration = months;
+            
+            // Update UI
+            document.querySelectorAll('.duration-btn').forEach(btn => {
+                btn.classList.remove('selected', 'bg-green-500', 'text-white');
+                btn.classList.add('border-gray-200');
+            });
+            
+            const selectedBtn = document.querySelector(`.duration-btn[data-duration="${months}"]`);
+            selectedBtn.classList.add('selected', 'bg-green-500', 'text-white');
+            selectedBtn.classList.remove('border-gray-200');
+            
+            // Get discount
+            selectedDiscount = parseInt(selectedBtn.getAttribute('data-discount'));
+            
+            updateSummary();
+        }
+
+        function toggleAddon(element) {
+            const addonName = element.getAttribute('data-addon');
+            const addonPrice = parseInt(element.getAttribute('data-price'));
+            
+            if (element.classList.contains('selected')) {
+                element.classList.remove('selected');
+                element.classList.remove('border-green-500', 'bg-green-50');
+                element.classList.add('border-gray-200');
+                selectedAddons = selectedAddons.filter(a => a.name !== addonName);
+            } else {
+                element.classList.add('selected');
+                element.classList.remove('border-gray-200');
+                element.classList.add('border-green-500', 'bg-green-50');
+                selectedAddons.push({ name: addonName, price: addonPrice });
+            }
+            
+            updateSummary();
+        }
+
+        function updateSummary() {
+            let baseTotal = selectedPackagePrice * selectedDuration;
+            let discountAmount = 0;
+            
+            if (selectedDiscount > 0) {
+                discountAmount = (baseTotal * selectedDiscount) / 100;
+            }
+            
+            let addonTotal = selectedAddons.reduce((sum, addon) => sum + addon.price, 0);
+            let grandTotal = baseTotal - discountAmount + addonTotal;
+            
+            document.getElementById('summaryBasePrice').innerHTML = formatRupiah(baseTotal);
+            
+            if (selectedDiscount > 0) {
+                document.getElementById('summaryDiscountRow').style.display = 'flex';
+                document.getElementById('summaryDiscount').innerHTML = `-${formatRupiah(discountAmount)}`;
+            } else {
+                document.getElementById('summaryDiscountRow').style.display = 'none';
+            }
+            
+            if (selectedAddons.length > 0) {
+                document.getElementById('summaryAddonRow').style.display = 'flex';
+                document.getElementById('summaryAddon').innerHTML = formatRupiah(addonTotal);
+            } else {
+                document.getElementById('summaryAddonRow').style.display = 'none';
+            }
+            
+            document.getElementById('summaryTotal').innerHTML = formatRupiah(grandTotal);
+        }
+
+        function nextStep2() {
+            selectedStartDate = document.getElementById('startDate').value;
+            if (!selectedStartDate) {
+                showToast('Pilih tanggal mulai sewa');
+                return;
+            }
+            navigateToStep(3);
+        }
+
+        function prevStep() {
+            navigateToStep(1);
+        }
+
+        // ============================================
+        // STEP 3: CONFIRMATION
+        // ============================================
+        function updateConfirmationData() {
+            let baseTotal = selectedPackagePrice * selectedDuration;
+            let discountAmount = (baseTotal * selectedDiscount) / 100;
+            let addonTotal = selectedAddons.reduce((sum, a) => sum + a.price, 0);
+            let grandTotal = baseTotal - discountAmount + addonTotal;
+            
+            const addonNames = selectedAddons.map(a => {
+                switch(a.name) {
+                    case 'branding': return 'Branding Premium';
+                    case 'electricity': return 'Listrik & WiFi';
+                    case 'equipment': return 'Peralatan Dapur';
+                    case 'staff': return 'Staff Booth';
+                    default: return a.name;
+                }
+            }).join(', ');
+            
+            document.getElementById('confirmPackage').innerHTML = selectedPackageName;
+            document.getElementById('confirmDuration').innerHTML = `${selectedDuration} Bulan ${selectedDiscount > 0 ? `(hemat ${selectedDiscount}%)` : ''}`;
+            document.getElementById('confirmDate').innerHTML = formatDate(selectedStartDate);
+            document.getElementById('confirmBasePrice').innerHTML = formatRupiah(baseTotal);
+            document.getElementById('confirmTotal').innerHTML = formatRupiah(grandTotal);
+            
+            if (selectedDiscount > 0) {
+                document.getElementById('confirmDiscountRow').style.display = 'flex';
+                document.getElementById('confirmDiscount').innerHTML = `-${formatRupiah(discountAmount)}`;
+            } else {
+                document.getElementById('confirmDiscountRow').style.display = 'none';
+            }
+            
+            if (selectedAddons.length > 0) {
+                document.getElementById('confirmAddonRow').style.display = 'flex';
+                document.getElementById('confirmAddon').innerHTML = addonNames;
+                document.getElementById('confirmAddonTotalRow').style.display = 'flex';
+                document.getElementById('confirmAddonTotal').innerHTML = formatRupiah(addonTotal);
+            } else {
+                document.getElementById('confirmAddonRow').style.display = 'none';
+                document.getElementById('confirmAddonTotalRow').style.display = 'none';
+            }
+        }
+
+        function selectPayment(method) {
+            selectedPayment = method;
+            document.querySelectorAll('input[name="payment"]').forEach(radio => {
+                radio.checked = radio.value === method;
+            });
+        }
+
+        function prevStep2() {
+            navigateToStep(2);
+        }
+
+        function confirmBooking() {
+            if (!selectedPayment) {
+                showToast('Pilih metode pembayaran terlebih dahulu');
+                return;
+            }
+            
+            const bookingCode = 'BTH-' + new Date().getFullYear() + '-' + Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+            document.getElementById('bookingCode').innerText = bookingCode;
+            document.getElementById('successModal').classList.remove('hidden');
+            document.getElementById('successModal').style.display = 'flex';
+        }
+
+        function closeSuccessModal() {
+            document.getElementById('successModal').style.display = 'none';
+            window.location.href = 'index.html';
+        }
+
+        // ============================================
+        // UTILITY FUNCTIONS
+        // ============================================
+        function formatRupiah(amount) {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(amount);
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('id-ID', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').innerText = message;
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 2000);
+        }
+
+        function goBack() {
+            window.history.back();
+        }
+
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+        document.getElementById('locationNameDisplay').innerText = `${locationData.name}, Jakarta Pusat`;
+        document.getElementById('confirmBoothName').innerText = locationData.name;
+        document.getElementById('confirmAddress').innerText = locationData.address;
+        document.getElementById('confirmImage').src = locationData.image;
+        
+        // Set default start date (tomorrow)
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        document.getElementById('startDate').value = tomorrow.toISOString().split('T')[0];
+        
+        // Initialize from URL hash
+        const initialStep = getCurrentStepFromURL();
+        if (initialStep === 1) showStep(1);
+        else if (initialStep === 2) showStep(2);
+        else if (initialStep === 3) showStep(3);
+        else showStep(1);
+    </script>
 </body>
 </html>
