@@ -3,17 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
-    <title>Boothera - Setup Profil Usaha</title>
+    <title>Boothera - Eksplor Lokasi Booth</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; background: #F0FDF4; }
+        body { font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; background: #F8FAFC; }
         
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
             to { opacity: 1; transform: translateY(0); }
         }
         @keyframes scaleIn {
@@ -21,164 +25,510 @@
             to { opacity: 1; transform: scale(1); }
         }
         .animate-fadeIn { animation: fadeIn 0.3s ease-out forwards; }
+        .animate-slideDown { animation: slideDown 0.3s ease-out forwards; }
         .animate-scaleIn { animation: scaleIn 0.3s ease-out forwards; }
         
-        /* Custom scrollbar */
         ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: #D1D5DB; border-radius: 10px; }
+        ::-webkit-scrollbar-track { background: #E2E8F0; border-radius: 10px; }
         ::-webkit-scrollbar-thumb { background: #10B981; border-radius: 10px; }
         
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        
         .card-hover {
-            transition: all 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -12px rgba(0, 0, 0, 0.15);
         }
         .card-hover:active {
             transform: scale(0.98);
         }
         
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(4px);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
+        .filter-chip {
+            transition: all 0.2s ease;
+            cursor: pointer;
         }
-        .modal.active {
-            display: flex;
+        .filter-chip.active {
+            background-color: #10B981;
+            color: white;
+        }
+        .filter-chip.active i {
+            color: white;
+        }
+        
+        .type-chip {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .type-chip.active {
+            background-color: #10B981;
+            color: white;
+        }
+        .type-chip.active i {
+            color: white;
+        }
+        
+        /* Filter Panel */
+        .filter-panel {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out;
+        }
+        .filter-panel.open {
+            max-height: 500px;
+            transition: max-height 0.4s ease-in;
         }
     </style>
 </head>
-<body class="bg-[#F0FDF4]">
+<body class="bg-[#F8FAFC]">
 
     <!-- Main Container -->
     <div class="max-w-[428px] mx-auto bg-white min-h-screen shadow-xl relative">
         
         <!-- ============================================ -->
-        <!-- SETUP PROFIL SECTION -->
+        <!-- HEADER -->
         <!-- ============================================ -->
-        <div id="setupSection" class="min-h-screen flex items-center justify-center p-4 bg-white">
-            <div class="max-w-md w-full animate-fadeIn">
-                <div class="text-center mb-8">
-                    <div class="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-2xl mb-4">
-                        <i class="fas fa-store text-green-600 text-2xl"></i>
+        <div class="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 pt-12 pb-6">
+            <div class="flex justify-between items-center mb-4">
+                <div>
+                    <p class="text-green-100 text-xs font-medium">Temukan lokasi terbaik</p>
+                    <h1 class="text-2xl font-bold">Eksplor Lokasi</h1>
+                </div>
+                <div class="flex gap-2">
+                    <button id="mapViewBtn" onclick="setView('map')" class="bg-white/20 backdrop-blur px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2">
+                        <i class="fas fa-map"></i> Map
+                    </button>
+                    <button id="listViewBtn" onclick="setView('list')" class="bg-white/20 backdrop-blur px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2">
+                        <i class="fas fa-list"></i> List
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Search Bar dengan Ikon Filter -->
+            <div class="relative mt-2">
+                <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                <input type="text" id="searchInput" placeholder="Cari nama booth, lokasi, atau alamat..." 
+                    class="w-full bg-white rounded-xl py-3.5 pl-11 pr-24 text-gray-800 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-green-500/50 shadow-md">
+                <button id="filterToggleBtn" class="absolute right-3 top-1/2 -translate-y-1/2 bg-gray-100 hover:bg-gray-200 rounded-xl px-3 py-1.5 text-sm font-medium text-gray-600 flex items-center gap-1 transition">
+                    <i class="fas fa-sliders-h text-green-500"></i>
+                    <span id="filterText">Filter</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- ============================================ -->
+        <!-- FILTER PANEL (Hidden by default) -->
+        <!-- ============================================ -->
+        <div id="filterPanel" class="filter-panel bg-white border-b border-gray-100 px-6">
+            <div class="py-4 space-y-4">
+                <!-- Filter Traffic -->
+                <div>
+                    <p class="text-xs font-semibold text-gray-400 mb-2 flex items-center gap-1">
+                        <i class="fas fa-chart-line text-green-500 text-xs"></i> TRAFFIC
+                    </p>
+                    <div class="flex gap-2 flex-wrap">
+                        <button class="filter-chip active px-4 py-1.5 rounded-full text-xs font-medium bg-green-500 text-white" data-filter="all">
+                            Semua
+                        </button>
+                        <button class="filter-chip px-4 py-1.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600" data-filter="high">
+                            <i class="fas fa-fire text-orange-500 mr-1"></i>Traffic Tinggi
+                        </button>
+                        <button class="filter-chip px-4 py-1.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600" data-filter="medium">
+                            <i class="fas fa-chart-line text-yellow-500 mr-1"></i>Traffic Medium
+                        </button>
+                        <button class="filter-chip px-4 py-1.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600" data-filter="low">
+                            <i class="fas fa-chart-line text-gray-400 mr-1"></i>Traffic Rendah
+                        </button>
                     </div>
-                    <h2 class="text-2xl font-bold">Setup Profil Usaha</h2>
-                    <p class="text-gray-500 mt-1">Isi data bisnis Anda</p>
+                </div>
+                
+                <!-- Filter Tipe Lokasi -->
+                <div>
+                    <p class="text-xs font-semibold text-gray-400 mb-2 flex items-center gap-1">
+                        <i class="fas fa-building text-green-500 text-xs"></i> TIPE LOKASI
+                    </p>
+                    <div class="flex gap-2 flex-wrap">
+                        <button class="type-chip active px-4 py-1.5 rounded-full text-xs font-medium bg-green-500 text-white" data-type="all">
+                            Semua
+                        </button>
+                        <button class="type-chip px-4 py-1.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600" data-type="permanent">
+                            <i class="fas fa-store mr-1"></i>Permanent
+                        </button>
+                        <button class="type-chip px-4 py-1.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600" data-type="event">
+                            <i class="fas fa-calendar-alt mr-1"></i>Event
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Filter Kota -->
+                <div>
+                    <p class="text-xs font-semibold text-gray-400 mb-2 flex items-center gap-1">
+                        <i class="fas fa-location-dot text-green-500 text-xs"></i> KOTA
+                    </p>
+                    <div class="relative">
+                        <select id="cityFilter" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 appearance-none">
+                            <option value="all">Semua Kota</option>
+                            <option value="Jakarta Pusat">Jakarta Pusat</option>
+                            <option value="Jakarta Selatan">Jakarta Selatan</option>
+                            <option value="Jakarta Barat">Jakarta Barat</option>
+                            <option value="Jakarta Timur">Jakarta Timur</option>
+                            <option value="Jakarta Utara">Jakarta Utara</option>
+                            <option value="Tangerang">Tangerang</option>
+                            <option value="Bekasi">Bekasi</option>
+                            <option value="Depok">Depok</option>
+                            <option value="Bogor">Bogor</option>
+                        </select>
+                        <i class="fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
+                    </div>
                 </div>
 
-                <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 space-y-5">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Nama Usaha</label>
-                        <input type="text" id="businessName" placeholder="Contoh: Kopi Kenangan" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500">
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Jenis Usaha</label>
-                        <select id="businessType" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500">
-                            <option>Kopi & Minuman</option>
-                            <option>Makanan Ringan</option>
-                            <option>Makanan Berat</option>
-                            <option>Dessert</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Skala Usaha</label>
-                        <div class="grid grid-cols-3 gap-3">
-                            <button class="scale-btn py-3 rounded-xl border-2 border-gray-200 font-medium transition-all hover:border-green-400" data-scale="starter">Starter</button>
-                            <button class="scale-btn py-3 rounded-xl border-2 border-gray-200 font-medium transition-all hover:border-green-400" data-scale="growing">Growing</button>
-                            <button class="scale-btn py-3 rounded-xl border-2 border-gray-200 font-medium transition-all hover:border-green-400" data-scale="brand">Brand</button>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Lokasi Target</label>
-                        <select id="targetLocation" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500">
-                            <option>Jakarta Pusat</option>
-                            <option>Jakarta Selatan</option>
-                            <option>Jakarta Barat</option>
-                            <option>Jakarta Timur</option>
-                            <option>Jakarta Utara</option>
-                            <option>Tangerang</option>
-                            <option>Bekasi</option>
-                            <option>Depok</option>
-                        </select>
-                    </div>
-
-                    <button onclick="saveAndContinue()" class="w-full bg-gradient-to-r from-green-500 to-emerald-500 text-white font-semibold py-4 rounded-2xl hover-lift mt-4">
-                        Mulai Sekarang
+                <!-- Result Count & Reset -->
+                <div class="flex justify-between items-center pt-2 border-t border-gray-100">
+                    <p class="text-xs text-gray-500" id="resultCount">Menampilkan 8 lokasi</p>
+                    <button id="resetFilterBtn" class="text-xs text-green-600 font-medium hover:text-green-700 transition">
+                        <i class="fas fa-undo-alt mr-1"></i>Reset
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- Toast -->
-        <div id="toast" class="fixed bottom-24 left-4 right-4 max-w-[428px] mx-auto bg-gray-800 text-white rounded-xl p-3 z-[1000] hidden animate-fadeIn">
-            <div class="flex items-center gap-2"><i class="fas fa-check-circle text-green-400"></i><span id="toastMessage" class="text-sm"></span></div>
+        <!-- ============================================ -->
+        <!-- MAP VIEW (Placeholder / Mockup) -->
+        <!-- ============================================ -->
+        <div id="mapView" class="px-4 py-4" style="display: block;">
+            <div class="bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl overflow-hidden shadow-inner relative" style="height: 450px;">
+                <!-- Mockup Map -->
+                <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://api.mapbox.com/styles/v1/mapbox/light-v10/static/-6.2088,106.8456,12,0,0/400x400?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIGOKA6-sKiUTwRlwZQ'); opacity: 0.3;"></div>
+                <div class="absolute inset-0 flex flex-col items-center justify-center">
+                    <div class="bg-white/90 backdrop-blur rounded-2xl p-6 text-center shadow-lg">
+                        <i class="fas fa-map-marked-alt text-green-500 text-4xl mb-2"></i>
+                        <p class="text-gray-600 text-sm font-medium">Map View</p>
+                        <p class="text-gray-400 text-xs mt-1">Peta interaktif akan muncul di sini</p>
+                        <div class="mt-3 flex gap-2 justify-center">
+                            <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+                            <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                            <div class="w-3 h-3 bg-purple-500 rounded-full"></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Mockup Markers -->
+                <div class="absolute top-1/4 left-1/3 animate-pulse">
+                    <div class="w-8 h-8 bg-white rounded-full shadow-lg flex items-center justify-center border-2 border-red-500">
+                        <i class="fas fa-store text-red-500 text-xs"></i>
+                    </div>
+                </div>
+                <div class="absolute bottom-1/3 right-1/4 animate-pulse" style="animation-delay: 0.5s;">
+                    <div class="w-8 h-8 bg-white rounded-full shadow-lg flex items-center justify-center border-2 border-green-500">
+                        <i class="fas fa-store text-green-500 text-xs"></i>
+                    </div>
+                </div>
+                <div class="absolute top-1/2 right-1/3 animate-pulse" style="animation-delay: 1s;">
+                    <div class="w-8 h-8 bg-white rounded-full shadow-lg flex items-center justify-center border-2 border-purple-500">
+                        <i class="fas fa-calendar-alt text-purple-500 text-xs"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Legend -->
+            <div class="flex justify-center gap-4 mt-3">
+                <div class="flex items-center gap-1">
+                    <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+                    <span class="text-[10px] text-gray-500">Traffic Tinggi</span>
+                </div>
+                <div class="flex items-center gap-1">
+                    <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                    <span class="text-[10px] text-gray-500">Traffic Medium</span>
+                </div>
+                <div class="flex items-center gap-1">
+                    <div class="w-3 h-3 bg-purple-500 rounded-full"></div>
+                    <span class="text-[10px] text-gray-500">Event</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================ -->
+        <!-- LIST VIEW (Default visible) -->
+        <!-- ============================================ -->
+        <div id="listView" class="px-6 py-4 space-y-4 pb-24" style="display: none;">
+            <!-- Booth list akan diisi JavaScript -->
+        </div>
+
+        <!-- ============================================ -->
+        <!-- EMPTY STATE -->
+        <!-- ============================================ -->
+        <div id="emptyState" class="px-6 py-12 text-center hidden">
+            <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-store-slash text-gray-400 text-3xl"></i>
+            </div>
+            <h3 class="text-gray-800 font-semibold text-lg">Tidak ditemukan</h3>
+            <p class="text-gray-400 text-sm mt-1">Coba cari dengan kata kunci lain</p>
+            <button onclick="resetFilters()" class="mt-4 text-green-600 text-sm font-medium">Reset Pencarian</button>
+        </div>
+
+        <!-- ============================================ -->
+        <!-- BOTTOM NAVIGATION -->
+        <!-- ============================================ -->
+        <div class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-lg border-t border-gray-100 pb-5 pt-2 z-50 shadow-lg">
+            <div class="max-w-[428px] mx-auto flex justify-around px-6">
+                <button class="nav-btn flex flex-col items-center gap-1 text-gray-400" data-tab="home">
+                    <i class="fas fa-home text-xl"></i>
+                    <span class="text-[10px] font-medium">Beranda</span>
+                </button>
+                <button class="nav-btn flex flex-col items-center gap-1 text-green-500" data-tab="explore">
+                    <i class="fas fa-map-marker-alt text-xl"></i>
+                    <span class="text-[10px] font-medium">Eksplor</span>
+                </button>
+                <button class="nav-btn flex flex-col items-center gap-1 text-gray-400" data-tab="bookings">
+                    <i class="fas fa-calendar-alt text-xl"></i>
+                    <span class="text-[10px] font-medium">Booking</span>
+                </button>
+                <button class="nav-btn flex flex-col items-center gap-1 text-gray-400" data-tab="profile">
+                    <i class="fas fa-user text-xl"></i>
+                    <span class="text-[10px] font-medium">Profil</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Toast Notification -->
+        <div id="toast" class="fixed bottom-24 left-4 right-4 max-w-[400px] mx-auto bg-gray-800 text-white rounded-xl p-3 z-[1000] hidden animate-fadeIn">
+            <div class="flex items-center gap-2">
+                <i class="fas fa-check-circle text-green-400"></i>
+                <span id="toastMessage" class="text-sm"></span>
+            </div>
         </div>
     </div>
 
     <script>
         // ============================================
-        // SCALE BUTTON HANDLER
+        // DATA BOOTH (Mockup Data)
         // ============================================
-        let selectedScale = null;
-        
-        document.querySelectorAll('.scale-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.scale-btn').forEach(b => { 
-                    b.classList.remove('border-green-500', 'bg-green-50'); 
-                    b.classList.add('border-gray-200'); 
-                });
-                btn.classList.remove('border-gray-200'); 
-                btn.classList.add('border-green-500', 'bg-green-50');
-                selectedScale = btn.getAttribute('data-scale');
-            });
-        });
+        const booths = [
+            { id: 1, name: "Sport Center Booth", city: "Jakarta Pusat", traffic: "12.500/hari", trafficLevel: "high", price: "Rp 2.5 Jt", type: "Sport Center", typeCategory: "permanent", available: 8, distance: "0.3 km", image: "https://picsum.photos/id/166/400/200", rating: 4.7 },
+            { id: 2, name: "Food Court Center", city: "Jakarta Selatan", traffic: "9.800/hari", trafficLevel: "high", price: "Rp 3.5 Jt", type: "Food Court", typeCategory: "permanent", available: 5, distance: "0.5 km", image: "https://picsum.photos/id/30/400/200", rating: 4.8 },
+            { id: 3, name: "Fashion Booth", city: "Jakarta Barat", traffic: "6.200/hari", trafficLevel: "medium", price: "Rp 4.0 Jt", type: "Fashion", typeCategory: "permanent", available: 3, distance: "0.8 km", image: "https://picsum.photos/id/20/400/200", rating: 4.6 },
+            { id: 4, name: "Kopi Nusantara", city: "Jakarta Selatan", traffic: "11.200/hari", trafficLevel: "high", price: "Rp 2.8 Jt", type: "Coffee Shop", typeCategory: "permanent", available: 6, distance: "1.2 km", image: "https://picsum.photos/id/104/400/200", rating: 4.9 },
+            { id: 5, name: "Jakarta Fair 2024", city: "Jakarta Pusat", traffic: "25.000/hari", trafficLevel: "high", price: "Rp 8.0 Jt", type: "Event Booth", typeCategory: "event", available: 12, distance: "2.0 km", image: "https://picsum.photos/id/169/400/200", rating: 4.9 },
+            { id: 6, name: "Food Festival", city: "Jakarta Selatan", traffic: "18.000/hari", trafficLevel: "high", price: "Rp 6.0 Jt", type: "Event Booth", typeCategory: "event", available: 8, distance: "2.5 km", image: "https://picsum.photos/id/26/400/200", rating: 4.8 },
+            { id: 7, name: "Tech Expo 2024", city: "Tangerang", traffic: "15.000/hari", trafficLevel: "high", price: "Rp 7.0 Jt", type: "Event Booth", typeCategory: "event", available: 10, distance: "3.0 km", image: "https://picsum.photos/id/96/400/200", rating: 4.7 },
+            { id: 8, name: "Bakmi Enak", city: "Bekasi", traffic: "4.200/hari", trafficLevel: "low", price: "Rp 1.8 Jt", type: "Food Stall", typeCategory: "permanent", available: 2, distance: "1.5 km", image: "https://picsum.photos/id/127/400/200", rating: 4.5 }
+        ];
+
+        // State Variables
+        let currentTrafficFilter = 'all';
+        let currentTypeFilter = 'all';
+        let currentCityFilter = 'all';
+        let currentSearch = '';
+        let currentView = 'map';
+        let isFilterOpen = false;
+
+        // DOM Elements
+        const listView = document.getElementById('listView');
+        const mapViewEl = document.getElementById('mapView');
+        const emptyState = document.getElementById('emptyState');
+        const resultCount = document.getElementById('resultCount');
+        const searchInput = document.getElementById('searchInput');
+        const cityFilter = document.getElementById('cityFilter');
+        const resetFilterBtn = document.getElementById('resetFilterBtn');
+        const filterPanel = document.getElementById('filterPanel');
+        const filterToggleBtn = document.getElementById('filterToggleBtn');
+        const filterText = document.getElementById('filterText');
 
         // ============================================
-        // SAVE AND CONTINUE
+        // FILTER PANEL TOGGLE
         // ============================================
-        function saveAndContinue() {
-            const businessName = document.getElementById('businessName').value;
-            const businessType = document.getElementById('businessType').value;
-            const targetLocation = document.getElementById('targetLocation').value;
-            
-            // Validasi
-            if (!businessName) {
-                showToast('Masukkan nama usaha Anda');
-                return;
+        function toggleFilterPanel() {
+            isFilterOpen = !isFilterOpen;
+            if (isFilterOpen) {
+                filterPanel.classList.add('open');
+                filterText.innerHTML = 'Tutup';
+                filterToggleBtn.classList.add('bg-green-100');
+            } else {
+                filterPanel.classList.remove('open');
+                filterText.innerHTML = 'Filter';
+                filterToggleBtn.classList.remove('bg-green-100');
             }
-            if (!selectedScale) {
-                showToast('Pilih skala usaha Anda');
-                return;
-            }
-            
-            // Simpan ke localStorage
-            const userProfile = {
-                businessName: businessName,
-                businessType: businessType,
-                scale: selectedScale,
-                targetLocation: targetLocation,
-                completedAt: new Date().toISOString()
-            };
-            localStorage.setItem('boothera_user_profile', JSON.stringify(userProfile));
-            localStorage.setItem('boothera_onboarding', 'true');
-            
-            showToast('Profil berhasil disimpan!');
-            
-            // Redirect ke halaman utama
-            setTimeout(() => {
-                window.location.href = 'index.html';
-            }, 1500);
         }
-        
+
+        filterToggleBtn.addEventListener('click', toggleFilterPanel);
+
+        // ============================================
+        // FILTER FUNCTIONS
+        // ============================================
+        function filterBooths() {
+            let filtered = [...booths];
+            
+            // Filter by search
+            if (currentSearch) {
+                filtered = filtered.filter(booth => 
+                    booth.name.toLowerCase().includes(currentSearch.toLowerCase()) ||
+                    booth.city.toLowerCase().includes(currentSearch.toLowerCase())
+                );
+            }
+            
+            // Filter by traffic
+            if (currentTrafficFilter !== 'all') {
+                filtered = filtered.filter(booth => booth.trafficLevel === currentTrafficFilter);
+            }
+            
+            // Filter by type
+            if (currentTypeFilter !== 'all') {
+                filtered = filtered.filter(booth => booth.typeCategory === currentTypeFilter);
+            }
+            
+            // Filter by city
+            if (currentCityFilter !== 'all') {
+                filtered = filtered.filter(booth => booth.city === currentCityFilter);
+            }
+            
+            // Update result count
+            resultCount.innerText = `Menampilkan ${filtered.length} lokasi`;
+            
+            return filtered;
+        }
+
+        function applyFilters() {
+            const filtered = filterBooths();
+            updateListView(filtered);
+        }
+
+        function resetFilters() {
+            currentTrafficFilter = 'all';
+            currentTypeFilter = 'all';
+            currentCityFilter = 'all';
+            currentSearch = '';
+            
+            // Reset UI
+            searchInput.value = '';
+            cityFilter.value = 'all';
+            
+            // Reset traffic filter chips
+            document.querySelectorAll('.filter-chip').forEach(chip => {
+                chip.classList.remove('active', 'bg-green-500', 'text-white');
+                chip.classList.add('bg-gray-100', 'text-gray-600');
+                if (chip.getAttribute('data-filter') === 'all') {
+                    chip.classList.remove('bg-gray-100', 'text-gray-600');
+                    chip.classList.add('active', 'bg-green-500', 'text-white');
+                }
+            });
+            
+            // Reset type filter chips
+            document.querySelectorAll('.type-chip').forEach(chip => {
+                chip.classList.remove('active', 'bg-green-500', 'text-white');
+                chip.classList.add('bg-gray-100', 'text-gray-600');
+                if (chip.getAttribute('data-type') === 'all') {
+                    chip.classList.remove('bg-gray-100', 'text-gray-600');
+                    chip.classList.add('active', 'bg-green-500', 'text-white');
+                }
+            });
+            
+            applyFilters();
+            showToast('Filter direset');
+        }
+
+        function updateListView(filteredBooths) {
+            if (filteredBooths.length === 0) {
+                if (currentView === 'list') {
+                    listView.classList.add('hidden');
+                    emptyState.classList.remove('hidden');
+                    mapViewEl.classList.add('hidden');
+                } else {
+                    mapViewEl.classList.add('hidden');
+                    emptyState.classList.remove('hidden');
+                }
+                return;
+            }
+            
+            emptyState.classList.add('hidden');
+            
+            if (currentView === 'list') {
+                listView.classList.remove('hidden');
+                mapViewEl.classList.add('hidden');
+            } else {
+                mapViewEl.classList.remove('hidden');
+                listView.classList.add('hidden');
+            }
+            
+            listView.innerHTML = filteredBooths.map(booth => `
+                <div class="bg-white rounded-2xl overflow-hidden shadow-md border border-gray-100 card-hover cursor-pointer animate-fadeIn" onclick="showToast('Detail ${booth.name}')">
+                    <div class="flex">
+                        <div class="relative w-28 h-28">
+                            <img src="${booth.image}" alt="${booth.name}" class="w-full h-full object-cover">
+                            <div class="absolute top-2 left-2 ${booth.trafficLevel === 'high' ? (booth.typeCategory === 'event' ? 'bg-purple-500' : 'bg-red-500') : (booth.trafficLevel === 'medium' ? 'bg-yellow-500' : 'bg-gray-500')} text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full">
+                                ${booth.typeCategory === 'event' ? '<i class="fas fa-calendar mr-0.5"></i> EVENT' : (booth.trafficLevel === 'high' ? '<i class="fas fa-fire mr-0.5"></i> HIGH' : (booth.trafficLevel === 'medium' ? '<i class="fas fa-chart-line mr-0.5"></i> MED' : '<i class="fas fa-chart-line mr-0.5"></i> LOW'))}
+                            </div>
+                        </div>
+                        <div class="flex-1 p-3">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h3 class="font-bold text-gray-800 text-base">${booth.name}</h3>
+                                    <p class="text-xs text-gray-400 mt-0.5">${booth.city}</p>
+                                </div>
+                                <div class="flex items-center gap-1 bg-green-50 px-2 py-1 rounded-lg">
+                                    <i class="fas fa-star text-yellow-400 text-[10px]"></i>
+                                    <span class="text-xs font-bold text-green-600">${booth.rating}</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3 mt-2">
+                                <div class="flex items-center gap-1">
+                                    <i class="fas ${booth.trafficLevel === 'high' ? 'fa-chart-line text-green-500' : (booth.trafficLevel === 'medium' ? 'fa-chart-line text-yellow-500' : 'fa-chart-line text-gray-400')} text-xs"></i>
+                                    <span class="text-xs text-gray-600 font-medium">${booth.traffic}</span>
+                                </div>
+                                <div class="flex items-center gap-1">
+                                    <i class="fas fa-location-dot text-gray-400 text-xs"></i>
+                                    <span class="text-xs text-gray-500">${booth.distance}</span>
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center mt-2">
+                                <div>
+                                    <span class="font-bold text-green-600 text-base">${booth.price}</span>
+                                    <span class="text-[10px] text-gray-400">/${booth.typeCategory === 'event' ? 'event' : 'bulan'}</span>
+                                </div>
+                                <button class="${booth.typeCategory === 'event' ? 'bg-purple-500 hover:bg-purple-600' : 'bg-green-500 hover:bg-green-600'} text-white text-xs font-semibold px-3 py-1.5 rounded-xl transition" onclick="event.stopPropagation(); showToast('Booking ${booth.name} dimulai!')">
+                                    ${booth.typeCategory === 'event' ? 'Pesan Event' : 'Pilih Booth'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ============================================
+        // VIEW SWITCHING (Map / List)
+        // ============================================
+        function setView(view) {
+            currentView = view;
+            const filtered = filterBooths();
+            
+            if (view === 'map') {
+                mapViewEl.style.display = 'block';
+                listView.style.display = 'none';
+                mapViewBtn.classList.add('bg-white/30');
+                listViewBtn.classList.remove('bg-white/30');
+                if (filtered.length === 0) {
+                    mapViewEl.classList.add('hidden');
+                    emptyState.classList.remove('hidden');
+                } else {
+                    mapViewEl.classList.remove('hidden');
+                    emptyState.classList.add('hidden');
+                }
+            } else {
+                mapViewEl.style.display = 'none';
+                listView.style.display = 'block';
+                listViewBtn.classList.add('bg-white/30');
+                mapViewBtn.classList.remove('bg-white/30');
+                if (filtered.length === 0) {
+                    listView.classList.add('hidden');
+                    emptyState.classList.remove('hidden');
+                } else {
+                    listView.classList.remove('hidden');
+                    emptyState.classList.add('hidden');
+                }
+            }
+        }
+
         // ============================================
         // TOAST FUNCTION
         // ============================================
@@ -191,6 +541,69 @@
                 toast.classList.add('hidden');
             }, 2000);
         }
+
+        // ============================================
+        // EVENT LISTENERS
+        // ============================================
+        // Traffic filter chips
+        document.querySelectorAll('.filter-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                document.querySelectorAll('.filter-chip').forEach(c => {
+                    c.classList.remove('active', 'bg-green-500', 'text-white');
+                    c.classList.add('bg-gray-100', 'text-gray-600');
+                });
+                chip.classList.remove('bg-gray-100', 'text-gray-600');
+                chip.classList.add('active', 'bg-green-500', 'text-white');
+                currentTrafficFilter = chip.getAttribute('data-filter');
+                applyFilters();
+            });
+        });
+
+        // Type filter chips
+        document.querySelectorAll('.type-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                document.querySelectorAll('.type-chip').forEach(c => {
+                    c.classList.remove('active', 'bg-green-500', 'text-white');
+                    c.classList.add('bg-gray-100', 'text-gray-600');
+                });
+                chip.classList.remove('bg-gray-100', 'text-gray-600');
+                chip.classList.add('active', 'bg-green-500', 'text-white');
+                currentTypeFilter = chip.getAttribute('data-type');
+                applyFilters();
+            });
+        });
+
+        // City filter
+        cityFilter.addEventListener('change', () => {
+            currentCityFilter = cityFilter.value;
+            applyFilters();
+        });
+
+        // Search input
+        searchInput.addEventListener('input', (e) => {
+            currentSearch = e.target.value;
+            applyFilters();
+        });
+
+        // Reset filter button
+        resetFilterBtn.addEventListener('click', resetFilters);
+
+        // Bottom navigation
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tab = btn.getAttribute('data-tab');
+                document.querySelectorAll('.nav-btn').forEach(b => {
+                    b.classList.remove('text-green-500');
+                    b.classList.add('text-gray-400');
+                });
+                btn.classList.remove('text-gray-400');
+                btn.classList.add('text-green-500');
+                showToast(`Beralih ke tab ${tab}`);
+            });
+        });
+
+        // Initial render
+        applyFilters();
     </script>
 </body>
 </html>
