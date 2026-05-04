@@ -3,786 +3,500 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
-    <title>Boothera - Booking Booth</title>
+    <title>Boothera - Sewa Booth untuk UMKM</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; background: #F0FDF4; }
+        body { font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; background: #F8FAFC; }
         
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes scaleIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-        .animate-fadeIn { animation: fadeIn 0.3s ease-out forwards; }
-        .animate-scaleIn { animation: scaleIn 0.3s ease-out forwards; }
-        
-        .package-card {
-            transition: all 0.3s ease;
-            cursor: pointer;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        .package-card.selected {
-            border: 2px solid #10B981;
-            background: #ECFDF5;
-            transform: scale(1.01);
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
         }
         
-        .duration-btn {
-            transition: all 0.2s ease;
-            cursor: pointer;
+        .animate-fadeIn { animation: fadeIn 0.4s ease-out forwards; }
+        .animate-pulse-slow { animation: pulse 2s ease-in-out infinite; }
+        
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #E2E8F0; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #10B981; border-radius: 10px; }
+        
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        .card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .duration-btn.selected {
-            background: #10B981;
-            color: white;
-            border-color: #10B981;
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -12px rgba(0, 0, 0, 0.15);
+        }
+        .card-hover:active {
+            transform: scale(0.98);
         }
         
-        .step-indicator {
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-        .step-indicator.active {
-            background: #10B981;
-            color: white;
-        }
-        .step-indicator.completed {
-            background: #10B981;
-            color: white;
+        .gradient-text {
+            background: linear-gradient(135deg, #10B981, #059669);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
         }
         
-        .addon-item {
-            transition: all 0.2s ease;
-            cursor: pointer;
+        /* Shimmer effect untuk button */
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
         }
-        .addon-item.selected {
-            border-color: #10B981;
-            background: #ECFDF5;
-        }
-        
-        /* Page transition */
-        .page-step {
-            display: none;
-        }
-        .page-step.active-step {
-            display: block;
-            animation: fadeIn 0.3s ease-out forwards;
+        .btn-shimmer {
+            background: linear-gradient(90deg, #10B981, #34D399, #10B981);
+            background-size: 200% auto;
+            animation: shimmer 3s ease infinite;
         }
     </style>
 </head>
-<body class="bg-[#F0FDF4]">
+<body class="bg-gradient-to-br from-white via-green-50 to-emerald-50">
 
-    <div class="max-w-[428px] mx-auto bg-white min-h-screen shadow-xl relative">
+    <!-- Main Container -->
+    <div class="max-w-[428px] mx-auto bg-white min-h-screen shadow-2xl relative">
         
-        <!-- Header -->
-        <div class="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 pt-12 pb-6">
-            <div class="flex items-center gap-3">
-                <button onclick="goBack()" class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-                    <i class="fas fa-arrow-left text-white"></i>
-                </button>
-                <div>
-                    <h1 class="text-2xl font-bold">Booking Booth</h1>
-                    <p class="text-green-100 text-sm mt-1" id="locationNameDisplay">Grand Indonesia, Jakarta Pusat</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Step Progress (Clickable) -->
-        <div class="px-6 py-5 bg-white border-b border-gray-100">
-            <div class="flex items-center justify-between">
-                <div id="step1Indicator" class="step-indicator active w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center text-sm font-bold cursor-pointer" onclick="navigateToStep(1)">1</div>
-                <div class="flex-1 h-0.5 bg-gray-200 mx-2"></div>
-                <div id="step2Indicator" class="step-indicator w-8 h-8 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-sm font-bold cursor-pointer" onclick="navigateToStep(2)">2</div>
-                <div class="flex-1 h-0.5 bg-gray-200 mx-2"></div>
-                <div id="step3Indicator" class="step-indicator w-8 h-8 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-sm font-bold cursor-pointer" onclick="navigateToStep(3)">3</div>
-            </div>
-            <div class="flex justify-between mt-2">
-                <span class="text-xs text-green-600 font-medium cursor-pointer" onclick="navigateToStep(1)">Pilih Paket</span>
-                <span class="text-xs text-gray-400 cursor-pointer" onclick="navigateToStep(2)">Durasi & Add-ons</span>
-                <span class="text-xs text-gray-400 cursor-pointer" onclick="navigateToStep(3)">Konfirmasi</span>
-            </div>
-        </div>
-
         <!-- ============================================ -->
-        <!-- STEP 1: Pilih Paket Booth -->
+        <!-- HEADER - Logo & Profile -->
         <!-- ============================================ -->
-        <div id="step1" class="page-step active-step px-6 py-5">
-            <h2 class="text-lg font-bold text-gray-800 mb-4">Pilih Tipe Booth</h2>
-            
-            <!-- Starter Package -->
-            <div class="package-card bg-white rounded-2xl p-4 mb-3 border border-gray-100 shadow-sm" data-package="starter" data-price="2500000" data-name="Starter Booth" onclick="selectPackage('starter')">
-                <div class="flex justify-between items-start">
-                    <div class="flex gap-3">
-                        <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                            <i class="fas fa-seedling text-blue-500 text-xl"></i>
-                        </div>
-                        <div>
-                            <h3 class="font-bold text-gray-800">Starter Booth</h3>
-                            <p class="text-xs text-gray-500">Mulai usaha dengan aman</p>
-                            <div class="flex gap-2 mt-1">
-                                <span class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">1 Booth</span>
-                                <span class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">Support 24/7</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <p class="font-bold text-gray-800">Rp 2.5 Jt</p>
-                        <p class="text-[10px] text-gray-400">/bulan</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Standard Package (Popular) -->
-            <div class="package-card bg-white rounded-2xl p-4 mb-3 border-2 border-green-200 shadow-md relative" data-package="standard" data-price="4500000" data-name="Popular Booth" onclick="selectPackage('standard')">
-                <div class="absolute -top-2 right-4 bg-orange-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
-                    <i class="fas fa-fire mr-1"></i> PALING POPULER
-                </div>
-                <div class="flex justify-between items-start">
-                    <div class="flex gap-3">
-                        <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-                            <i class="fas fa-chart-line text-green-500 text-xl"></i>
-                        </div>
-                        <div>
-                            <h3 class="font-bold text-gray-800">Popular Booth</h3>
-                            <p class="text-xs text-gray-500">Pilihan terbaik untuk bisnis berkembang</p>
-                            <div class="flex gap-2 mt-1">
-                                <span class="text-[10px] bg-green-50 text-green-600 px-2 py-0.5 rounded-full">2 Booth</span>
-                                <span class="text-[10px] bg-green-50 text-green-600 px-2 py-0.5 rounded-full">Premium Support</span>
-                                <span class="text-[10px] bg-green-50 text-green-600 px-2 py-0.5 rounded-full">Analytics</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <p class="font-bold text-gray-800">Rp 4.5 Jt</p>
-                        <p class="text-[10px] text-gray-400">/bulan</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Premium Package -->
-            <div class="package-card bg-white rounded-2xl p-4 mb-3 border border-gray-100 shadow-sm" data-package="premium" data-price="7500000" data-name="Prime Booth" onclick="selectPackage('premium')">
-                <div class="flex justify-between items-start">
-                    <div class="flex gap-3">
-                        <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
-                            <i class="fas fa-crown text-purple-500 text-xl"></i>
-                        </div>
-                        <div>
-                            <h3 class="font-bold text-gray-800">Prime Booth</h3>
-                            <p class="text-xs text-gray-500">Tampil eksklusif di area premium</p>
-                            <div class="flex gap-2 mt-1">
-                                <span class="text-[10px] bg-purple-50 text-purple-600 px-2 py-0.5 rounded-full">3 Booth</span>
-                                <span class="text-[10px] bg-purple-50 text-purple-600 px-2 py-0.5 rounded-full">Dedicated Support</span>
-                                <span class="text-[10px] bg-purple-50 text-purple-600 px-2 py-0.5 rounded-full">Priority Location</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <p class="font-bold text-gray-800">Rp 7.5 Jt</p>
-                        <p class="text-[10px] text-gray-400">/bulan</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Enterprise Package -->
-            <div class="package-card bg-white rounded-2xl p-4 mb-4 border border-gray-100 shadow-sm" data-package="enterprise" data-price="12000000" data-name="Icon Booth" onclick="selectPackage('enterprise')">
-                <div class="flex justify-between items-start">
-                    <div class="flex gap-3">
-                        <div class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center">
-                            <i class="fas fa-gem text-amber-500 text-xl"></i>
-                        </div>
-                        <div>
-                            <h3 class="font-bold text-gray-800">Icon Booth</h3>
-                            <p class="text-xs text-gray-500">Untuk brand terbaik & multi-location</p>
-                            <div class="flex gap-2 mt-1">
-                                <span class="text-[10px] bg-amber-50 text-amber-600 px-2 py-0.5 rounded-full">5+ Booth</span>
-                                <span class="text-[10px] bg-amber-50 text-amber-600 px-2 py-0.5 rounded-full">Concierge Service</span>
-                                <span class="text-[10px] bg-amber-50 text-amber-600 px-2 py-0.5 rounded-full">Best Location</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <p class="font-bold text-gray-800">Rp 12 Jt</p>
-                        <p class="text-[10px] text-gray-400">/bulan</p>
-                    </div>
-                </div>
-            </div>
-
-            <button onclick="nextStep()" id="nextStep1Btn" class="w-full bg-gradient-to-r from-green-500 to-emerald-500 text-white font-semibold py-4 rounded-2xl mt-4 opacity-50 cursor-not-allowed" disabled>
-                Lanjut ke Durasi
-            </button>
-        </div>
-
-        <!-- ============================================ -->
-        <!-- STEP 2: Durasi & Add-ons -->
-        <!-- ============================================ -->
-        <div id="step2" class="page-step px-6 py-5">
-            <h2 class="text-lg font-bold text-gray-800 mb-4">Pilih Durasi & Add-ons</h2>
-            
-            <!-- Selected Package Info -->
-            <div class="bg-green-50 rounded-xl p-3 mb-5 flex items-center justify-between">
+        <div class="pt-12 px-6 pb-4 bg-white border-b border-gray-100">
+            <div class="flex justify-between items-center">
+                <!-- Logo -->
                 <div class="flex items-center gap-2">
-                    <i class="fas fa-check-circle text-green-500"></i>
-                    <span class="text-sm font-medium" id="selectedPackageName">-</span>
-                </div>
-                <div class="text-right">
-                    <p class="text-xs text-gray-500">Harga dasar</p>
-                    <p class="font-bold text-green-600" id="selectedPackagePrice">Rp 0</p>
-                </div>
-            </div>
-
-            <!-- Durasi Selection -->
-            <label class="block text-sm font-medium text-gray-700 mb-2">Pilih Durasi Sewa</label>
-            <div class="grid grid-cols-3 gap-3 mb-6">
-                <div class="duration-btn text-center py-3 rounded-xl border-2 border-gray-200 font-medium" data-duration="1" data-discount="0" onclick="selectDuration(1)">
-                    1 Bulan
-                </div>
-                <div class="duration-btn text-center py-3 rounded-xl border-2 border-gray-200 font-medium relative" data-duration="3" data-discount="5" onclick="selectDuration(3)">
-                    3 Bulan
-                    <span class="absolute -top-2 -right-1 bg-green-500 text-white text-[9px] px-1.5 py-0.5 rounded-full">hemat 5%</span>
-                </div>
-                <div class="duration-btn text-center py-3 rounded-xl border-2 border-gray-200 font-medium relative" data-duration="6" data-discount="10" onclick="selectDuration(6)">
-                    6 Bulan
-                    <span class="absolute -top-2 -right-1 bg-green-500 text-white text-[9px] px-1.5 py-0.5 rounded-full">hemat 10%</span>
-                </div>
-            </div>
-
-            <!-- Add-ons Selection -->
-            <label class="block text-sm font-medium text-gray-700 mb-2">Add-ons (Opsional)</label>
-            <div class="space-y-2 mb-6">
-                <div class="addon-item flex items-center justify-between p-3 border border-gray-200 rounded-xl cursor-pointer" data-addon="branding" data-price="500000" onclick="toggleAddon(this)">
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-palette text-purple-500 text-sm"></i>
-                        </div>
-                        <div>
-                            <p class="font-medium text-sm">Branding Booth Premium</p>
-                            <p class="text-[10px] text-gray-400">Custom desain booth sesuai brand Anda</p>
-                        </div>
+                    <div class="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-md">
+                        <i class="fas fa-store text-white text-lg"></i>
                     </div>
-                    <p class="font-semibold text-green-600 text-sm">+Rp 500k</p>
-                </div>
-
-                <div class="addon-item flex items-center justify-between p-3 border border-gray-200 rounded-xl cursor-pointer" data-addon="electricity" data-price="300000" onclick="toggleAddon(this)">
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-bolt text-blue-500 text-sm"></i>
-                        </div>
-                        <div>
-                            <p class="font-medium text-sm">Listrik & WiFi</p>
-                            <p class="text-[10px] text-gray-400">Akses listrik dan internet cepat</p>
-                        </div>
+                    <div>
+                        <h1 class="text-xl font-bold gradient-text">Boothera</h1>
+                        <p class="text-[10px] text-gray-400 -mt-0.5">Sewa Booth UMKM</p>
                     </div>
-                    <p class="font-semibold text-green-600 text-sm">+Rp 300k</p>
                 </div>
-
-                <div class="addon-item flex items-center justify-between p-3 border border-gray-200 rounded-xl cursor-pointer" data-addon="equipment" data-price="1000000" onclick="toggleAddon(this)">
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-kitchen-set text-orange-500 text-sm"></i>
-                        </div>
-                        <div>
-                            <p class="font-medium text-sm">Peralatan Dapur</p>
-                            <p class="text-[10px] text-gray-400">Kompor, kulkas, dan peralatan masak</p>
-                        </div>
+                
+                <!-- Right Icons -->
+                <div class="flex items-center gap-4">
+                    <!-- Search -->
+                    <div class="relative cursor-pointer">
+                        <i class="fas fa-search text-gray-500 text-xl hover:text-green-500 transition"></i>
                     </div>
-                    <p class="font-semibold text-green-600 text-sm">+Rp 1Jt</p>
-                </div>
-
-                <div class="addon-item flex items-center justify-between p-3 border border-gray-200 rounded-xl cursor-pointer" data-addon="staff" data-price="2000000" onclick="toggleAddon(this)">
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 bg-teal-100 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-user-tie text-teal-500 text-sm"></i>
-                        </div>
-                        <div>
-                            <p class="font-medium text-sm">Staff Booth</p>
-                            <p class="text-[10px] text-gray-400">1 orang staff terlatih</p>
-                        </div>
+                    <!-- Notification -->
+                    <div class="relative cursor-pointer">
+                        <i class="fas fa-bell text-gray-500 text-xl hover:text-green-500 transition"></i>
+                        <span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full"></span>
                     </div>
-                    <p class="font-semibold text-green-600 text-sm">+Rp 2Jt</p>
+                    <!-- Profile Avatar -->
+                    <div class="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full flex items-center justify-center shadow-md cursor-pointer hover:scale-105 transition">
+                        <i class="fas fa-user text-white text-sm"></i>
+                    </div>
                 </div>
-            </div>
-
-            <!-- Start Date -->
-            <label class="block text-sm font-medium text-gray-700 mb-2">Tanggal Mulai Sewa</label>
-            <input type="date" id="startDate" class="w-full border border-gray-200 rounded-xl px-4 py-3 mb-6 focus:outline-none focus:ring-2 focus:ring-green-500">
-
-            <!-- Price Summary -->
-            <div class="bg-gray-50 rounded-xl p-4 mb-6">
-                <div class="flex justify-between mb-2">
-                    <span class="text-gray-600 text-sm">Harga Paket</span>
-                    <span class="font-medium" id="summaryBasePrice">Rp 0</span>
-                </div>
-                <div class="flex justify-between mb-2" id="summaryDiscountRow" style="display: none;">
-                    <span class="text-gray-600 text-sm">Diskon</span>
-                    <span class="text-green-600" id="summaryDiscount">-Rp 0</span>
-                </div>
-                <div class="flex justify-between mb-2" id="summaryAddonRow" style="display: none;">
-                    <span class="text-gray-600 text-sm">Add-ons</span>
-                    <span class="font-medium" id="summaryAddon">Rp 0</span>
-                </div>
-                <div class="flex justify-between pt-2 border-t border-gray-200">
-                    <span class="font-bold text-gray-800">Total Harga</span>
-                    <span class="font-bold text-xl text-green-600" id="summaryTotal">Rp 0</span>
-                </div>
-                <p class="text-[10px] text-gray-400 mt-2">*Sudah termasuk pajak</p>
-            </div>
-
-            <div class="flex gap-3">
-                <button onclick="prevStep()" class="flex-1 py-4 rounded-2xl border border-gray-300 text-gray-600 font-semibold">
-                    Kembali
-                </button>
-                <button onclick="nextStep2()" class="flex-1 bg-gradient-to-r from-green-500 to-emerald-500 text-white font-semibold py-4 rounded-2xl">
-                    Lanjut ke Konfirmasi
-                </button>
             </div>
         </div>
 
         <!-- ============================================ -->
-        <!-- STEP 3: Konfirmasi Booking -->
+        <!-- SEARCH BAR -->
         <!-- ============================================ -->
-        <div id="step3" class="page-step px-6 py-5">
-            <h2 class="text-lg font-bold text-gray-800 mb-4">Konfirmasi Booking</h2>
+        <div class="px-6 py-4 bg-white">
+            <div class="relative">
+                <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                <input type="text" placeholder="Cari booth atau lokasi..." 
+                    class="w-full bg-gray-100 border-0 rounded-2xl py-3.5 pl-11 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:bg-white transition-all">
+            </div>
+        </div>
 
-            <!-- Location & Booth Info -->
-            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm mb-4 overflow-hidden">
-                <div class="p-4 border-b border-gray-100">
-                    <div class="flex gap-3">
-                        <img id="confirmImage" src="https://picsum.photos/id/96/80/80" class="w-16 h-16 rounded-xl object-cover">
-                        <div>
-                            <h3 class="font-bold" id="confirmBoothName">Grand Indonesia</h3>
-                            <p class="text-xs text-gray-500" id="confirmAddress">Jl. MH Thamrin No.1, Jakarta Pusat</p>
+        <!-- ============================================ -->
+        <!-- REKOMENDASI SECTION (Horizontal Scroll) -->
+        <!-- ============================================ -->
+        <div class="px-6 mt-2">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                    <i class="fas fa-fire text-orange-500 text-lg"></i>
+                    Rekomendasi untukmu
+                </h2>
+                <button class="text-green-600 text-xs font-medium hover:text-green-700 transition">
+                    Lihat Semua <i class="fas fa-arrow-right ml-1 text-xs"></i>
+                </button>
+            </div>
+            
+            <div class="flex gap-4 overflow-x-auto pb-3 scrollbar-hide">
+                <!-- Card 1 -->
+                <div class="min-w-[200px] bg-white rounded-2xl overflow-hidden shadow-md border border-gray-100 card-hover cursor-pointer">
+                    <div class="relative h-32">
+                        <img src="https://picsum.photos/id/166/400/200" alt="Sport Center" class="w-full h-full object-cover">
+                        <div class="absolute top-2 left-2 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                            <i class="fas fa-fire mr-1"></i> HOT
+                        </div>
+                        <div class="absolute bottom-2 left-2 bg-white/90 backdrop-blur rounded-full px-2 py-0.5">
+                            <span class="text-[10px] font-semibold text-blue-600"><i class="fas fa-utensils mr-1"></i>F&B</span>
+                        </div>
+                    </div>
+                    <div class="p-3">
+                        <h3 class="font-semibold text-gray-800 text-sm">Sport Center Booth</h3>
+                        <p class="text-xs text-gray-400 mt-0.5">Tanjung Morawa</p>
+                        <div class="flex justify-between items-center mt-2">
+                            <div>
+                                <span class="font-bold text-green-600 text-base">Rp2.5Jt</span>
+                                <span class="text-[10px] text-gray-400">/bulan</span>
+                            </div>
+                            <div class="bg-green-100 px-2 py-1 rounded-lg">
+                                <i class="fas fa-star text-yellow-500 text-[10px]"></i>
+                                <span class="text-[10px] font-semibold text-green-700 ml-1">4.8</span>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="p-4 space-y-3">
-                    <div class="flex justify-between">
-                        <span class="text-gray-500 text-sm">Tipe Booth</span>
-                        <span class="font-medium" id="confirmPackage">-</span>
+                
+                <!-- Card 2 -->
+                <div class="min-w-[200px] bg-white rounded-2xl overflow-hidden shadow-md border border-gray-100 card-hover cursor-pointer">
+                    <div class="relative h-32">
+                        <img src="https://picsum.photos/id/30/400/200" alt="Food Court" class="w-full h-full object-cover">
+                        <div class="absolute top-2 left-2 bg-purple-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                            <i class="fas fa-crown mr-1"></i> PREMIUM
+                        </div>
+                        <div class="absolute bottom-2 left-2 bg-white/90 backdrop-blur rounded-full px-2 py-0.5">
+                            <span class="text-[10px] font-semibold text-purple-600"><i class="fas fa-utensils mr-1"></i>F&B</span>
+                        </div>
                     </div>
-                    <div class="flex justify-between">
-                        <span class="text-gray-500 text-sm">Durasi Sewa</span>
-                        <span class="font-medium" id="confirmDuration">-</span>
+                    <div class="p-3">
+                        <h3 class="font-semibold text-gray-800 text-sm">Food Court Center</h3>
+                        <p class="text-xs text-gray-400 mt-0.5">Medan Fair</p>
+                        <div class="flex justify-between items-center mt-2">
+                            <div>
+                                <span class="font-bold text-green-600 text-base">Rp3.5Jt</span>
+                                <span class="text-[10px] text-gray-400">/bulan</span>
+                            </div>
+                            <div class="bg-green-100 px-2 py-1 rounded-lg">
+                                <i class="fas fa-star text-yellow-500 text-[10px]"></i>
+                                <span class="text-[10px] font-semibold text-green-700 ml-1">4.9</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="flex justify-between">
-                        <span class="text-gray-500 text-sm">Tanggal Mulai</span>
-                        <span class="font-medium" id="confirmDate">-</span>
+                </div>
+                
+                <!-- Card 3 -->
+                <div class="min-w-[200px] bg-white rounded-2xl overflow-hidden shadow-md border border-gray-100 card-hover cursor-pointer">
+                    <div class="relative h-32">
+                        <img src="https://picsum.photos/id/20/400/200" alt="Fashion Booth" class="w-full h-full object-cover">
+                        <div class="absolute bottom-2 left-2 bg-white/90 backdrop-blur rounded-full px-2 py-0.5">
+                            <span class="text-[10px] font-semibold text-green-600"><i class="fas fa-tshirt mr-1"></i>Fashion</span>
+                        </div>
                     </div>
-                    <div class="flex justify-between" id="confirmAddonRow" style="display: none;">
-                        <span class="text-gray-500 text-sm">Add-ons</span>
-                        <span class="font-medium" id="confirmAddon">-</span>
+                    <div class="p-3">
+                        <h3 class="font-semibold text-gray-800 text-sm">Fashion Booth</h3>
+                        <p class="text-xs text-gray-400 mt-0.5">Centre Point</p>
+                        <div class="flex justify-between items-center mt-2">
+                            <div>
+                                <span class="font-bold text-green-600 text-base">Rp4.0Jt</span>
+                                <span class="text-[10px] text-gray-400">/bulan</span>
+                            </div>
+                            <div class="bg-green-100 px-2 py-1 rounded-lg">
+                                <i class="fas fa-star text-yellow-500 text-[10px]"></i>
+                                <span class="text-[10px] font-semibold text-green-700 ml-1">4.7</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- Price Breakdown -->
-            <div class="bg-gray-50 rounded-xl p-4 mb-6">
-                <div class="flex justify-between mb-2">
-                    <span class="text-gray-600 text-sm">Harga Paket</span>
-                    <span class="font-medium" id="confirmBasePrice">Rp 0</span>
-                </div>
-                <div class="flex justify-between mb-2" id="confirmDiscountRow" style="display: none;">
-                    <span class="text-gray-600 text-sm">Diskon</span>
-                    <span class="text-green-600" id="confirmDiscount">-Rp 0</span>
-                </div>
-                <div class="flex justify-between mb-2" id="confirmAddonTotalRow" style="display: none;">
-                    <span class="text-gray-600 text-sm">Add-ons</span>
-                    <span class="font-medium" id="confirmAddonTotal">Rp 0</span>
-                </div>
-                <div class="flex justify-between pt-2 border-t border-gray-200">
-                    <span class="font-bold text-gray-800">Total yang Harus Dibayar</span>
-                    <span class="font-bold text-xl text-green-600" id="confirmTotal">Rp 0</span>
-                </div>
-            </div>
-
-            <!-- Payment Methods -->
-            <label class="block text-sm font-medium text-gray-700 mb-2">Metode Pembayaran</label>
-            <div class="space-y-2 mb-6">
-                <div class="flex items-center gap-3 p-3 border border-gray-200 rounded-xl cursor-pointer hover:border-green-300" onclick="selectPayment('bank')">
-                    <input type="radio" name="payment" value="bank" class="w-4 h-4 text-green-500">
-                    <i class="fas fa-university text-blue-500 text-lg w-6"></i>
-                    <span class="flex-1 text-sm">Transfer Bank (BCA, Mandiri, BRI)</span>
-                </div>
-                <div class="flex items-center gap-3 p-3 border border-gray-200 rounded-xl cursor-pointer hover:border-green-300" onclick="selectPayment('qris')">
-                    <input type="radio" name="payment" value="qris" class="w-4 h-4 text-green-500">
-                    <i class="fas fa-qrcode text-green-500 text-lg w-6"></i>
-                    <span class="flex-1 text-sm">QRIS (Scan QR Code)</span>
-                </div>
-                <div class="flex items-center gap-3 p-3 border border-gray-200 rounded-xl cursor-pointer hover:border-green-300" onclick="selectPayment('ewallet')">
-                    <input type="radio" name="payment" value="ewallet" class="w-4 h-4 text-green-500">
-                    <i class="fab fa-google-pay text-indigo-500 text-lg w-6"></i>
-                    <span class="flex-1 text-sm">E-Wallet (OVO, GoPay, Dana)</span>
-                </div>
-            </div>
-
-            <div class="flex gap-3">
-                <button onclick="prevStep2()" class="flex-1 py-4 rounded-2xl border border-gray-300 text-gray-600 font-semibold">
-                    Kembali
-                </button>
-                <button onclick="confirmBooking()" class="flex-1 bg-gradient-to-r from-green-500 to-emerald-500 text-white font-semibold py-4 rounded-2xl">
-                    Konfirmasi & Bayar
-                </button>
             </div>
         </div>
 
-        <!-- Success Modal -->
-        <div id="successModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center">
-            <div class="bg-white rounded-3xl mx-4 p-6 max-w-sm w-full animate-scaleIn text-center">
-                <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-check-circle text-green-500 text-4xl"></i>
-                </div>
-                <h3 class="text-2xl font-bold mb-2">Booking Berhasil!</h3>
-                <p class="text-gray-500 text-sm mb-4">Pembayaran Anda sedang diproses</p>
-                <div class="bg-gray-50 rounded-xl p-3 mb-4">
-                    <p class="text-xs text-gray-500">Kode Booking</p>
-                    <p class="font-bold text-green-600" id="bookingCode">BTH-2024-001234</p>
-                </div>
-                <button onclick="closeSuccessModal()" class="w-full bg-gradient-to-r from-green-500 to-emerald-500 text-white font-semibold py-3 rounded-xl">
-                    Kembali ke Beranda
+        <!-- ============================================ -->
+        <!-- YOUR BOOTH SECTION -->
+        <!-- ============================================ -->
+        <div class="px-6 mt-4">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                    <i class="fas fa-store text-green-600 text-lg"></i>
+                    Booth Kamu
+                </h2>
+                <button class="text-green-600 text-xs font-medium hover:text-green-700 transition">
+                    Lihat Semua <i class="fas fa-arrow-right ml-1 text-xs"></i>
                 </button>
+            </div>
+            
+            <!-- Booth Card 1 -->
+            <div class="bg-white rounded-2xl p-4 mb-4 shadow-md border border-gray-100 card-hover cursor-pointer">
+                <div class="flex gap-4">
+                    <div class="relative">
+                        <img src="https://picsum.photos/id/104/80/80" alt="Booth" class="w-20 h-20 rounded-xl object-cover shadow-md">
+                        <div class="absolute -top-2 -right-2 bg-green-500 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full">
+                            AKTIF
+                        </div>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="font-bold text-gray-800">Sport Center Booth</h3>
+                                <p class="text-xs text-gray-400 mt-0.5">Tanjung Morawa</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-xs text-gray-500">Sewa tersisa</p>
+                                <p class="font-bold text-green-600">48 hari</p>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-gray-500">Masa sewa</span>
+                                <span class="text-gray-700 font-medium">78%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-gradient-to-r from-green-500 to-emerald-500 rounded-full h-2" style="width: 78%"></div>
+                            </div>
+                        </div>
+                        <div class="flex gap-2 mt-3">
+                            <button class="flex-1 py-2 text-green-600 font-semibold text-sm bg-green-50 rounded-xl hover:bg-green-100 transition">
+                                Kelola
+                            </button>
+                            <button class="flex-1 py-2 text-white font-semibold text-sm bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl hover:shadow-md transition">
+                                Perpanjang
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Booth Card 2 -->
+            <div class="bg-white rounded-2xl p-4 mb-4 shadow-md border border-gray-100 card-hover cursor-pointer">
+                <div class="flex gap-4">
+                    <div class="relative">
+                        <img src="https://picsum.photos/id/96/80/80" alt="Booth" class="w-20 h-20 rounded-xl object-cover shadow-md">
+                        <div class="absolute -top-2 -right-2 bg-green-500 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full">
+                            AKTIF
+                        </div>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="font-bold text-gray-800">Medan Stars</h3>
+                                <p class="text-xs text-gray-400 mt-0.5">Medan Fair</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-xs text-gray-500">Sewa tersisa</p>
+                                <p class="font-bold text-green-600">32 hari</p>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-gray-500">Masa sewa</span>
+                                <span class="text-gray-700 font-medium">65%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-gradient-to-r from-green-500 to-emerald-500 rounded-full h-2" style="width: 65%"></div>
+                            </div>
+                        </div>
+                        <div class="flex gap-2 mt-3">
+                            <button class="flex-1 py-2 text-green-600 font-semibold text-sm bg-green-50 rounded-xl hover:bg-green-100 transition">
+                                Kelola
+                            </button>
+                            <button class="flex-1 py-2 text-white font-semibold text-sm bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl hover:shadow-md transition">
+                                Perpanjang
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- Toast -->
-        <div id="toast" class="fixed bottom-24 left-4 right-4 max-w-[428px] mx-auto bg-gray-800 text-white rounded-xl p-3 z-50 hidden animate-fadeIn">
-            <div class="flex items-center gap-2">
-                <i class="fas fa-check-circle text-green-400"></i>
-                <span id="toastMessage" class="text-sm"></span>
+        <!-- ============================================ -->
+        <!-- CTA BOOKING BOOTH (Fitur Utama) -->
+        <!-- ============================================ -->
+        <div class="px-6 mt-2">
+            <div class="bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl p-5 shadow-lg card-hover cursor-pointer">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <p class="text-green-100 text-sm">Butuh booth baru?</p>
+                        <h3 class="text-white font-bold text-lg mt-0.5">Booking Booth Sekarang</h3>
+                        <p class="text-green-100 text-xs mt-1">Dapatkan lokasi strategis untuk usahamu</p>
+                    </div>
+                    <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                        <i class="fas fa-arrow-right text-white text-xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================ -->
+        <!-- PERFORMANCE SECTION -->
+        <!-- ============================================ -->
+        <div class="px-6 mt-6 pb-24">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                    <i class="fas fa-chart-line text-blue-500 text-lg"></i>
+                    Performa Booth Kamu
+                </h2>
+                <button class="text-gray-400 text-xs hover:text-green-600 transition">
+                    Detail <i class="fas fa-chevron-right ml-1 text-xs"></i>
+                </button>
+            </div>
+
+            <!-- Main Performance Card -->
+            <div class="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl p-5 text-white shadow-lg">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-blue-100 text-sm">Skor Performa Bulan Ini</p>
+                        <p class="text-5xl font-bold mt-1">78<span class="text-2xl">%</span></p>
+                        <div class="flex items-center gap-2 mt-2">
+                            <div class="bg-blue-400/30 rounded-full px-2 py-0.5">
+                                <i class="fas fa-arrow-up text-xs text-blue-200"></i>
+                                <span class="text-xs text-blue-200">+12%</span>
+                            </div>
+                            <span class="text-xs text-blue-200">dari bulan lalu</span>
+                        </div>
+                    </div>
+                    <!-- Circular Progress -->
+                    <div class="relative w-24 h-24">
+                        <svg class="w-24 h-24 transform -rotate-90">
+                            <circle cx="48" cy="48" r="42" stroke="rgba(255,255,255,0.2)" stroke-width="8" fill="none"/>
+                            <circle cx="48" cy="48" r="42" stroke="white" stroke-width="8" fill="none"
+                                stroke-dasharray="264" stroke-dashoffset="58" stroke-linecap="round"/>
+                        </svg>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <i class="fas fa-chart-line text-white text-2xl"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Metrics Grid -->
+                <div class="grid grid-cols-3 gap-3 mt-6 pt-4 border-t border-white/20">
+                    <div class="text-center bg-white/10 rounded-xl py-2">
+                        <p class="text-blue-100 text-xs">Traffic</p>
+                        <p class="font-bold text-lg">12.5k</p>
+                        <p class="text-[10px] text-blue-200">↑ 23%</p>
+                    </div>
+                    <div class="text-center bg-white/10 rounded-xl py-2">
+                        <p class="text-blue-100 text-xs">Penjualan</p>
+                        <p class="font-bold text-lg">Rp8.2Jt</p>
+                        <p class="text-[10px] text-blue-200">↑ 15%</p>
+                    </div>
+                    <div class="text-center bg-white/10 rounded-xl py-2">
+                        <p class="text-blue-100 text-xs">Rating</p>
+                        <p class="font-bold text-lg">4.8</p>
+                        <p class="text-[10px] text-blue-200">★ 120</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Stats Cards -->
+            <div class="grid grid-cols-2 gap-3 mt-4">
+                <div class="bg-gradient-to-r from-orange-50 to-orange-100 rounded-2xl p-4 shadow-sm card-hover cursor-pointer">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-orange-600 text-xs font-medium">Total Impressions</p>
+                            <p class="font-bold text-gray-800 text-xl">24.8k</p>
+                            <p class="text-green-600 text-xs">↑ 8.2%</p>
+                        </div>
+                        <div class="w-10 h-10 bg-orange-200 rounded-full flex items-center justify-center">
+                            <i class="fas fa-eye text-orange-600 text-lg"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gradient-to-r from-purple-50 to-purple-100 rounded-2xl p-4 shadow-sm card-hover cursor-pointer">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-purple-600 text-xs font-medium">Pengunjung Unik</p>
+                            <p class="font-bold text-gray-800 text-xl">3.2k</p>
+                            <p class="text-green-600 text-xs">↑ 5.3%</p>
+                        </div>
+                        <div class="w-10 h-10 bg-purple-200 rounded-full flex items-center justify-center">
+                            <i class="fas fa-users text-purple-600 text-lg"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Relocation Recommendation -->
+            <div class="mt-4 bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-4 border border-orange-200 cursor-pointer hover:shadow-md transition card-hover">
+                <div class="flex items-start gap-3">
+                    <div class="w-10 h-10 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center shadow-md">
+                        <i class="fas fa-location-arrow text-white text-sm"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="font-bold text-gray-800 text-sm">Rekomendasi Relokasi</h4>
+                                <p class="text-xs text-gray-600 mt-0.5">Booth Medan Stars memiliki potensi lebih besar di:</p>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-400 text-sm"></i>
+                        </div>
+                        <div class="flex gap-2 mt-3">
+                            <div class="bg-white rounded-xl px-3 py-2 shadow-sm flex-1 text-center">
+                                <p class="text-xs font-bold text-green-600">Sport Center</p>
+                                <p class="text-[10px] text-green-500">+45% traffic</p>
+                            </div>
+                            <div class="bg-white rounded-xl px-3 py-2 shadow-sm flex-1 text-center">
+                                <p class="text-xs font-bold text-blue-600">Medan Fair</p>
+                                <p class="text-[10px] text-blue-500">+32% traffic</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================ -->
+        <!-- BOTTOM NAVIGATION -->
+        <!-- ============================================ -->
+        <div class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-lg border-t border-gray-100 pb-5 pt-2 z-50 shadow-lg">
+            <div class="max-w-[428px] mx-auto flex justify-around px-6">
+                <button class="nav-btn flex flex-col items-center gap-1 text-green-500" data-tab="home">
+                    <i class="fas fa-home text-xl"></i>
+                    <span class="text-[10px] font-medium">Beranda</span>
+                </button>
+                <button class="nav-btn flex flex-col items-center gap-1 text-gray-400" data-tab="explore">
+                    <i class="fas fa-map-marker-alt text-xl"></i>
+                    <span class="text-[10px] font-medium">Eksplor</span>
+                </button>
+                <button class="nav-btn flex flex-col items-center gap-1 text-gray-400" data-tab="bookings">
+                    <i class="fas fa-calendar-alt text-xl"></i>
+                    <span class="text-[10px] font-medium">Booking</span>
+                </button>
+                <button class="nav-btn flex flex-col items-center gap-1 text-gray-400" data-tab="profile">
+                    <i class="fas fa-user text-xl"></i>
+                    <span class="text-[10px] font-medium">Profil</span>
+                </button>
             </div>
         </div>
     </div>
 
     <script>
-        // ============================================
-        // STATE VARIABLES
-        // ============================================
-        let selectedPackage = null;
-        let selectedPackagePrice = 0;
-        let selectedPackageName = '';
-        let selectedDuration = 1;
-        let selectedDiscount = 0;
-        let selectedAddons = [];
-        let selectedStartDate = '';
-        let selectedPayment = '';
-
-        // Location data (bisa dari URL parameter)
-        const urlParams = new URLSearchParams(window.location.search);
-        const locationData = {
-            name: urlParams.get('name') || "Grand Indonesia",
-            address: urlParams.get('address') || "Jl. MH Thamrin No.1, Jakarta Pusat",
-            image: urlParams.get('image') || "https://picsum.photos/id/96/400/300"
-        };
-
-        // ============================================
-        // URL ROUTING (Hash-based)
-        // ============================================
-        function updateURLStep(step) {
-            window.location.hash = `step-${step}`;
-        }
-
-        function getCurrentStepFromURL() {
-            const hash = window.location.hash;
-            if (hash === '#step-2') return 2;
-            if (hash === '#step-3') return 3;
-            return 1;
-        }
-
-        function navigateToStep(step) {
-            // Validate if can go to step
-            if (step === 2 && !selectedPackage) {
-                showToast('Pilih paket booth terlebih dahulu');
-                return;
-            }
-            if (step === 3 && (!selectedPackage || !selectedStartDate)) {
-                showToast('Lengkapi data durasi dan tanggal mulai');
-                return;
-            }
-            
-            updateURLStep(step);
-            showStep(step);
-        }
-
-        function showStep(step) {
-            // Hide all steps
-            document.querySelectorAll('.page-step').forEach(el => {
-                el.classList.remove('active-step');
-            });
-            
-            // Show selected step
-            document.getElementById(`step${step}`).classList.add('active-step');
-            
-            // Update step indicators
-            for (let i = 1; i <= 3; i++) {
-                const indicator = document.getElementById(`step${i}Indicator`);
-                if (i < step) {
-                    indicator.classList.remove('active');
-                    indicator.classList.add('completed');
-                } else if (i === step) {
-                    indicator.classList.remove('completed');
-                    indicator.classList.add('active');
-                } else {
-                    indicator.classList.remove('active', 'completed');
-                }
-            }
-            
-            // Update step 2 data if needed
-            if (step === 2 && selectedPackage) {
-                document.getElementById('selectedPackageName').innerText = selectedPackageName;
-                document.getElementById('selectedPackagePrice').innerHTML = formatRupiah(selectedPackagePrice);
-                updateSummary();
-            }
-            
-            // Update step 3 data if needed
-            if (step === 3) {
-                updateConfirmationData();
-            }
-        }
-
-        // Listen to hash change
-        window.addEventListener('hashchange', () => {
-            const step = getCurrentStepFromURL();
-            if (step === 1) showStep(1);
-            else if (step === 2 && selectedPackage) showStep(2);
-            else if (step === 3 && selectedPackage && selectedStartDate) showStep(3);
-            else showStep(1);
-        });
-
-        // ============================================
-        // STEP 1: SELECT PACKAGE
-        // ============================================
-        function selectPackage(packageType) {
-            // Remove selected class from all packages
-            document.querySelectorAll('.package-card').forEach(card => {
-                card.classList.remove('selected');
-            });
-            
-            // Add selected class to clicked package
-            const selectedCard = document.querySelector(`.package-card[data-package="${packageType}"]`);
-            selectedCard.classList.add('selected');
-            
-            // Get package data
-            selectedPackage = packageType;
-            selectedPackagePrice = parseInt(selectedCard.getAttribute('data-price'));
-            selectedPackageName = selectedCard.getAttribute('data-name');
-            
-            // Enable next button
-            const nextBtn = document.getElementById('nextStep1Btn');
-            nextBtn.disabled = false;
-            nextBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-        }
-
-        function nextStep() {
-            if (!selectedPackage) {
-                showToast('Pilih tipe booth terlebih dahulu');
-                return;
-            }
-            navigateToStep(2);
-        }
-
-        // ============================================
-        // STEP 2: DURATION & ADD-ONS
-        // ============================================
-        function selectDuration(months) {
-            selectedDuration = months;
-            
-            // Update UI
-            document.querySelectorAll('.duration-btn').forEach(btn => {
-                btn.classList.remove('selected', 'bg-green-500', 'text-white');
-                btn.classList.add('border-gray-200');
-            });
-            
-            const selectedBtn = document.querySelector(`.duration-btn[data-duration="${months}"]`);
-            selectedBtn.classList.add('selected', 'bg-green-500', 'text-white');
-            selectedBtn.classList.remove('border-gray-200');
-            
-            // Get discount
-            selectedDiscount = parseInt(selectedBtn.getAttribute('data-discount'));
-            
-            updateSummary();
-        }
-
-        function toggleAddon(element) {
-            const addonName = element.getAttribute('data-addon');
-            const addonPrice = parseInt(element.getAttribute('data-price'));
-            
-            if (element.classList.contains('selected')) {
-                element.classList.remove('selected');
-                element.classList.remove('border-green-500', 'bg-green-50');
-                element.classList.add('border-gray-200');
-                selectedAddons = selectedAddons.filter(a => a.name !== addonName);
-            } else {
-                element.classList.add('selected');
-                element.classList.remove('border-gray-200');
-                element.classList.add('border-green-500', 'bg-green-50');
-                selectedAddons.push({ name: addonName, price: addonPrice });
-            }
-            
-            updateSummary();
-        }
-
-        function updateSummary() {
-            let baseTotal = selectedPackagePrice * selectedDuration;
-            let discountAmount = 0;
-            
-            if (selectedDiscount > 0) {
-                discountAmount = (baseTotal * selectedDiscount) / 100;
-            }
-            
-            let addonTotal = selectedAddons.reduce((sum, addon) => sum + addon.price, 0);
-            let grandTotal = baseTotal - discountAmount + addonTotal;
-            
-            document.getElementById('summaryBasePrice').innerHTML = formatRupiah(baseTotal);
-            
-            if (selectedDiscount > 0) {
-                document.getElementById('summaryDiscountRow').style.display = 'flex';
-                document.getElementById('summaryDiscount').innerHTML = `-${formatRupiah(discountAmount)}`;
-            } else {
-                document.getElementById('summaryDiscountRow').style.display = 'none';
-            }
-            
-            if (selectedAddons.length > 0) {
-                document.getElementById('summaryAddonRow').style.display = 'flex';
-                document.getElementById('summaryAddon').innerHTML = formatRupiah(addonTotal);
-            } else {
-                document.getElementById('summaryAddonRow').style.display = 'none';
-            }
-            
-            document.getElementById('summaryTotal').innerHTML = formatRupiah(grandTotal);
-        }
-
-        function nextStep2() {
-            selectedStartDate = document.getElementById('startDate').value;
-            if (!selectedStartDate) {
-                showToast('Pilih tanggal mulai sewa');
-                return;
-            }
-            navigateToStep(3);
-        }
-
-        function prevStep() {
-            navigateToStep(1);
-        }
-
-        // ============================================
-        // STEP 3: CONFIRMATION
-        // ============================================
-        function updateConfirmationData() {
-            let baseTotal = selectedPackagePrice * selectedDuration;
-            let discountAmount = (baseTotal * selectedDiscount) / 100;
-            let addonTotal = selectedAddons.reduce((sum, a) => sum + a.price, 0);
-            let grandTotal = baseTotal - discountAmount + addonTotal;
-            
-            const addonNames = selectedAddons.map(a => {
-                switch(a.name) {
-                    case 'branding': return 'Branding Premium';
-                    case 'electricity': return 'Listrik & WiFi';
-                    case 'equipment': return 'Peralatan Dapur';
-                    case 'staff': return 'Staff Booth';
-                    default: return a.name;
-                }
-            }).join(', ');
-            
-            document.getElementById('confirmPackage').innerHTML = selectedPackageName;
-            document.getElementById('confirmDuration').innerHTML = `${selectedDuration} Bulan ${selectedDiscount > 0 ? `(hemat ${selectedDiscount}%)` : ''}`;
-            document.getElementById('confirmDate').innerHTML = formatDate(selectedStartDate);
-            document.getElementById('confirmBasePrice').innerHTML = formatRupiah(baseTotal);
-            document.getElementById('confirmTotal').innerHTML = formatRupiah(grandTotal);
-            
-            if (selectedDiscount > 0) {
-                document.getElementById('confirmDiscountRow').style.display = 'flex';
-                document.getElementById('confirmDiscount').innerHTML = `-${formatRupiah(discountAmount)}`;
-            } else {
-                document.getElementById('confirmDiscountRow').style.display = 'none';
-            }
-            
-            if (selectedAddons.length > 0) {
-                document.getElementById('confirmAddonRow').style.display = 'flex';
-                document.getElementById('confirmAddon').innerHTML = addonNames;
-                document.getElementById('confirmAddonTotalRow').style.display = 'flex';
-                document.getElementById('confirmAddonTotal').innerHTML = formatRupiah(addonTotal);
-            } else {
-                document.getElementById('confirmAddonRow').style.display = 'none';
-                document.getElementById('confirmAddonTotalRow').style.display = 'none';
-            }
-        }
-
-        function selectPayment(method) {
-            selectedPayment = method;
-            document.querySelectorAll('input[name="payment"]').forEach(radio => {
-                radio.checked = radio.value === method;
-            });
-        }
-
-        function prevStep2() {
-            navigateToStep(2);
-        }
-
-        function confirmBooking() {
-            if (!selectedPayment) {
-                showToast('Pilih metode pembayaran terlebih dahulu');
-                return;
-            }
-            
-            const bookingCode = 'BTH-' + new Date().getFullYear() + '-' + Math.floor(Math.random() * 10000).toString().padStart(4, '0');
-            document.getElementById('bookingCode').innerText = bookingCode;
-            document.getElementById('successModal').classList.remove('hidden');
-            document.getElementById('successModal').style.display = 'flex';
-        }
-
-        function closeSuccessModal() {
-            document.getElementById('successModal').style.display = 'none';
-            window.location.href = 'index.html';
-        }
-
-        // ============================================
-        // UTILITY FUNCTIONS
-        // ============================================
-        function formatRupiah(amount) {
-            return new Intl.NumberFormat('id-ID', {
-                style: 'currency',
-                currency: 'IDR',
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0
-            }).format(amount);
-        }
-
-        function formatDate(dateString) {
-            const date = new Date(dateString);
-            return date.toLocaleDateString('id-ID', {
-                day: 'numeric',
-                month: 'long',
-                year: 'numeric'
-            });
-        }
-
+        // Simple navigation
         function showToast(message) {
-            const toast = document.getElementById('toast');
-            document.getElementById('toastMessage').innerText = message;
-            toast.classList.remove('hidden');
-            setTimeout(() => toast.classList.add('hidden'), 2000);
+            console.log(message);
+            alert(message);
         }
-
-        function goBack() {
-            window.history.back();
-        }
-
-        // ============================================
-        // INITIALIZATION
-        // ============================================
-        document.getElementById('locationNameDisplay').innerText = `${locationData.name}, Jakarta Pusat`;
-        document.getElementById('confirmBoothName').innerText = locationData.name;
-        document.getElementById('confirmAddress').innerText = locationData.address;
-        document.getElementById('confirmImage').src = locationData.image;
         
-        // Set default start date (tomorrow)
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        document.getElementById('startDate').value = tomorrow.toISOString().split('T')[0];
+        // Bottom navigation
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tab = btn.getAttribute('data-tab');
+                document.querySelectorAll('.nav-btn').forEach(b => {
+                    b.classList.remove('text-green-500');
+                    b.classList.add('text-gray-400');
+                });
+                btn.classList.remove('text-gray-400');
+                btn.classList.add('text-green-500');
+                showToast(`Beralih ke tab ${tab}`);
+            });
+        });
         
-        // Initialize from URL hash
-        const initialStep = getCurrentStepFromURL();
-        if (initialStep === 1) showStep(1);
-        else if (initialStep === 2) showStep(2);
-        else if (initialStep === 3) showStep(3);
-        else showStep(1);
+        // Card click handlers
+        document.querySelectorAll('.card-hover').forEach(card => {
+            card.addEventListener('click', () => {
+                console.log('Card clicked');
+            });
+        });
+        
+        // CTA Button
+        document.querySelector('.bg-gradient-to-r.from-green-500').addEventListener('click', () => {
+            showToast('Mulai booking booth sekarang!');
+        });
     </script>
 </body>
 </html>
