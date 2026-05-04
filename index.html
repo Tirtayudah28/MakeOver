@@ -3,500 +3,194 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
-    <title>Boothera - Sewa Booth untuk UMKM</title>
+    <title>Boothera - Setup Profil Usaha</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; background: #F8FAFC; }
+        body { font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; background: #F0FDF4; }
         
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
+            from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
         }
+        .animate-fadeIn { animation: fadeIn 0.3s ease-out forwards; }
+        .animate-scaleIn { animation: scaleIn 0.3s ease-out forwards; }
         
-        .animate-fadeIn { animation: fadeIn 0.4s ease-out forwards; }
-        .animate-pulse-slow { animation: pulse 2s ease-in-out infinite; }
-        
+        /* Custom scrollbar */
         ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: #E2E8F0; border-radius: 10px; }
+        ::-webkit-scrollbar-track { background: #D1D5DB; border-radius: 10px; }
         ::-webkit-scrollbar-thumb { background: #10B981; border-radius: 10px; }
         
-        .scrollbar-hide::-webkit-scrollbar { display: none; }
-        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-        
         .card-hover {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .card-hover:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 25px -12px rgba(0, 0, 0, 0.15);
+            transition: all 0.2s ease;
         }
         .card-hover:active {
             transform: scale(0.98);
         }
         
-        .gradient-text {
-            background: linear-gradient(135deg, #10B981, #059669);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
         }
-        
-        /* Shimmer effect untuk button */
-        @keyframes shimmer {
-            0% { background-position: -200% 0; }
-            100% { background-position: 200% 0; }
-        }
-        .btn-shimmer {
-            background: linear-gradient(90deg, #10B981, #34D399, #10B981);
-            background-size: 200% auto;
-            animation: shimmer 3s ease infinite;
+        .modal.active {
+            display: flex;
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-white via-green-50 to-emerald-50">
+<body class="bg-[#F0FDF4]">
 
     <!-- Main Container -->
-    <div class="max-w-[428px] mx-auto bg-white min-h-screen shadow-2xl relative">
+    <div class="max-w-[428px] mx-auto bg-white min-h-screen shadow-xl relative">
         
         <!-- ============================================ -->
-        <!-- HEADER - Logo & Profile -->
+        <!-- SETUP PROFIL SECTION -->
         <!-- ============================================ -->
-        <div class="pt-12 px-6 pb-4 bg-white border-b border-gray-100">
-            <div class="flex justify-between items-center">
-                <!-- Logo -->
-                <div class="flex items-center gap-2">
-                    <div class="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-md">
-                        <i class="fas fa-store text-white text-lg"></i>
+        <div id="setupSection" class="min-h-screen flex items-center justify-center p-4 bg-white">
+            <div class="max-w-md w-full animate-fadeIn">
+                <div class="text-center mb-8">
+                    <div class="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-2xl mb-4">
+                        <i class="fas fa-store text-green-600 text-2xl"></i>
                     </div>
+                    <h2 class="text-2xl font-bold">Setup Profil Usaha</h2>
+                    <p class="text-gray-500 mt-1">Isi data bisnis Anda</p>
+                </div>
+
+                <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 space-y-5">
                     <div>
-                        <h1 class="text-xl font-bold gradient-text">Boothera</h1>
-                        <p class="text-[10px] text-gray-400 -mt-0.5">Sewa Booth UMKM</p>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Nama Usaha</label>
+                        <input type="text" id="businessName" placeholder="Contoh: Kopi Kenangan" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500">
                     </div>
-                </div>
-                
-                <!-- Right Icons -->
-                <div class="flex items-center gap-4">
-                    <!-- Search -->
-                    <div class="relative cursor-pointer">
-                        <i class="fas fa-search text-gray-500 text-xl hover:text-green-500 transition"></i>
-                    </div>
-                    <!-- Notification -->
-                    <div class="relative cursor-pointer">
-                        <i class="fas fa-bell text-gray-500 text-xl hover:text-green-500 transition"></i>
-                        <span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full"></span>
-                    </div>
-                    <!-- Profile Avatar -->
-                    <div class="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full flex items-center justify-center shadow-md cursor-pointer hover:scale-105 transition">
-                        <i class="fas fa-user text-white text-sm"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- ============================================ -->
-        <!-- SEARCH BAR -->
-        <!-- ============================================ -->
-        <div class="px-6 py-4 bg-white">
-            <div class="relative">
-                <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
-                <input type="text" placeholder="Cari booth atau lokasi..." 
-                    class="w-full bg-gray-100 border-0 rounded-2xl py-3.5 pl-11 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:bg-white transition-all">
-            </div>
-        </div>
-
-        <!-- ============================================ -->
-        <!-- REKOMENDASI SECTION (Horizontal Scroll) -->
-        <!-- ============================================ -->
-        <div class="px-6 mt-2">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
-                    <i class="fas fa-fire text-orange-500 text-lg"></i>
-                    Rekomendasi untukmu
-                </h2>
-                <button class="text-green-600 text-xs font-medium hover:text-green-700 transition">
-                    Lihat Semua <i class="fas fa-arrow-right ml-1 text-xs"></i>
-                </button>
-            </div>
-            
-            <div class="flex gap-4 overflow-x-auto pb-3 scrollbar-hide">
-                <!-- Card 1 -->
-                <div class="min-w-[200px] bg-white rounded-2xl overflow-hidden shadow-md border border-gray-100 card-hover cursor-pointer">
-                    <div class="relative h-32">
-                        <img src="https://picsum.photos/id/166/400/200" alt="Sport Center" class="w-full h-full object-cover">
-                        <div class="absolute top-2 left-2 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
-                            <i class="fas fa-fire mr-1"></i> HOT
-                        </div>
-                        <div class="absolute bottom-2 left-2 bg-white/90 backdrop-blur rounded-full px-2 py-0.5">
-                            <span class="text-[10px] font-semibold text-blue-600"><i class="fas fa-utensils mr-1"></i>F&B</span>
-                        </div>
-                    </div>
-                    <div class="p-3">
-                        <h3 class="font-semibold text-gray-800 text-sm">Sport Center Booth</h3>
-                        <p class="text-xs text-gray-400 mt-0.5">Tanjung Morawa</p>
-                        <div class="flex justify-between items-center mt-2">
-                            <div>
-                                <span class="font-bold text-green-600 text-base">Rp2.5Jt</span>
-                                <span class="text-[10px] text-gray-400">/bulan</span>
-                            </div>
-                            <div class="bg-green-100 px-2 py-1 rounded-lg">
-                                <i class="fas fa-star text-yellow-500 text-[10px]"></i>
-                                <span class="text-[10px] font-semibold text-green-700 ml-1">4.8</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Card 2 -->
-                <div class="min-w-[200px] bg-white rounded-2xl overflow-hidden shadow-md border border-gray-100 card-hover cursor-pointer">
-                    <div class="relative h-32">
-                        <img src="https://picsum.photos/id/30/400/200" alt="Food Court" class="w-full h-full object-cover">
-                        <div class="absolute top-2 left-2 bg-purple-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
-                            <i class="fas fa-crown mr-1"></i> PREMIUM
-                        </div>
-                        <div class="absolute bottom-2 left-2 bg-white/90 backdrop-blur rounded-full px-2 py-0.5">
-                            <span class="text-[10px] font-semibold text-purple-600"><i class="fas fa-utensils mr-1"></i>F&B</span>
-                        </div>
-                    </div>
-                    <div class="p-3">
-                        <h3 class="font-semibold text-gray-800 text-sm">Food Court Center</h3>
-                        <p class="text-xs text-gray-400 mt-0.5">Medan Fair</p>
-                        <div class="flex justify-between items-center mt-2">
-                            <div>
-                                <span class="font-bold text-green-600 text-base">Rp3.5Jt</span>
-                                <span class="text-[10px] text-gray-400">/bulan</span>
-                            </div>
-                            <div class="bg-green-100 px-2 py-1 rounded-lg">
-                                <i class="fas fa-star text-yellow-500 text-[10px]"></i>
-                                <span class="text-[10px] font-semibold text-green-700 ml-1">4.9</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Card 3 -->
-                <div class="min-w-[200px] bg-white rounded-2xl overflow-hidden shadow-md border border-gray-100 card-hover cursor-pointer">
-                    <div class="relative h-32">
-                        <img src="https://picsum.photos/id/20/400/200" alt="Fashion Booth" class="w-full h-full object-cover">
-                        <div class="absolute bottom-2 left-2 bg-white/90 backdrop-blur rounded-full px-2 py-0.5">
-                            <span class="text-[10px] font-semibold text-green-600"><i class="fas fa-tshirt mr-1"></i>Fashion</span>
-                        </div>
-                    </div>
-                    <div class="p-3">
-                        <h3 class="font-semibold text-gray-800 text-sm">Fashion Booth</h3>
-                        <p class="text-xs text-gray-400 mt-0.5">Centre Point</p>
-                        <div class="flex justify-between items-center mt-2">
-                            <div>
-                                <span class="font-bold text-green-600 text-base">Rp4.0Jt</span>
-                                <span class="text-[10px] text-gray-400">/bulan</span>
-                            </div>
-                            <div class="bg-green-100 px-2 py-1 rounded-lg">
-                                <i class="fas fa-star text-yellow-500 text-[10px]"></i>
-                                <span class="text-[10px] font-semibold text-green-700 ml-1">4.7</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ============================================ -->
-        <!-- YOUR BOOTH SECTION -->
-        <!-- ============================================ -->
-        <div class="px-6 mt-4">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
-                    <i class="fas fa-store text-green-600 text-lg"></i>
-                    Booth Kamu
-                </h2>
-                <button class="text-green-600 text-xs font-medium hover:text-green-700 transition">
-                    Lihat Semua <i class="fas fa-arrow-right ml-1 text-xs"></i>
-                </button>
-            </div>
-            
-            <!-- Booth Card 1 -->
-            <div class="bg-white rounded-2xl p-4 mb-4 shadow-md border border-gray-100 card-hover cursor-pointer">
-                <div class="flex gap-4">
-                    <div class="relative">
-                        <img src="https://picsum.photos/id/104/80/80" alt="Booth" class="w-20 h-20 rounded-xl object-cover shadow-md">
-                        <div class="absolute -top-2 -right-2 bg-green-500 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full">
-                            AKTIF
-                        </div>
-                    </div>
-                    <div class="flex-1">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <h3 class="font-bold text-gray-800">Sport Center Booth</h3>
-                                <p class="text-xs text-gray-400 mt-0.5">Tanjung Morawa</p>
-                            </div>
-                            <div class="text-right">
-                                <p class="text-xs text-gray-500">Sewa tersisa</p>
-                                <p class="font-bold text-green-600">48 hari</p>
-                            </div>
-                        </div>
-                        <div class="mt-2">
-                            <div class="flex justify-between text-xs mb-1">
-                                <span class="text-gray-500">Masa sewa</span>
-                                <span class="text-gray-700 font-medium">78%</span>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="bg-gradient-to-r from-green-500 to-emerald-500 rounded-full h-2" style="width: 78%"></div>
-                            </div>
-                        </div>
-                        <div class="flex gap-2 mt-3">
-                            <button class="flex-1 py-2 text-green-600 font-semibold text-sm bg-green-50 rounded-xl hover:bg-green-100 transition">
-                                Kelola
-                            </button>
-                            <button class="flex-1 py-2 text-white font-semibold text-sm bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl hover:shadow-md transition">
-                                Perpanjang
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Booth Card 2 -->
-            <div class="bg-white rounded-2xl p-4 mb-4 shadow-md border border-gray-100 card-hover cursor-pointer">
-                <div class="flex gap-4">
-                    <div class="relative">
-                        <img src="https://picsum.photos/id/96/80/80" alt="Booth" class="w-20 h-20 rounded-xl object-cover shadow-md">
-                        <div class="absolute -top-2 -right-2 bg-green-500 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full">
-                            AKTIF
-                        </div>
-                    </div>
-                    <div class="flex-1">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <h3 class="font-bold text-gray-800">Medan Stars</h3>
-                                <p class="text-xs text-gray-400 mt-0.5">Medan Fair</p>
-                            </div>
-                            <div class="text-right">
-                                <p class="text-xs text-gray-500">Sewa tersisa</p>
-                                <p class="font-bold text-green-600">32 hari</p>
-                            </div>
-                        </div>
-                        <div class="mt-2">
-                            <div class="flex justify-between text-xs mb-1">
-                                <span class="text-gray-500">Masa sewa</span>
-                                <span class="text-gray-700 font-medium">65%</span>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="bg-gradient-to-r from-green-500 to-emerald-500 rounded-full h-2" style="width: 65%"></div>
-                            </div>
-                        </div>
-                        <div class="flex gap-2 mt-3">
-                            <button class="flex-1 py-2 text-green-600 font-semibold text-sm bg-green-50 rounded-xl hover:bg-green-100 transition">
-                                Kelola
-                            </button>
-                            <button class="flex-1 py-2 text-white font-semibold text-sm bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl hover:shadow-md transition">
-                                Perpanjang
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ============================================ -->
-        <!-- CTA BOOKING BOOTH (Fitur Utama) -->
-        <!-- ============================================ -->
-        <div class="px-6 mt-2">
-            <div class="bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl p-5 shadow-lg card-hover cursor-pointer">
-                <div class="flex justify-between items-center">
                     <div>
-                        <p class="text-green-100 text-sm">Butuh booth baru?</p>
-                        <h3 class="text-white font-bold text-lg mt-0.5">Booking Booth Sekarang</h3>
-                        <p class="text-green-100 text-xs mt-1">Dapatkan lokasi strategis untuk usahamu</p>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Jenis Usaha</label>
+                        <select id="businessType" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <option>Kopi & Minuman</option>
+                            <option>Makanan Ringan</option>
+                            <option>Makanan Berat</option>
+                            <option>Dessert</option>
+                        </select>
                     </div>
-                    <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-                        <i class="fas fa-arrow-right text-white text-xl"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- ============================================ -->
-        <!-- PERFORMANCE SECTION -->
-        <!-- ============================================ -->
-        <div class="px-6 mt-6 pb-24">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
-                    <i class="fas fa-chart-line text-blue-500 text-lg"></i>
-                    Performa Booth Kamu
-                </h2>
-                <button class="text-gray-400 text-xs hover:text-green-600 transition">
-                    Detail <i class="fas fa-chevron-right ml-1 text-xs"></i>
-                </button>
-            </div>
-
-            <!-- Main Performance Card -->
-            <div class="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl p-5 text-white shadow-lg">
-                <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-blue-100 text-sm">Skor Performa Bulan Ini</p>
-                        <p class="text-5xl font-bold mt-1">78<span class="text-2xl">%</span></p>
-                        <div class="flex items-center gap-2 mt-2">
-                            <div class="bg-blue-400/30 rounded-full px-2 py-0.5">
-                                <i class="fas fa-arrow-up text-xs text-blue-200"></i>
-                                <span class="text-xs text-blue-200">+12%</span>
-                            </div>
-                            <span class="text-xs text-blue-200">dari bulan lalu</span>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Skala Usaha</label>
+                        <div class="grid grid-cols-3 gap-3">
+                            <button class="scale-btn py-3 rounded-xl border-2 border-gray-200 font-medium transition-all hover:border-green-400" data-scale="starter">Starter</button>
+                            <button class="scale-btn py-3 rounded-xl border-2 border-gray-200 font-medium transition-all hover:border-green-400" data-scale="growing">Growing</button>
+                            <button class="scale-btn py-3 rounded-xl border-2 border-gray-200 font-medium transition-all hover:border-green-400" data-scale="brand">Brand</button>
                         </div>
                     </div>
-                    <!-- Circular Progress -->
-                    <div class="relative w-24 h-24">
-                        <svg class="w-24 h-24 transform -rotate-90">
-                            <circle cx="48" cy="48" r="42" stroke="rgba(255,255,255,0.2)" stroke-width="8" fill="none"/>
-                            <circle cx="48" cy="48" r="42" stroke="white" stroke-width="8" fill="none"
-                                stroke-dasharray="264" stroke-dashoffset="58" stroke-linecap="round"/>
-                        </svg>
-                        <div class="absolute inset-0 flex items-center justify-center">
-                            <i class="fas fa-chart-line text-white text-2xl"></i>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Metrics Grid -->
-                <div class="grid grid-cols-3 gap-3 mt-6 pt-4 border-t border-white/20">
-                    <div class="text-center bg-white/10 rounded-xl py-2">
-                        <p class="text-blue-100 text-xs">Traffic</p>
-                        <p class="font-bold text-lg">12.5k</p>
-                        <p class="text-[10px] text-blue-200">↑ 23%</p>
-                    </div>
-                    <div class="text-center bg-white/10 rounded-xl py-2">
-                        <p class="text-blue-100 text-xs">Penjualan</p>
-                        <p class="font-bold text-lg">Rp8.2Jt</p>
-                        <p class="text-[10px] text-blue-200">↑ 15%</p>
-                    </div>
-                    <div class="text-center bg-white/10 rounded-xl py-2">
-                        <p class="text-blue-100 text-xs">Rating</p>
-                        <p class="font-bold text-lg">4.8</p>
-                        <p class="text-[10px] text-blue-200">★ 120</p>
-                    </div>
-                </div>
-            </div>
 
-            <!-- Quick Stats Cards -->
-            <div class="grid grid-cols-2 gap-3 mt-4">
-                <div class="bg-gradient-to-r from-orange-50 to-orange-100 rounded-2xl p-4 shadow-sm card-hover cursor-pointer">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-orange-600 text-xs font-medium">Total Impressions</p>
-                            <p class="font-bold text-gray-800 text-xl">24.8k</p>
-                            <p class="text-green-600 text-xs">↑ 8.2%</p>
-                        </div>
-                        <div class="w-10 h-10 bg-orange-200 rounded-full flex items-center justify-center">
-                            <i class="fas fa-eye text-orange-600 text-lg"></i>
-                        </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Lokasi Target</label>
+                        <select id="targetLocation" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <option>Jakarta Pusat</option>
+                            <option>Jakarta Selatan</option>
+                            <option>Jakarta Barat</option>
+                            <option>Jakarta Timur</option>
+                            <option>Jakarta Utara</option>
+                            <option>Tangerang</option>
+                            <option>Bekasi</option>
+                            <option>Depok</option>
+                        </select>
                     </div>
-                </div>
-                <div class="bg-gradient-to-r from-purple-50 to-purple-100 rounded-2xl p-4 shadow-sm card-hover cursor-pointer">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-purple-600 text-xs font-medium">Pengunjung Unik</p>
-                            <p class="font-bold text-gray-800 text-xl">3.2k</p>
-                            <p class="text-green-600 text-xs">↑ 5.3%</p>
-                        </div>
-                        <div class="w-10 h-10 bg-purple-200 rounded-full flex items-center justify-center">
-                            <i class="fas fa-users text-purple-600 text-lg"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
-            <!-- Relocation Recommendation -->
-            <div class="mt-4 bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-4 border border-orange-200 cursor-pointer hover:shadow-md transition card-hover">
-                <div class="flex items-start gap-3">
-                    <div class="w-10 h-10 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center shadow-md">
-                        <i class="fas fa-location-arrow text-white text-sm"></i>
-                    </div>
-                    <div class="flex-1">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <h4 class="font-bold text-gray-800 text-sm">Rekomendasi Relokasi</h4>
-                                <p class="text-xs text-gray-600 mt-0.5">Booth Medan Stars memiliki potensi lebih besar di:</p>
-                            </div>
-                            <i class="fas fa-chevron-right text-gray-400 text-sm"></i>
-                        </div>
-                        <div class="flex gap-2 mt-3">
-                            <div class="bg-white rounded-xl px-3 py-2 shadow-sm flex-1 text-center">
-                                <p class="text-xs font-bold text-green-600">Sport Center</p>
-                                <p class="text-[10px] text-green-500">+45% traffic</p>
-                            </div>
-                            <div class="bg-white rounded-xl px-3 py-2 shadow-sm flex-1 text-center">
-                                <p class="text-xs font-bold text-blue-600">Medan Fair</p>
-                                <p class="text-[10px] text-blue-500">+32% traffic</p>
-                            </div>
-                        </div>
-                    </div>
+                    <button onclick="saveAndContinue()" class="w-full bg-gradient-to-r from-green-500 to-emerald-500 text-white font-semibold py-4 rounded-2xl hover-lift mt-4">
+                        Mulai Sekarang
+                    </button>
                 </div>
             </div>
         </div>
 
-        <!-- ============================================ -->
-        <!-- BOTTOM NAVIGATION -->
-        <!-- ============================================ -->
-        <div class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-lg border-t border-gray-100 pb-5 pt-2 z-50 shadow-lg">
-            <div class="max-w-[428px] mx-auto flex justify-around px-6">
-                <button class="nav-btn flex flex-col items-center gap-1 text-green-500" data-tab="home">
-                    <i class="fas fa-home text-xl"></i>
-                    <span class="text-[10px] font-medium">Beranda</span>
-                </button>
-                <button class="nav-btn flex flex-col items-center gap-1 text-gray-400" data-tab="explore">
-                    <i class="fas fa-map-marker-alt text-xl"></i>
-                    <span class="text-[10px] font-medium">Eksplor</span>
-                </button>
-                <button class="nav-btn flex flex-col items-center gap-1 text-gray-400" data-tab="bookings">
-                    <i class="fas fa-calendar-alt text-xl"></i>
-                    <span class="text-[10px] font-medium">Booking</span>
-                </button>
-                <button class="nav-btn flex flex-col items-center gap-1 text-gray-400" data-tab="profile">
-                    <i class="fas fa-user text-xl"></i>
-                    <span class="text-[10px] font-medium">Profil</span>
-                </button>
-            </div>
+        <!-- Toast -->
+        <div id="toast" class="fixed bottom-24 left-4 right-4 max-w-[428px] mx-auto bg-gray-800 text-white rounded-xl p-3 z-[1000] hidden animate-fadeIn">
+            <div class="flex items-center gap-2"><i class="fas fa-check-circle text-green-400"></i><span id="toastMessage" class="text-sm"></span></div>
         </div>
     </div>
 
     <script>
-        // Simple navigation
-        function showToast(message) {
-            console.log(message);
-            alert(message);
+        // ============================================
+        // SCALE BUTTON HANDLER
+        // ============================================
+        let selectedScale = null;
+        
+        document.querySelectorAll('.scale-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.scale-btn').forEach(b => { 
+                    b.classList.remove('border-green-500', 'bg-green-50'); 
+                    b.classList.add('border-gray-200'); 
+                });
+                btn.classList.remove('border-gray-200'); 
+                btn.classList.add('border-green-500', 'bg-green-50');
+                selectedScale = btn.getAttribute('data-scale');
+            });
+        });
+
+        // ============================================
+        // SAVE AND CONTINUE
+        // ============================================
+        function saveAndContinue() {
+            const businessName = document.getElementById('businessName').value;
+            const businessType = document.getElementById('businessType').value;
+            const targetLocation = document.getElementById('targetLocation').value;
+            
+            // Validasi
+            if (!businessName) {
+                showToast('Masukkan nama usaha Anda');
+                return;
+            }
+            if (!selectedScale) {
+                showToast('Pilih skala usaha Anda');
+                return;
+            }
+            
+            // Simpan ke localStorage
+            const userProfile = {
+                businessName: businessName,
+                businessType: businessType,
+                scale: selectedScale,
+                targetLocation: targetLocation,
+                completedAt: new Date().toISOString()
+            };
+            localStorage.setItem('boothera_user_profile', JSON.stringify(userProfile));
+            localStorage.setItem('boothera_onboarding', 'true');
+            
+            showToast('Profil berhasil disimpan!');
+            
+            // Redirect ke halaman utama
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 1500);
         }
         
-        // Bottom navigation
-        document.querySelectorAll('.nav-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const tab = btn.getAttribute('data-tab');
-                document.querySelectorAll('.nav-btn').forEach(b => {
-                    b.classList.remove('text-green-500');
-                    b.classList.add('text-gray-400');
-                });
-                btn.classList.remove('text-gray-400');
-                btn.classList.add('text-green-500');
-                showToast(`Beralih ke tab ${tab}`);
-            });
-        });
-        
-        // Card click handlers
-        document.querySelectorAll('.card-hover').forEach(card => {
-            card.addEventListener('click', () => {
-                console.log('Card clicked');
-            });
-        });
-        
-        // CTA Button
-        document.querySelector('.bg-gradient-to-r.from-green-500').addEventListener('click', () => {
-            showToast('Mulai booking booth sekarang!');
-        });
+        // ============================================
+        // TOAST FUNCTION
+        // ============================================
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            toastMessage.innerText = message;
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 2000);
+        }
     </script>
 </body>
 </html>
