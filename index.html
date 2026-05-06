@@ -41,66 +41,39 @@
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* Package Card */
         .package-card {
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
         }
-        .package-card:hover {
-            transform: translateX(4px);
-        }
-        .package-card.selected {
-            border-color: #10B981;
-            background: #ECFDF5;
-        }
+        .package-card:hover { transform: translateX(4px); }
+        .package-card.selected { border-color: #10B981; background: #ECFDF5; }
         
-        /* Add-on Card */
         .addon-card {
             transition: all 0.2s ease;
             cursor: pointer;
         }
-        .addon-card:hover {
-            transform: translateX(4px);
-            background: #F9FAFB;
-        }
-        .addon-card.selected {
-            border-color: #10B981;
-            background: #ECFDF5;
-        }
+        .addon-card:hover { transform: translateX(4px); background: #F9FAFB; }
+        .addon-card.selected { border-color: #10B981; background: #ECFDF5; }
         
-        /* Accordion */
         .accordion-header {
             transition: all 0.2s ease;
             cursor: pointer;
         }
-        .accordion-header:hover {
-            background: #F9FAFB;
-        }
+        .accordion-header:hover { background: #F9FAFB; }
         .accordion-content {
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.4s ease-out;
         }
-        .accordion-content.open {
-            max-height: 800px;
-            transition: max-height 0.5s ease-in;
-        }
+        .accordion-content.open { max-height: 800px; transition: max-height 0.5s ease-in; }
         
-        /* Color Option */
         .color-option {
             transition: all 0.2s ease;
             cursor: pointer;
         }
-        .color-option:hover {
-            transform: scale(1.1);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        }
-        .color-option.selected {
-            transform: scale(1.15);
-            box-shadow: 0 0 0 3px white, 0 0 0 5px #10B981;
-        }
+        .color-option:hover { transform: scale(1.1); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+        .color-option.selected { transform: scale(1.15); box-shadow: 0 0 0 3px white, 0 0 0 5px #10B981; }
         
-        /* Tab styling */
         .tab-btn {
             transition: all 0.2s ease;
         }
@@ -109,27 +82,10 @@
             border-bottom-color: #10B981;
         }
         
-        /* Quantity Stepper */
-        .qty-btn {
-            transition: all 0.2s ease;
-        }
-        .qty-btn:active {
-            transform: scale(0.95);
-        }
-        
-        /* Booth 3D Visual */
         .booth-visual {
             background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
             border-radius: 24px;
             transition: all 0.3s ease;
-        }
-        
-        /* Price highlight */
-        .price-highlight {
-            background: linear-gradient(135deg, #10B981, #059669);
-            background-clip: text;
-            -webkit-background-clip: text;
-            color: transparent;
         }
     </style>
 </head>
@@ -143,7 +99,7 @@
         <!-- ============================================ -->
         <div class="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 pt-12 pb-6">
             <div class="flex items-center gap-3 mb-2">
-                <button onclick="history.back()" class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                <button onclick="goBack()" class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
                     <i class="fas fa-arrow-left text-white"></i>
                 </button>
                 <div>
@@ -154,16 +110,16 @@
         </div>
 
         <!-- ============================================ -->
-        <!-- TABS -->
+        <!-- TABS (Clickable with URL update) -->
         <!-- ============================================ -->
         <div class="flex border-b border-gray-100 px-6 bg-white">
-            <button class="tab-btn active flex-1 py-3 text-center font-semibold text-gray-700 border-b-2 border-green-500 transition" data-tab="package">
+            <button class="tab-btn flex-1 py-3 text-center font-semibold text-gray-700 border-b-2 border-green-500 transition" data-tab="package" onclick="navigateToStep(0)">
                 <i class="fas fa-store text-sm mr-1"></i> Paket Booth
             </button>
-            <button class="tab-btn flex-1 py-3 text-center font-semibold text-gray-400 border-b-2 border-transparent transition" data-tab="addons">
+            <button class="tab-btn flex-1 py-3 text-center font-semibold text-gray-400 border-b-2 border-transparent transition" data-tab="addons" onclick="navigateToStep(1)">
                 <i class="fas fa-cog text-sm mr-1"></i> Add-Ons
             </button>
-            <button class="tab-btn flex-1 py-3 text-center font-semibold text-gray-400 border-b-2 border-transparent transition" data-tab="customize">
+            <button class="tab-btn flex-1 py-3 text-center font-semibold text-gray-400 border-b-2 border-transparent transition" data-tab="customize" onclick="navigateToStep(2)">
                 <i class="fas fa-palette text-sm mr-1"></i> Kustomisasi
             </button>
         </div>
@@ -171,7 +127,7 @@
         <!-- ============================================ -->
         <!-- TAB 1: PAKET BOOTH -->
         <!-- ============================================ -->
-        <div id="tabPackage" class="px-6 py-5 space-y-5 animate-fadeIn">
+        <div id="tabPackage" class="tab-content px-6 py-5 space-y-5">
             <div>
                 <h3 class="text-base font-bold text-gray-800 mb-3">Pilih Tipe Booth</h3>
                 <div class="space-y-2">
@@ -241,7 +197,6 @@
                 </div>
             </div>
 
-            <!-- Durasi Sewa dengan visual slider -->
             <div>
                 <h3 class="text-base font-bold text-gray-800 mb-3">Durasi Sewa</h3>
                 <div class="grid grid-cols-3 gap-3">
@@ -259,13 +214,11 @@
                 </div>
             </div>
 
-            <!-- Tanggal Mulai -->
             <div>
                 <h3 class="text-base font-bold text-gray-800 mb-3">Tanggal Mulai Sewa</h3>
                 <input type="date" id="startDate" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500">
             </div>
 
-            <!-- Total Harga Card -->
             <div class="bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl p-5 mt-2">
                 <div class="flex justify-between items-center">
                     <span class="text-white/80 text-sm">Total Harga</span>
@@ -278,14 +231,14 @@
         <!-- ============================================ -->
         <!-- TAB 2: ADD-ONS (Accordion Style) -->
         <!-- ============================================ -->
-        <div id="tabAddons" class="px-6 py-5 space-y-4 animate-fadeIn" style="display: none;">
+        <div id="tabAddons" class="tab-content px-6 py-5 space-y-4" style="display: none;">
             <div class="flex justify-between items-center mb-2">
                 <h3 class="text-base font-bold text-gray-800">Tingkatkan Booth Anda</h3>
                 <span class="text-xs bg-green-100 text-green-600 px-2 py-1 rounded-full" id="selectedAddonsCount">0 dipilih</span>
             </div>
             <p class="text-xs text-gray-400 mb-3">Pilih add-ons untuk meningkatkan performa bisnis Anda</p>
 
-            <!-- ===== ACCORDION 1: POS System & Technology ===== -->
+            <!-- Accordion 1: POS System -->
             <div class="border border-gray-200 rounded-xl overflow-hidden">
                 <div class="accordion-header flex justify-between items-center p-4 bg-gray-50" onclick="toggleAccordion(this)">
                     <div class="flex items-center gap-3">
@@ -302,31 +255,22 @@
                 <div class="accordion-content">
                     <div class="p-3 space-y-2 border-t border-gray-100">
                         <div class="addon-card flex justify-between items-center p-3 border border-gray-200 rounded-xl" data-price="350000" data-name="POS System Integration (Majoo)" onclick="toggleAddon(this)">
-                            <div>
-                                <p class="font-medium text-sm">POS System Integration (Majoo)</p>
-                                <p class="text-[10px] text-gray-400">Integrasi sistem kasir digital</p>
-                            </div>
+                            <div><p class="font-medium text-sm">POS System Integration (Majoo)</p><p class="text-[10px] text-gray-400">Integrasi sistem kasir digital</p></div>
                             <p class="font-bold text-green-600 text-sm">+Rp350k</p>
                         </div>
                         <div class="addon-card flex justify-between items-center p-3 border border-gray-200 rounded-xl" data-price="500000" data-name="Tenant Onboarding & SOP Package" onclick="toggleAddon(this)">
-                            <div>
-                                <p class="font-medium text-sm">Tenant Onboarding & SOP Package</p>
-                                <p class="text-[10px] text-gray-400">Pelatihan dan panduan operasional</p>
-                            </div>
+                            <div><p class="font-medium text-sm">Tenant Onboarding & SOP Package</p><p class="text-[10px] text-gray-400">Pelatihan dan panduan operasional</p></div>
                             <p class="font-bold text-green-600 text-sm">+Rp500k</p>
                         </div>
                         <div class="addon-card flex justify-between items-center p-3 border border-gray-200 rounded-xl" data-price="1500000" data-name="Menu Display / Digital Screen" onclick="toggleAddon(this)">
-                            <div>
-                                <p class="font-medium text-sm">Menu Display / Digital Screen</p>
-                                <p class="text-[10px] text-gray-400">Layar digital untuk menu</p>
-                            </div>
+                            <div><p class="font-medium text-sm">Menu Display / Digital Screen</p><p class="text-[10px] text-gray-400">Layar digital untuk menu</p></div>
                             <p class="font-bold text-green-600 text-sm">+Rp1.5Jt</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- ===== ACCORDION 2: Branding & Signage ===== -->
+            <!-- Accordion 2: Branding -->
             <div class="border border-gray-200 rounded-xl overflow-hidden">
                 <div class="accordion-header flex justify-between items-center p-4 bg-gray-50" onclick="toggleAccordion(this)">
                     <div class="flex items-center gap-3">
@@ -343,31 +287,22 @@
                 <div class="accordion-content">
                     <div class="p-3 space-y-2 border-t border-gray-100">
                         <div class="addon-card flex justify-between items-center p-3 border border-gray-200 rounded-xl" data-price="700000" data-name="Additional Branding Package" onclick="toggleAddon(this)">
-                            <div>
-                                <p class="font-medium text-sm">Additional Branding Package</p>
-                                <p class="text-[10px] text-gray-400">Stiker, banner, dan desain booth</p>
-                            </div>
+                            <div><p class="font-medium text-sm">Additional Branding Package</p><p class="text-[10px] text-gray-400">Stiker, banner, dan desain booth</p></div>
                             <p class="font-bold text-green-600 text-sm">+Rp700k</p>
                         </div>
                         <div class="addon-card flex justify-between items-center p-3 border border-gray-200 rounded-xl" data-price="1500000" data-name="Premium Signage & Lightbox" onclick="toggleAddon(this)">
-                            <div>
-                                <p class="font-medium text-sm">Premium Signage & Lightbox</p>
-                                <p class="text-[10px] text-gray-400">Papan nama premium dengan backlight</p>
-                            </div>
+                            <div><p class="font-medium text-sm">Premium Signage & Lightbox</p><p class="text-[10px] text-gray-400">Papan nama premium dengan backlight</p></div>
                             <p class="font-bold text-green-600 text-sm">+Rp1.5Jt</p>
                         </div>
                         <div class="addon-card flex justify-between items-center p-3 border border-gray-200 rounded-xl" data-price="750000" data-name="Social Media Promotion Support" onclick="toggleAddon(this)">
-                            <div>
-                                <p class="font-medium text-sm">Social Media Promotion Support</p>
-                                <p class="text-[10px] text-gray-400">Promosi di sosial media Boothera</p>
-                            </div>
+                            <div><p class="font-medium text-sm">Social Media Promotion Support</p><p class="text-[10px] text-gray-400">Promosi di sosial media Boothera</p></div>
                             <p class="font-bold text-green-600 text-sm">+Rp750k</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- ===== ACCORDION 3: Service & Furniture ===== -->
+            <!-- Accordion 3: Furniture -->
             <div class="border border-gray-200 rounded-xl overflow-hidden">
                 <div class="accordion-header flex justify-between items-center p-4 bg-gray-50" onclick="toggleAccordion(this)">
                     <div class="flex items-center gap-3">
@@ -384,66 +319,39 @@
                 <div class="accordion-content">
                     <div class="p-3 space-y-2 border-t border-gray-100">
                         <div class="addon-card flex justify-between items-center p-3 border border-gray-200 rounded-xl" data-price="2000000" data-name="Extra Shelving & Storage" onclick="toggleAddon(this)">
-                            <div>
-                                <p class="font-medium text-sm">Extra Shelving & Storage</p>
-                                <p class="text-[10px] text-gray-400">Rak tambahan untuk penyimpanan</p>
-                            </div>
+                            <div><p class="font-medium text-sm">Extra Shelving & Storage</p><p class="text-[10px] text-gray-400">Rak tambahan untuk penyimpanan</p></div>
                             <p class="font-bold text-green-600 text-sm">+Rp2Jt</p>
                         </div>
                         <div class="addon-card flex justify-between items-center p-3 border border-gray-200 rounded-xl" data-price="1200000" data-name="Additional Sink Setup" onclick="toggleAddon(this)">
-                            <div>
-                                <p class="font-medium text-sm">Additional Sink Setup</p>
-                                <p class="text-[10px] text-gray-400">Tambahan wastafel</p>
-                            </div>
+                            <div><p class="font-medium text-sm">Additional Sink Setup</p><p class="text-[10px] text-gray-400">Tambahan wastafel</p></div>
                             <p class="font-bold text-green-600 text-sm">+Rp1.2Jt</p>
                         </div>
                         <div class="addon-card flex justify-between items-center p-3 border border-gray-200 rounded-xl" data-price="1800000" data-name="Water Tank & Plumbing Kit" onclick="toggleAddon(this)">
-                            <div>
-                                <p class="font-medium text-sm">Water Tank & Plumbing Kit</p>
-                                <p class="text-[10px] text-gray-400">Tangki air dan perangkat plumbing</p>
-                            </div>
+                            <div><p class="font-medium text-sm">Water Tank & Plumbing Kit</p><p class="text-[10px] text-gray-400">Tangki air dan perangkat plumbing</p></div>
                             <p class="font-bold text-green-600 text-sm">+Rp1.8Jt</p>
                         </div>
                         <div class="addon-card flex justify-between items-center p-3 border border-gray-200 rounded-xl" data-price="2500000" data-name="Extra Electrical Sockets" onclick="toggleAddon(this)">
-                            <div>
-                                <p class="font-medium text-sm">Extra Electrical Sockets</p>
-                                <p class="text-[10px] text-gray-400">Stopkontak tambahan</p>
-                            </div>
+                            <div><p class="font-medium text-sm">Extra Electrical Sockets</p><p class="text-[10px] text-gray-400">Stopkontak tambahan</p></div>
                             <p class="font-bold text-green-600 text-sm">+Rp2.5Jt</p>
                         </div>
                         <div class="addon-card flex justify-between items-center p-3 border border-gray-200 rounded-xl" data-price="2500000" data-name="Air Cooler / Fan Package" onclick="toggleAddon(this)">
-                            <div>
-                                <p class="font-medium text-sm">Air Cooler / Fan Package</p>
-                                <p class="text-[10px] text-gray-400">Pendingin ruangan / kipas</p>
-                            </div>
+                            <div><p class="font-medium text-sm">Air Cooler / Fan Package</p><p class="text-[10px] text-gray-400">Pendingin ruangan / kipas</p></div>
                             <p class="font-bold text-green-600 text-sm">+Rp2.5Jt</p>
                         </div>
                         <div class="addon-card flex justify-between items-center p-3 border border-gray-200 rounded-xl" data-price="1200000" data-name="Bar Stool / Seating Set" onclick="toggleAddon(this)">
-                            <div>
-                                <p class="font-medium text-sm">Bar Stool / Seating Set</p>
-                                <p class="text-[10px] text-gray-400">Kursi untuk pelanggan</p>
-                            </div>
+                            <div><p class="font-medium text-sm">Bar Stool / Seating Set</p><p class="text-[10px] text-gray-400">Kursi untuk pelanggan</p></div>
                             <p class="font-bold text-green-600 text-sm">+Rp1.2Jt</p>
                         </div>
                         <div class="addon-card flex justify-between items-center p-3 border border-gray-200 rounded-xl" data-price="2000000" data-name="Relocation Service" onclick="toggleAddon(this)">
-                            <div>
-                                <p class="font-medium text-sm">Relocation Service</p>
-                                <p class="text-[10px] text-gray-400">Layanan pindah lokasi</p>
-                            </div>
+                            <div><p class="font-medium text-sm">Relocation Service</p><p class="text-[10px] text-gray-400">Layanan pindah lokasi</p></div>
                             <p class="font-bold text-green-600 text-sm">+Rp2Jt</p>
                         </div>
                         <div class="addon-card flex justify-between items-center p-3 border border-gray-200 rounded-xl" data-price="5000000" data-name="Deep Cleaning & Maintenance" onclick="toggleAddon(this)">
-                            <div>
-                                <p class="font-medium text-sm">Deep Cleaning & Maintenance</p>
-                                <p class="text-[10px] text-gray-400">Pembersihan menyeluruh & perawatan</p>
-                            </div>
+                            <div><p class="font-medium text-sm">Deep Cleaning & Maintenance</p><p class="text-[10px] text-gray-400">Pembersihan menyeluruh & perawatan</p></div>
                             <p class="font-bold text-green-600 text-sm">+Rp5Jt</p>
                         </div>
                         <div class="addon-card flex justify-between items-center p-3 border border-gray-200 rounded-xl" data-price="1500000" data-name="CCTV Package" onclick="toggleAddon(this)">
-                            <div>
-                                <p class="font-medium text-sm">CCTV Package</p>
-                                <p class="text-[10px] text-gray-400">Sistem keamanan CCTV</p>
-                            </div>
+                            <div><p class="font-medium text-sm">CCTV Package</p><p class="text-[10px] text-gray-400">Sistem keamanan CCTV</p></div>
                             <p class="font-bold text-green-600 text-sm">+Rp1.5Jt</p>
                         </div>
                     </div>
@@ -468,11 +376,11 @@
         <!-- ============================================ -->
         <!-- TAB 3: KUSTOMISASI BOOTH -->
         <!-- ============================================ -->
-        <div id="tabCustomize" class="px-6 py-5 space-y-5 animate-fadeIn" style="display: none;">
+        <div id="tabCustomize" class="tab-content px-6 py-5 space-y-5" style="display: none;">
             <h3 class="text-base font-bold text-gray-800 mb-2">Kustomisasi Booth</h3>
             <p class="text-xs text-gray-400 mb-3">Sesuaikan tampilan booth dengan identitas brand Anda</p>
 
-            <!-- Booth Visualization 3D -->
+            <!-- Booth Visualization -->
             <div class="booth-visual p-6 flex flex-col items-center justify-center relative" style="min-height: 280px;">
                 <div class="relative" id="boothVisual">
                     <div class="w-64 h-48 rounded-2xl shadow-2xl relative overflow-hidden" id="boothBackground" style="background: linear-gradient(135deg, #10B981, #059669);">
@@ -492,8 +400,7 @@
             <!-- Warna Booth -->
             <div>
                 <h4 class="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                    <i class="fas fa-palette text-green-500"></i>
-                    Warna Booth
+                    <i class="fas fa-palette text-green-500"></i> Warna Booth
                 </h4>
                 <div class="flex gap-3 flex-wrap">
                     <div class="color-option w-10 h-10 rounded-full shadow-md selected" style="background: linear-gradient(135deg, #10B981, #059669)" data-color="green" onclick="selectColor('green', 'linear-gradient(135deg, #10B981, #059669)')"></div>
@@ -509,8 +416,7 @@
             <!-- Nama Brand -->
             <div>
                 <h4 class="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                    <i class="fas fa-font text-green-500"></i>
-                    Nama Brand
+                    <i class="fas fa-font text-green-500"></i> Nama Brand
                 </h4>
                 <input type="text" id="brandNameInput" placeholder="Contoh: Kopi Kenangan" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500">
             </div>
@@ -518,8 +424,7 @@
             <!-- Upload Logo -->
             <div>
                 <h4 class="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                    <i class="fas fa-image text-green-500"></i>
-                    Logo Brand (Opsional)
+                    <i class="fas fa-image text-green-500"></i> Logo Brand (Opsional)
                 </h4>
                 <div class="border-2 border-dashed border-gray-300 rounded-xl p-4 text-center cursor-pointer hover:border-green-500 transition" onclick="document.getElementById('logoUpload').click()">
                     <i class="fas fa-cloud-upload-alt text-gray-400 text-2xl mb-1"></i>
@@ -576,26 +481,43 @@
         let selectedAddons = [];
         let selectedStartDate = '';
         
-        // Customization
         let boothColor = 'linear-gradient(135deg, #10B981, #059669)';
         let brandName = '';
         let logoFile = null;
         
-        // DOM Elements
         const tabs = ['tabPackage', 'tabAddons', 'tabCustomize'];
         const nextBtn = document.getElementById('nextBtn');
         const backBtn = document.getElementById('backBtn');
         const confirmBtn = document.getElementById('confirmBtn');
         
         // ============================================
-        // TAB NAVIGATION
+        // URL ROUTING
         // ============================================
+        function updateURLStep(step) {
+            const stepNames = ['paket-booth', 'add-ons', 'kustomisasi'];
+            window.location.hash = stepNames[step];
+        }
+        
+        function getStepFromURL() {
+            const hash = window.location.hash.replace('#', '');
+            if (hash === 'add-ons') return 1;
+            if (hash === 'kustomisasi') return 2;
+            return 0;
+        }
+        
+        function navigateToStep(step) {
+            updateURLStep(step);
+            showTab(step);
+        }
+        
         function showTab(index) {
+            // Hide all tabs
             tabs.forEach(tab => {
                 document.getElementById(tab).style.display = 'none';
             });
             document.getElementById(tabs[index]).style.display = 'block';
             
+            // Update tab buttons
             document.querySelectorAll('.tab-btn').forEach((btn, i) => {
                 if (i === index) {
                     btn.classList.add('active');
@@ -607,6 +529,7 @@
                 }
             });
             
+            // Update navigation buttons
             if (index === 2) {
                 nextBtn.style.display = 'none';
                 confirmBtn.style.display = 'block';
@@ -620,15 +543,27 @@
                 confirmBtn.style.display = 'none';
                 backBtn.style.display = 'block';
             }
+            
             currentTab = index;
         }
         
-        function nextTab() { if (currentTab < 2) showTab(currentTab + 1); }
-        function previousTab() { if (currentTab > 0) showTab(currentTab - 1); }
-        
-        document.querySelectorAll('.tab-btn').forEach((btn, index) => {
-            btn.addEventListener('click', () => showTab(index));
+        // Listen to hash change
+        window.addEventListener('hashchange', () => {
+            const step = getStepFromURL();
+            showTab(step);
         });
+        
+        function nextTab() {
+            if (currentTab < 2) navigateToStep(currentTab + 1);
+        }
+        
+        function previousTab() {
+            if (currentTab > 0) navigateToStep(currentTab - 1);
+        }
+        
+        function goBack() {
+            window.history.back();
+        }
         
         // ============================================
         // ACCORDION FUNCTIONS
@@ -639,12 +574,6 @@
             content.classList.toggle('open');
             icon.style.transform = content.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0)';
         }
-        
-        // Open first accordion by default
-        setTimeout(() => {
-            const firstAccordion = document.querySelector('.accordion-header');
-            if (firstAccordion) toggleAccordion(firstAccordion);
-        }, 100);
         
         // ============================================
         // PACKAGE SELECTION
@@ -702,7 +631,6 @@
             const addonsTotal = selectedAddons.reduce((sum, a) => sum + a.price, 0);
             document.getElementById('selectedAddonsCount').innerHTML = `${selectedAddons.length} dipilih`;
             document.getElementById('selectedAddonsTotal').innerHTML = formatRupiah(addonsTotal);
-            
             const addonNames = selectedAddons.map(a => a.name).join(', ');
             document.getElementById('selectedAddonsList').innerHTML = addonNames || 'Belum ada add-ons dipilih';
             updateTotalPrice();
@@ -799,6 +727,16 @@
         // Initialize default selections
         document.querySelector('.package-card[data-price="3500000"]').classList.add('selected', 'border-green-500', 'bg-green-50');
         document.querySelector('.duration-btn[data-duration="1"]').classList.add('selected', 'bg-green-500', 'text-white');
+        
+        // Initialize from URL
+        const initialStep = getStepFromURL();
+        showTab(initialStep);
+        
+        // Open first accordion by default
+        setTimeout(() => {
+            const firstAccordion = document.querySelector('.accordion-header');
+            if (firstAccordion && currentTab === 1) toggleAccordion(firstAccordion);
+        }, 100);
     </script>
 </body>
 </html>
