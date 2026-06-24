@@ -1,742 +1,558 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
-    <title>Boothera - Booking & Customize Booth</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; background: #F8FAFC; }
-        
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        @keyframes scaleIn {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
-        }
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .animate-fadeInUp { animation: fadeInUp 0.4s ease-out forwards; }
-        .animate-fadeIn { animation: fadeIn 0.3s ease-out forwards; }
-        .animate-scaleIn { animation: scaleIn 0.3s ease-out forwards; }
-        .animate-slideDown { animation: slideDown 0.3s ease-out forwards; }
-        
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: #E2E8F0; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb { background: #10B981; border-radius: 10px; }
-        
-        .scrollbar-hide::-webkit-scrollbar { display: none; }
-        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-        
-        .package-card {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer;
-        }
-        .package-card:hover { transform: translateX(4px); }
-        .package-card.selected { border-color: #10B981; background: #ECFDF5; }
-        
-        .addon-card {
-            transition: all 0.2s ease;
-            cursor: pointer;
-        }
-        .addon-card:hover { transform: translateX(4px); background: #F9FAFB; }
-        .addon-card.selected { border-color: #10B981; background: #ECFDF5; }
-        
-        .accordion-header {
-            transition: all 0.2s ease;
-            cursor: pointer;
-        }
-        .accordion-header:hover { background: #F9FAFB; }
-        .accordion-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.4s ease-out;
-        }
-        .accordion-content.open { max-height: 800px; transition: max-height 0.5s ease-in; }
-        
-        .color-option {
-            transition: all 0.2s ease;
-            cursor: pointer;
-        }
-        .color-option:hover { transform: scale(1.1); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
-        .color-option.selected { transform: scale(1.15); box-shadow: 0 0 0 3px white, 0 0 0 5px #10B981; }
-        
-        .tab-btn {
-            transition: all 0.2s ease;
-        }
-        .tab-btn.active {
-            color: #10B981;
-            border-bottom-color: #10B981;
-        }
-        
-        .booth-visual {
-            background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
-            border-radius: 24px;
-            transition: all 0.3s ease;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NexaBiz UI Dashboard</title>
+<style>
+  :root {
+    --primary: #388185; /* Muted Teal */
+    --primary-light: #e8f2f2;
+    --bg-color: #f9fafb;
+    --surface: #ffffff;
+    --text-dark: #111827;
+    --text-muted: #6b7280;
+    --danger: #ef4444;
+    --danger-light: #fef2f2;
+    --success: #10b981;
+    --success-light: #d1fae5;
+    --border: #f3f4f6;
+    --radius-lg: 20px;
+    --radius-md: 12px;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+
+  body {
+    background-color: #e5e7eb;
+    display: flex;
+    justify-content: center;
+  }
+
+  .app-container {
+    width: 100%;
+    max-width: 414px;
+    background-color: var(--bg-color);
+    min-height: 100vh;
+    position: relative;
+    padding-bottom: 80px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.05);
+    overflow-x: hidden;
+  }
+
+  /* Header */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background: var(--surface);
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .logo h1 {
+    font-size: 1.2rem;
+    color: var(--primary);
+  }
+  .logo p {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+  }
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .notification {
+    position: relative;
+    padding: 8px;
+    background: var(--bg-color);
+    border-radius: 50%;
+  }
+  .badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: var(--danger);
+    color: white;
+    font-size: 10px;
+    border-radius: 50%;
+    width: 14px;
+    height: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #ccc;
+    object-fit: cover;
+  }
+
+  /* Greeting */
+  .greeting {
+    padding: 0 20px 20px;
+    background: var(--surface);
+  }
+  .greeting h2 {
+    font-size: 1.5rem;
+    color: var(--text-dark);
+    margin-bottom: 4px;
+  }
+  .store-selector {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+  }
+
+  /* Hero Card */
+  .section-padding { padding: 0 20px 20px; }
+  
+  .hero-card {
+    background: var(--primary);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+  }
+  .alert-tag {
+    background: rgba(255, 204, 0, 0.2);
+    color: #ffcc00;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    display: inline-block;
+    margin-bottom: 12px;
+    font-weight: 600;
+  }
+  .hero-card h3 {
+    font-size: 1.2rem;
+    margin-bottom: 4px;
+  }
+  .hero-card p {
+    font-size: 0.85rem;
+    opacity: 0.9;
+    margin-bottom: 16px;
+  }
+  .restock-info {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 16px;
+  }
+  .info-item span {
+    display: block;
+    font-size: 0.75rem;
+    opacity: 0.8;
+  }
+  .info-item strong {
+    font-size: 1.1rem;
+  }
+  .btn-primary {
+    background: white;
+    color: var(--primary);
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* Quick Actions */
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .section-header h4 { font-size: 1rem; color: var(--text-dark); }
+  .section-header a { font-size: 0.8rem; color: var(--text-muted); text-decoration: none; }
+  
+  .quick-actions-grid {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+  .action-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  .icon-box {
+    width: 50px;
+    height: 50px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+  }
+  .icon-box.green { background: #e8f5e9; color: #4caf50; }
+  .icon-box.teal { background: #e0f2f1; color: #009688; }
+  .icon-box.orange { background: #fff3e0; color: #ff9800; }
+  .icon-box.purple { background: #f3e5f5; color: #9c27b0; }
+  .action-btn span { font-size: 0.75rem; color: var(--text-dark); font-weight: 500; }
+
+  /* Split Dashboard (Widgets) */
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .widget-card {
+    background: var(--surface);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+  }
+  .widget-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  /* Stok List */
+  .stock-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .stock-item-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .stock-icon { font-size: 1.2rem; }
+  .stock-text h5 { font-size: 0.8rem; color: var(--text-dark); }
+  .stock-text p { font-size: 0.65rem; color: var(--text-muted); }
+  .stock-qty { font-size: 0.8rem; font-weight: 600; color: var(--danger); }
+  
+  .alert-banner {
+    background: var(--danger-light);
+    color: var(--danger);
+    padding: 8px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    text-align: center;
+    font-weight: 600;
+  }
+
+  /* Order Card */
+  .order-id { font-size: 0.9rem; font-weight: 700; margin-bottom: 8px; }
+  .order-status {
+    background: var(--success-light);
+    color: var(--success);
+    font-size: 0.65rem;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    display: inline-block;
+    margin-bottom: 12px;
+  }
+  .courier-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .btn-outline {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid var(--primary-light);
+    background: var(--primary-light);
+    color: var(--primary);
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  /* Banner & Insights */
+  .promo-banner {
+    background: #e8f5e9;
+    border-radius: var(--radius-md);
+    padding: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+  }
+  .promo-text h4 { color: #2e7d32; font-size: 0.9rem; margin-bottom: 4px; }
+  .promo-text p { font-size: 0.75rem; color: #4caf50; }
+
+  .insights-grid {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+  .insight-card {
+    background: var(--surface);
+    padding: 12px;
+    border-radius: var(--radius-md);
+    min-width: 140px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+  }
+  .insight-card p { font-size: 0.7rem; color: var(--text-muted); margin-bottom: 4px; }
+  .insight-card h5 { font-size: 1rem; color: var(--text-dark); margin-bottom: 4px; }
+  .trend { font-size: 0.65rem; font-weight: 600; color: var(--success); background: var(--success-light); padding: 2px 6px; border-radius: 4px; }
+
+  /* Bottom Navigation */
+  .bottom-nav {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background: var(--surface);
+    display: flex;
+    justify-content: space-around;
+    padding: 12px 0 20px;
+    box-shadow: 0 -4px 12px rgba(0,0,0,0.03);
+    border-top: 1px solid var(--border);
+  }
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    color: var(--text-muted);
+    font-size: 0.7rem;
+    cursor: pointer;
+  }
+  .nav-item.active { color: var(--primary); font-weight: 600; }
+  .nav-item i { font-size: 1.2rem; }
+  .nav-center {
+    background: var(--primary);
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: -24px;
+    border: 4px solid var(--bg-color);
+    box-shadow: 0 4px 10px rgba(56, 129, 133, 0.3);
+  }
+
+  /* Hide scrollbar for clean UI */
+  ::-webkit-scrollbar { display: none; }
+</style>
 </head>
-<body class="bg-[#F8FAFC]">
+<body>
 
-    <!-- Main Container -->
-    <div class="max-w-[428px] mx-auto bg-white min-h-screen shadow-xl relative">
-        
-        <!-- ============================================ -->
-        <!-- HEADER -->
-        <!-- ============================================ -->
-        <div class="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 pt-12 pb-6">
-            <div class="flex items-center gap-3 mb-2">
-                <button onclick="goBack()" class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-                    <i class="fas fa-arrow-left text-white"></i>
-                </button>
-                <div>
-                    <h1 class="text-2xl font-bold">Booking Booth</h1>
-                    <p class="text-green-100 text-sm">Sport Center Booth, Tanjung Morawa</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- ============================================ -->
-        <!-- TABS (Clickable with URL update) -->
-        <!-- ============================================ -->
-        <div class="flex border-b border-gray-100 px-6 bg-white">
-            <button class="tab-btn flex-1 py-3 text-center font-semibold text-gray-700 border-b-2 border-green-500 transition" data-tab="package" onclick="navigateToStep(0)">
-                <i class="fas fa-store text-sm mr-1"></i> Paket Booth
-            </button>
-            <button class="tab-btn flex-1 py-3 text-center font-semibold text-gray-400 border-b-2 border-transparent transition" data-tab="addons" onclick="navigateToStep(1)">
-                <i class="fas fa-cog text-sm mr-1"></i> Add-Ons
-            </button>
-            <button class="tab-btn flex-1 py-3 text-center font-semibold text-gray-400 border-b-2 border-transparent transition" data-tab="customize" onclick="navigateToStep(2)">
-                <i class="fas fa-palette text-sm mr-1"></i> Kustomisasi
-            </button>
-        </div>
-
-        <!-- ============================================ -->
-        <!-- TAB 1: PAKET BOOTH -->
-        <!-- ============================================ -->
-        <div id="tabPackage" class="tab-content px-6 py-5 space-y-5">
-            <div>
-                <h3 class="text-base font-bold text-gray-800 mb-3">Pilih Tipe Booth</h3>
-                <div class="space-y-2">
-                    <div class="package-card bg-white border border-gray-100 rounded-xl p-4" data-price="2500000" data-name="Starter Booth" onclick="selectPackage(this)">
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <div class="flex items-center gap-2">
-                                    <span class="font-bold text-gray-800">Starter Booth</span>
-                                    <span class="text-[10px] bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full">Pemula</span>
-                                </div>
-                                <p class="text-xs text-gray-400 mt-1">1 booth, support 24/7, basic branding</p>
-                            </div>
-                            <div class="text-right">
-                                <p class="font-bold text-green-600">Rp 2.5 Jt</p>
-                                <p class="text-[10px] text-gray-400">/bulan</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="package-card bg-white border-2 border-green-200 rounded-xl p-4 relative" data-price="3500000" data-name="Popular Booth" onclick="selectPackage(this)">
-                        <div class="absolute -top-2 right-4 bg-orange-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full">
-                            <i class="fas fa-fire mr-1"></i> PALING POPULER
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <div class="flex items-center gap-2">
-                                    <span class="font-bold text-gray-800">Popular Booth</span>
-                                    <span class="text-[10px] bg-green-100 text-green-600 px-2 py-0.5 rounded-full">Best Value</span>
-                                </div>
-                                <p class="text-xs text-gray-400 mt-1">2 booth, premium support, analytics</p>
-                            </div>
-                            <div class="text-right">
-                                <p class="font-bold text-green-600">Rp 3.5 Jt</p>
-                                <p class="text-[10px] text-gray-400">/bulan</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="package-card bg-white border border-gray-100 rounded-xl p-4" data-price="4500000" data-name="Prime Booth" onclick="selectPackage(this)">
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <div class="flex items-center gap-2">
-                                    <span class="font-bold text-gray-800">Prime Booth</span>
-                                    <span class="text-[10px] bg-purple-100 text-purple-600 px-2 py-0.5 rounded-full">Area Premium</span>
-                                </div>
-                                <p class="text-xs text-gray-400 mt-1">3 booth, dedicated support, priority location</p>
-                            </div>
-                            <div class="text-right">
-                                <p class="font-bold text-green-600">Rp 4.5 Jt</p>
-                                <p class="text-[10px] text-gray-400">/bulan</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="package-card bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-4" data-price="5500000" data-name="Icon Booth" onclick="selectPackage(this)">
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <div class="flex items-center gap-2">
-                                    <span class="font-bold text-gray-800">Icon Booth</span>
-                                    <span class="text-[10px] bg-amber-100 text-amber-600 px-2 py-0.5 rounded-full">Eksklusif</span>
-                                </div>
-                                <p class="text-xs text-gray-500 mt-1">5+ booth, concierge service, best location</p>
-                            </div>
-                            <div class="text-right">
-                                <p class="font-bold text-amber-600">Rp 5.5 Jt</p>
-                                <p class="text-[10px] text-gray-400">/bulan</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div>
-                <h3 class="text-base font-bold text-gray-800 mb-3">Durasi Sewa</h3>
-                <div class="grid grid-cols-3 gap-3">
-                    <button class="duration-btn py-3 rounded-xl border-2 border-gray-200 font-medium text-sm" data-duration="1" data-discount="0" onclick="selectDuration(1)">
-                        1 Bulan
-                    </button>
-                    <button class="duration-btn py-3 rounded-xl border-2 border-gray-200 font-medium text-sm relative" data-duration="3" data-discount="5" onclick="selectDuration(3)">
-                        3 Bulan
-                        <span class="absolute -top-2 -right-1 bg-green-500 text-white text-[9px] px-1.5 py-0.5 rounded-full">hemat 5%</span>
-                    </button>
-                    <button class="duration-btn py-3 rounded-xl border-2 border-gray-200 font-medium text-sm relative" data-duration="6" data-discount="10" onclick="selectDuration(6)">
-                        6 Bulan
-                        <span class="absolute -top-2 -right-1 bg-green-500 text-white text-[9px] px-1.5 py-0.5 rounded-full">hemat 10%</span>
-                    </button>
-                </div>
-            </div>
-
-            <div>
-                <h3 class="text-base font-bold text-gray-800 mb-3">Tanggal Mulai Sewa</h3>
-                <input type="date" id="startDate" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500">
-            </div>
-
-            <div class="bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl p-5 mt-2">
-                <div class="flex justify-between items-center">
-                    <span class="text-white/80 text-sm">Total Harga</span>
-                    <span class="font-bold text-2xl text-white" id="totalPrice">Rp 3.500.000</span>
-                </div>
-                <p class="text-green-100 text-xs mt-2">*Sudah termasuk pajak & biaya layanan</p>
-            </div>
-        </div>
-
-        <!-- ============================================ -->
-        <!-- TAB 2: ADD-ONS (Accordion Style) -->
-        <!-- ============================================ -->
-        <div id="tabAddons" class="tab-content px-6 py-5 space-y-4" style="display: none;">
-            <div class="flex justify-between items-center mb-2">
-                <h3 class="text-base font-bold text-gray-800">Tingkatkan Booth Anda</h3>
-                <span class="text-xs bg-green-100 text-green-600 px-2 py-1 rounded-full" id="selectedAddonsCount">0 dipilih</span>
-            </div>
-            <p class="text-xs text-gray-400 mb-3">Pilih add-ons untuk meningkatkan performa bisnis Anda</p>
-
-            <!-- Accordion 1: POS System -->
-            <div class="border border-gray-200 rounded-xl overflow-hidden">
-                <div class="accordion-header flex justify-between items-center p-4 bg-gray-50" onclick="toggleAccordion(this)">
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-laptop-code text-blue-500 text-sm"></i>
-                        </div>
-                        <div>
-                            <p class="font-semibold text-gray-800">POS System & Technology</p>
-                            <p class="text-[10px] text-gray-400">Integrasi sistem kasir digital</p>
-                        </div>
-                    </div>
-                    <i class="fas fa-chevron-down text-gray-400 transition-transform"></i>
-                </div>
-                <div class="accordion-content">
-                    <div class="p-3 space-y-2 border-t border-gray-100">
-                        <div class="addon-card flex justify-between items-center p-3 border border-gray-200 rounded-xl" data-price="350000" data-name="POS System Integration (Majoo)" onclick="toggleAddon(this)">
-                            <div><p class="font-medium text-sm">POS System Integration (Majoo)</p><p class="text-[10px] text-gray-400">Integrasi sistem kasir digital</p></div>
-                            <p class="font-bold text-green-600 text-sm">+Rp350k</p>
-                        </div>
-                        <div class="addon-card flex justify-between items-center p-3 border border-gray-200 rounded-xl" data-price="500000" data-name="Tenant Onboarding & SOP Package" onclick="toggleAddon(this)">
-                            <div><p class="font-medium text-sm">Tenant Onboarding & SOP Package</p><p class="text-[10px] text-gray-400">Pelatihan dan panduan operasional</p></div>
-                            <p class="font-bold text-green-600 text-sm">+Rp500k</p>
-                        </div>
-                        <div class="addon-card flex justify-between items-center p-3 border border-gray-200 rounded-xl" data-price="1500000" data-name="Menu Display / Digital Screen" onclick="toggleAddon(this)">
-                            <div><p class="font-medium text-sm">Menu Display / Digital Screen</p><p class="text-[10px] text-gray-400">Layar digital untuk menu</p></div>
-                            <p class="font-bold text-green-600 text-sm">+Rp1.5Jt</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Accordion 2: Branding -->
-            <div class="border border-gray-200 rounded-xl overflow-hidden">
-                <div class="accordion-header flex justify-between items-center p-4 bg-gray-50" onclick="toggleAccordion(this)">
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 bg-pink-100 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-paint-brush text-pink-500 text-sm"></i>
-                        </div>
-                        <div>
-                            <p class="font-semibold text-gray-800">Branding & Signage</p>
-                            <p class="text-[10px] text-gray-400">Promosikan brand Anda lebih maksimal</p>
-                        </div>
-                    </div>
-                    <i class="fas fa-chevron-down text-gray-400 transition-transform"></i>
-                </div>
-                <div class="accordion-content">
-                    <div class="p-3 space-y-2 border-t border-gray-100">
-                        <div class="addon-card flex justify-between items-center p-3 border border-gray-200 rounded-xl" data-price="700000" data-name="Additional Branding Package" onclick="toggleAddon(this)">
-                            <div><p class="font-medium text-sm">Additional Branding Package</p><p class="text-[10px] text-gray-400">Stiker, banner, dan desain booth</p></div>
-                            <p class="font-bold text-green-600 text-sm">+Rp700k</p>
-                        </div>
-                        <div class="addon-card flex justify-between items-center p-3 border border-gray-200 rounded-xl" data-price="1500000" data-name="Premium Signage & Lightbox" onclick="toggleAddon(this)">
-                            <div><p class="font-medium text-sm">Premium Signage & Lightbox</p><p class="text-[10px] text-gray-400">Papan nama premium dengan backlight</p></div>
-                            <p class="font-bold text-green-600 text-sm">+Rp1.5Jt</p>
-                        </div>
-                        <div class="addon-card flex justify-between items-center p-3 border border-gray-200 rounded-xl" data-price="750000" data-name="Social Media Promotion Support" onclick="toggleAddon(this)">
-                            <div><p class="font-medium text-sm">Social Media Promotion Support</p><p class="text-[10px] text-gray-400">Promosi di sosial media Boothera</p></div>
-                            <p class="font-bold text-green-600 text-sm">+Rp750k</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Accordion 3: Furniture -->
-            <div class="border border-gray-200 rounded-xl overflow-hidden">
-                <div class="accordion-header flex justify-between items-center p-4 bg-gray-50" onclick="toggleAccordion(this)">
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-couch text-green-500 text-sm"></i>
-                        </div>
-                        <div>
-                            <p class="font-semibold text-gray-800">Service & Furniture</p>
-                            <p class="text-[10px] text-gray-400">Perlengkapan booth yang nyaman</p>
-                        </div>
-                    </div>
-                    <i class="fas fa-chevron-down text-gray-400 transition-transform"></i>
-                </div>
-                <div class="accordion-content">
-                    <div class="p-3 space-y-2 border-t border-gray-100">
-                        <div class="addon-card flex justify-between items-center p-3 border border-gray-200 rounded-xl" data-price="2000000" data-name="Extra Shelving & Storage" onclick="toggleAddon(this)">
-                            <div><p class="font-medium text-sm">Extra Shelving & Storage</p><p class="text-[10px] text-gray-400">Rak tambahan untuk penyimpanan</p></div>
-                            <p class="font-bold text-green-600 text-sm">+Rp2Jt</p>
-                        </div>
-                        <div class="addon-card flex justify-between items-center p-3 border border-gray-200 rounded-xl" data-price="1200000" data-name="Additional Sink Setup" onclick="toggleAddon(this)">
-                            <div><p class="font-medium text-sm">Additional Sink Setup</p><p class="text-[10px] text-gray-400">Tambahan wastafel</p></div>
-                            <p class="font-bold text-green-600 text-sm">+Rp1.2Jt</p>
-                        </div>
-                        <div class="addon-card flex justify-between items-center p-3 border border-gray-200 rounded-xl" data-price="1800000" data-name="Water Tank & Plumbing Kit" onclick="toggleAddon(this)">
-                            <div><p class="font-medium text-sm">Water Tank & Plumbing Kit</p><p class="text-[10px] text-gray-400">Tangki air dan perangkat plumbing</p></div>
-                            <p class="font-bold text-green-600 text-sm">+Rp1.8Jt</p>
-                        </div>
-                        <div class="addon-card flex justify-between items-center p-3 border border-gray-200 rounded-xl" data-price="2500000" data-name="Extra Electrical Sockets" onclick="toggleAddon(this)">
-                            <div><p class="font-medium text-sm">Extra Electrical Sockets</p><p class="text-[10px] text-gray-400">Stopkontak tambahan</p></div>
-                            <p class="font-bold text-green-600 text-sm">+Rp2.5Jt</p>
-                        </div>
-                        <div class="addon-card flex justify-between items-center p-3 border border-gray-200 rounded-xl" data-price="2500000" data-name="Air Cooler / Fan Package" onclick="toggleAddon(this)">
-                            <div><p class="font-medium text-sm">Air Cooler / Fan Package</p><p class="text-[10px] text-gray-400">Pendingin ruangan / kipas</p></div>
-                            <p class="font-bold text-green-600 text-sm">+Rp2.5Jt</p>
-                        </div>
-                        <div class="addon-card flex justify-between items-center p-3 border border-gray-200 rounded-xl" data-price="1200000" data-name="Bar Stool / Seating Set" onclick="toggleAddon(this)">
-                            <div><p class="font-medium text-sm">Bar Stool / Seating Set</p><p class="text-[10px] text-gray-400">Kursi untuk pelanggan</p></div>
-                            <p class="font-bold text-green-600 text-sm">+Rp1.2Jt</p>
-                        </div>
-                        <div class="addon-card flex justify-between items-center p-3 border border-gray-200 rounded-xl" data-price="2000000" data-name="Relocation Service" onclick="toggleAddon(this)">
-                            <div><p class="font-medium text-sm">Relocation Service</p><p class="text-[10px] text-gray-400">Layanan pindah lokasi</p></div>
-                            <p class="font-bold text-green-600 text-sm">+Rp2Jt</p>
-                        </div>
-                        <div class="addon-card flex justify-between items-center p-3 border border-gray-200 rounded-xl" data-price="5000000" data-name="Deep Cleaning & Maintenance" onclick="toggleAddon(this)">
-                            <div><p class="font-medium text-sm">Deep Cleaning & Maintenance</p><p class="text-[10px] text-gray-400">Pembersihan menyeluruh & perawatan</p></div>
-                            <p class="font-bold text-green-600 text-sm">+Rp5Jt</p>
-                        </div>
-                        <div class="addon-card flex justify-between items-center p-3 border border-gray-200 rounded-xl" data-price="1500000" data-name="CCTV Package" onclick="toggleAddon(this)">
-                            <div><p class="font-medium text-sm">CCTV Package</p><p class="text-[10px] text-gray-400">Sistem keamanan CCTV</p></div>
-                            <p class="font-bold text-green-600 text-sm">+Rp1.5Jt</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Ringkasan Add-Ons -->
-            <div class="bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl p-4 mt-4">
-                <div class="flex justify-between items-center">
-                    <div>
-                        <p class="text-sm text-gray-600">Add-ons terpilih</p>
-                        <p class="text-xs text-gray-400" id="selectedAddonsList">Belum ada add-ons dipilih</p>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-xs text-gray-500">Total tambahan</p>
-                        <p class="font-bold text-green-600 text-lg" id="selectedAddonsTotal">Rp 0</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ============================================ -->
-        <!-- TAB 3: KUSTOMISASI BOOTH -->
-        <!-- ============================================ -->
-        <div id="tabCustomize" class="tab-content px-6 py-5 space-y-5" style="display: none;">
-            <h3 class="text-base font-bold text-gray-800 mb-2">Kustomisasi Booth</h3>
-            <p class="text-xs text-gray-400 mb-3">Sesuaikan tampilan booth dengan identitas brand Anda</p>
-
-            <!-- Booth Visualization -->
-            <div class="booth-visual p-6 flex flex-col items-center justify-center relative" style="min-height: 280px;">
-                <div class="relative" id="boothVisual">
-                    <div class="w-64 h-48 rounded-2xl shadow-2xl relative overflow-hidden" id="boothBackground" style="background: linear-gradient(135deg, #10B981, #059669);">
-                        <div class="absolute inset-0 flex flex-col items-center justify-center text-center p-4">
-                            <div id="boothContent">
-                                <i class="fas fa-store text-white text-5xl mb-2"></i>
-                                <p class="text-white text-sm font-bold" id="boothBrandName">Your Booth</p>
-                                <p class="text-white/70 text-[10px]">Brand Area</p>
-                            </div>
-                        </div>
-                        <div class="absolute bottom-0 left-0 right-0 h-8 bg-white/20 backdrop-blur"></div>
-                    </div>
-                </div>
-                <p class="text-xs text-gray-400 mt-3">Preview tampilan booth Anda secara real-time</p>
-            </div>
-
-            <!-- Warna Booth -->
-            <div>
-                <h4 class="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                    <i class="fas fa-palette text-green-500"></i> Warna Booth
-                </h4>
-                <div class="flex gap-3 flex-wrap">
-                    <div class="color-option w-10 h-10 rounded-full shadow-md selected" style="background: linear-gradient(135deg, #10B981, #059669)" data-color="green" onclick="selectColor('green', 'linear-gradient(135deg, #10B981, #059669)')"></div>
-                    <div class="color-option w-10 h-10 rounded-full shadow-md" style="background: linear-gradient(135deg, #3B82F6, #1D4ED8)" data-color="blue" onclick="selectColor('blue', 'linear-gradient(135deg, #3B82F6, #1D4ED8)')"></div>
-                    <div class="color-option w-10 h-10 rounded-full shadow-md" style="background: linear-gradient(135deg, #EF4444, #B91C1C)" data-color="red" onclick="selectColor('red', 'linear-gradient(135deg, #EF4444, #B91C1C)')"></div>
-                    <div class="color-option w-10 h-10 rounded-full shadow-md" style="background: linear-gradient(135deg, #8B5CF6, #6D28D9)" data-color="purple" onclick="selectColor('purple', 'linear-gradient(135deg, #8B5CF6, #6D28D9)')"></div>
-                    <div class="color-option w-10 h-10 rounded-full shadow-md" style="background: linear-gradient(135deg, #F59E0B, #D97706)" data-color="orange" onclick="selectColor('orange', 'linear-gradient(135deg, #F59E0B, #D97706)')"></div>
-                    <div class="color-option w-10 h-10 rounded-full shadow-md" style="background: linear-gradient(135deg, #EC4899, #BE185D)" data-color="pink" onclick="selectColor('pink', 'linear-gradient(135deg, #EC4899, #BE185D)')"></div>
-                    <div class="color-option w-10 h-10 rounded-full shadow-md" style="background: linear-gradient(135deg, #1F2937, #111827)" data-color="dark" onclick="selectColor('dark', 'linear-gradient(135deg, #1F2937, #111827)')"></div>
-                </div>
-            </div>
-
-            <!-- Nama Brand -->
-            <div>
-                <h4 class="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                    <i class="fas fa-font text-green-500"></i> Nama Brand
-                </h4>
-                <input type="text" id="brandNameInput" placeholder="Contoh: Kopi Kenangan" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500">
-            </div>
-
-            <!-- Upload Logo -->
-            <div>
-                <h4 class="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                    <i class="fas fa-image text-green-500"></i> Logo Brand (Opsional)
-                </h4>
-                <div class="border-2 border-dashed border-gray-300 rounded-xl p-4 text-center cursor-pointer hover:border-green-500 transition" onclick="document.getElementById('logoUpload').click()">
-                    <i class="fas fa-cloud-upload-alt text-gray-400 text-2xl mb-1"></i>
-                    <p class="text-xs text-gray-500">Klik untuk upload logo</p>
-                    <p class="text-[10px] text-gray-400">PNG, JPG (Max 2MB)</p>
-                    <input type="file" id="logoUpload" accept="image/*" class="hidden" onchange="uploadLogo(this)">
-                </div>
-                <div id="logoPreview" class="hidden mt-3 flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
-                    <img id="previewImg" src="" class="w-10 h-10 rounded-lg object-cover">
-                    <div class="flex-1">
-                        <p class="text-sm font-medium" id="logoName">logo-brand.png</p>
-                        <button onclick="removeLogo()" class="text-xs text-red-500">Hapus</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ============================================ -->
-        <!-- FIXED BOTTOM BUTTON -->
-        <!-- ============================================ -->
-        <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 shadow-lg z-50">
-            <div class="max-w-[428px] mx-auto flex gap-3">
-                <button id="backBtn" onclick="previousTab()" class="flex-1 py-3 rounded-xl border border-gray-300 text-gray-600 font-semibold hidden">
-                    Kembali
-                </button>
-                <button id="nextBtn" onclick="nextTab()" class="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold py-3 rounded-xl shadow-md">
-                    Selanjutnya
-                </button>
-                <button id="confirmBtn" onclick="confirmBooking()" class="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold py-3 rounded-xl shadow-md hidden">
-                    Konfirmasi Booking
-                </button>
-            </div>
-        </div>
-
-        <!-- Toast Notification -->
-        <div id="toast" class="fixed bottom-24 left-4 right-4 max-w-[400px] mx-auto bg-gray-800 text-white rounded-xl p-3 z-[1000] hidden animate-fadeIn">
-            <div class="flex items-center gap-2">
-                <i class="fas fa-check-circle text-green-400"></i>
-                <span id="toastMessage" class="text-sm"></span>
-            </div>
-        </div>
+<div class="app-container">
+  
+  <header class="header">
+    <div class="logo">
+      <div style="background:var(--primary); width:24px; height:24px; border-radius:6px; display:flex; align-items:center; justify-content:center; color:white; font-size:12px;">🛍️</div>
+      <div>
+        <h1>NexaBiz</h1>
+        <p>Belanja Cerdas, Usaha Maju</p>
+      </div>
     </div>
+    <div class="header-actions">
+      <div class="notification">
+        🔔<span class="badge">3</span>
+      </div>
+      <img src="https://via.placeholder.com/36" alt="Profile" class="avatar">
+    </div>
+  </header>
 
-    <script>
-        // ============================================
-        // STATE VARIABLES
-        // ============================================
-        let currentTab = 0;
-        let selectedPackage = null;
-        let selectedPackagePrice = 3500000;
-        let selectedPackageName = 'Popular Booth';
-        let selectedDuration = 1;
-        let selectedDiscount = 0;
-        let selectedAddons = [];
-        let selectedStartDate = '';
-        
-        let boothColor = 'linear-gradient(135deg, #10B981, #059669)';
-        let brandName = '';
-        let logoFile = null;
-        
-        const tabs = ['tabPackage', 'tabAddons', 'tabCustomize'];
-        const nextBtn = document.getElementById('nextBtn');
-        const backBtn = document.getElementById('backBtn');
-        const confirmBtn = document.getElementById('confirmBtn');
-        
-        // ============================================
-        // URL ROUTING
-        // ============================================
-        function updateURLStep(step) {
-            const stepNames = ['paket-booth', 'add-ons', 'kustomisasi'];
-            window.location.hash = stepNames[step];
-        }
-        
-        function getStepFromURL() {
-            const hash = window.location.hash.replace('#', '');
-            if (hash === 'add-ons') return 1;
-            if (hash === 'kustomisasi') return 2;
-            return 0;
-        }
-        
-        function navigateToStep(step) {
-            updateURLStep(step);
-            showTab(step);
-        }
-        
-        function showTab(index) {
-            // Hide all tabs
-            tabs.forEach(tab => {
-                document.getElementById(tab).style.display = 'none';
-            });
-            document.getElementById(tabs[index]).style.display = 'block';
-            
-            // Update tab buttons
-            document.querySelectorAll('.tab-btn').forEach((btn, i) => {
-                if (i === index) {
-                    btn.classList.add('active');
-                    btn.classList.remove('text-gray-400');
-                    btn.classList.add('text-green-600', 'border-green-500');
-                } else {
-                    btn.classList.remove('active', 'text-green-600', 'border-green-500');
-                    btn.classList.add('text-gray-400', 'border-transparent');
-                }
-            });
-            
-            // Update navigation buttons
-            if (index === 2) {
-                nextBtn.style.display = 'none';
-                confirmBtn.style.display = 'block';
-                backBtn.style.display = 'block';
-            } else if (index === 0) {
-                nextBtn.style.display = 'block';
-                confirmBtn.style.display = 'none';
-                backBtn.style.display = 'none';
-            } else {
-                nextBtn.style.display = 'block';
-                confirmBtn.style.display = 'none';
-                backBtn.style.display = 'block';
-            }
-            
-            currentTab = index;
-        }
-        
-        // Listen to hash change
-        window.addEventListener('hashchange', () => {
-            const step = getStepFromURL();
-            showTab(step);
-        });
-        
-        function nextTab() {
-            if (currentTab < 2) navigateToStep(currentTab + 1);
-        }
-        
-        function previousTab() {
-            if (currentTab > 0) navigateToStep(currentTab - 1);
-        }
-        
-        function goBack() {
-            window.history.back();
-        }
-        
-        // ============================================
-        // ACCORDION FUNCTIONS
-        // ============================================
-        function toggleAccordion(header) {
-            const content = header.nextElementSibling;
-            const icon = header.querySelector('.fa-chevron-down');
-            content.classList.toggle('open');
-            icon.style.transform = content.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0)';
-        }
-        
-        // ============================================
-        // PACKAGE SELECTION
-        // ============================================
-        function selectPackage(element) {
-            document.querySelectorAll('.package-card').forEach(card => {
-                card.classList.remove('selected', 'border-green-500', 'bg-green-50');
-                card.classList.add('border-gray-100');
-            });
-            element.classList.remove('border-gray-100');
-            element.classList.add('selected', 'border-green-500', 'bg-green-50');
-            selectedPackagePrice = parseInt(element.getAttribute('data-price'));
-            selectedPackageName = element.getAttribute('data-name');
-            updateTotalPrice();
-            showToast(`${selectedPackageName} dipilih`);
-        }
-        
-        function selectDuration(months) {
-            selectedDuration = months;
-            document.querySelectorAll('.duration-btn').forEach(btn => {
-                btn.classList.remove('selected', 'bg-green-500', 'text-white');
-                btn.classList.add('border-gray-200', 'bg-white', 'text-gray-700');
-            });
-            const selectedBtn = document.querySelector(`.duration-btn[data-duration="${months}"]`);
-            selectedBtn.classList.remove('border-gray-200', 'bg-white', 'text-gray-700');
-            selectedBtn.classList.add('selected', 'bg-green-500', 'text-white');
-            selectedDiscount = parseInt(selectedBtn.getAttribute('data-discount'));
-            updateTotalPrice();
-        }
-        
-        function updateTotalPrice() {
-            let total = selectedPackagePrice * selectedDuration;
-            if (selectedDiscount > 0) total = total * (1 - selectedDiscount / 100);
-            selectedAddons.forEach(addon => { total += addon.price; });
-            document.getElementById('totalPrice').innerHTML = formatRupiah(total);
-        }
-        
-        // ============================================
-        // ADD-ONS FUNCTIONS
-        // ============================================
-        function toggleAddon(element) {
-            const price = parseInt(element.getAttribute('data-price'));
-            const name = element.getAttribute('data-name');
-            
-            if (element.classList.contains('selected')) {
-                element.classList.remove('selected', 'border-green-500', 'bg-green-50');
-                element.classList.add('border-gray-200');
-                selectedAddons = selectedAddons.filter(a => a.name !== name);
-            } else {
-                element.classList.add('selected', 'border-green-500', 'bg-green-50');
-                element.classList.remove('border-gray-200');
-                selectedAddons.push({ name: name, price: price });
-            }
-            
-            const addonsTotal = selectedAddons.reduce((sum, a) => sum + a.price, 0);
-            document.getElementById('selectedAddonsCount').innerHTML = `${selectedAddons.length} dipilih`;
-            document.getElementById('selectedAddonsTotal').innerHTML = formatRupiah(addonsTotal);
-            const addonNames = selectedAddons.map(a => a.name).join(', ');
-            document.getElementById('selectedAddonsList').innerHTML = addonNames || 'Belum ada add-ons dipilih';
-            updateTotalPrice();
-        }
-        
-        // ============================================
-        // CUSTOMIZATION FUNCTIONS
-        // ============================================
-        function selectColor(colorName, gradient) {
-            boothColor = gradient;
-            document.getElementById('boothBackground').style.background = gradient;
-            document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected'));
-            event.currentTarget.classList.add('selected');
-            showToast(`Warna booth diubah ke ${colorName}`);
-        }
-        
-        function uploadLogo(input) {
-            if (input.files && input.files[0]) {
-                const file = input.files[0];
-                logoFile = file;
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('logoPreview').classList.remove('hidden');
-                    document.getElementById('previewImg').src = e.target.result;
-                    document.getElementById('logoName').innerText = file.name;
-                    updateBoothVisual(e.target.result);
-                };
-                reader.readAsDataURL(file);
-                showToast('Logo berhasil diupload');
-            }
-        }
-        
-        function removeLogo() {
-            logoFile = null;
-            document.getElementById('logoPreview').classList.add('hidden');
-            document.getElementById('logoUpload').value = '';
-            updateBoothVisual(null);
-            showToast('Logo dihapus');
-        }
-        
-        function updateBoothVisual(logoUrl) {
-            const container = document.getElementById('boothContent');
-            const currentBrand = document.getElementById('brandNameInput').value || 'Your Booth';
-            if (logoUrl) {
-                container.innerHTML = `<img src="${logoUrl}" class="w-12 h-12 object-contain mx-auto mb-2"><p class="text-white text-sm font-bold">${currentBrand}</p><p class="text-white/70 text-[10px]">Brand Area</p>`;
-            } else {
-                container.innerHTML = `<i class="fas fa-store text-white text-5xl mb-2"></i><p class="text-white text-sm font-bold" id="boothBrandName">${currentBrand}</p><p class="text-white/70 text-[10px]">Brand Area</p>`;
-            }
-        }
-        
-        document.getElementById('brandNameInput').addEventListener('input', (e) => {
-            brandName = e.target.value;
-            const displayName = brandName || 'Your Booth';
-            if (logoFile) {
-                document.getElementById('boothContent').innerHTML = `<img src="${document.getElementById('previewImg').src}" class="w-12 h-12 object-contain mx-auto mb-2"><p class="text-white text-sm font-bold">${displayName}</p><p class="text-white/70 text-[10px]">Brand Area</p>`;
-            } else {
-                document.getElementById('boothContent').innerHTML = `<i class="fas fa-store text-white text-5xl mb-2"></i><p class="text-white text-sm font-bold">${displayName}</p><p class="text-white/70 text-[10px]">Brand Area</p>`;
-            }
-        });
-        
-        // ============================================
-        // CONFIRM BOOKING
-        // ============================================
-        function confirmBooking() {
-            selectedStartDate = document.getElementById('startDate').value;
-            if (!selectedStartDate) {
-                showToast('Pilih tanggal mulai sewa');
-                return;
-            }
-            const total = document.getElementById('totalPrice').innerText;
-            showToast(`Booking berhasil! Total ${total}`);
-            setTimeout(() => window.location.href = 'index.html', 2000);
-        }
-        
-        // ============================================
-        // UTILITY FUNCTIONS
-        // ============================================
-        function formatRupiah(amount) {
-            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(amount);
-        }
-        
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            document.getElementById('toastMessage').innerText = message;
-            toast.classList.remove('hidden');
-            setTimeout(() => toast.classList.add('hidden'), 2000);
-        }
-        
-        // Set default date
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        document.getElementById('startDate').value = tomorrow.toISOString().split('T')[0];
-        
-        // Initialize default selections
-        document.querySelector('.package-card[data-price="3500000"]').classList.add('selected', 'border-green-500', 'bg-green-50');
-        document.querySelector('.duration-btn[data-duration="1"]').classList.add('selected', 'bg-green-500', 'text-white');
-        
-        // Initialize from URL
-        const initialStep = getStepFromURL();
-        showTab(initialStep);
-        
-        // Open first accordion by default
-        setTimeout(() => {
-            const firstAccordion = document.querySelector('.accordion-header');
-            if (firstAccordion && currentTab === 1) toggleAccordion(firstAccordion);
-        }, 100);
-    </script>
+  <section class="greeting">
+    <h2>Halo, Bu Rani! 👋</h2>
+    <div class="store-selector">
+      Warung Nasi Nusantara <span>▼</span>
+    </div>
+  </section>
+
+  <section class="section-padding">
+    <div class="hero-card">
+      <div class="alert-tag">⚠️ Smart Restock Alert</div>
+      <h3>Ayam akan habis besok</h3>
+      <p>Sisa stok hanya 4 Kg</p>
+      
+      <div class="restock-info">
+        <div class="info-item">
+          <span>Disarankan beli</span>
+          <strong>12 Kg</strong>
+        </div>
+        <div class="info-item">
+          <span>Estimasi biaya</span>
+          <strong>Rp420.000</strong>
+        </div>
+      </div>
+      
+      <button class="btn-primary">Buat Rencana Belanja <span>›</span></button>
+    </div>
+  </section>
+
+  <section class="section-padding">
+    <div class="section-header">
+      <h4>Aksi Cepat</h4>
+      <a href="#">Lihat Semua ›</a>
+    </div>
+    <div class="quick-actions-grid">
+      <button class="action-btn">
+        <div class="icon-box green">📦</div>
+        <span>Kelola Stok</span>
+      </button>
+      <button class="action-btn">
+        <div class="icon-box teal">🛒</div>
+        <span>Belanja</span>
+      </button>
+      <button class="action-btn">
+        <div class="icon-box orange">🚚</div>
+        <span>Pesanan</span>
+      </button>
+      <button class="action-btn">
+        <div class="icon-box purple">📊</div>
+        <span>Laporan</span>
+      </button>
+    </div>
+  </section>
+
+  <section class="section-padding">
+    <div class="dashboard-grid">
+      <div class="widget-card">
+        <div class="widget-title">
+          <span>Stok Kritis 🚨</span>
+          <span style="font-size:10px; color:var(--text-muted);">›</span>
+        </div>
+        <div class="stock-item">
+          <div class="stock-item-left">
+            <span class="stock-icon">🍗</span>
+            <div class="stock-text">
+              <h5>Ayam</h5>
+              <p>Min. 10 Kg</p>
+            </div>
+          </div>
+          <span class="stock-qty">4 Kg</span>
+        </div>
+        <div class="stock-item">
+          <div class="stock-item-left">
+            <span class="stock-icon">🌶️</span>
+            <div class="stock-text">
+              <h5>Cabai</h5>
+              <p>Min. 5 Kg</p>
+            </div>
+          </div>
+          <span class="stock-qty">2 Kg</span>
+        </div>
+        <div class="stock-item">
+          <div class="stock-item-left">
+            <span class="stock-icon">🧄</span>
+            <div class="stock-text">
+              <h5>Bawang Putih</h5>
+              <p>Min. 3 Kg</p>
+            </div>
+          </div>
+          <span class="stock-qty">1 Kg</span>
+        </div>
+        <div class="alert-banner">🚨 3 bahan hampir habis ›</div>
+      </div>
+
+      <div class="widget-card">
+        <div class="widget-title">
+          <span>Pesanan Aktif</span>
+          <span style="font-size:10px; color:var(--text-muted);">›</span>
+        </div>
+        <div class="order-id">#NX231</div>
+        <div class="order-status">Dalam Pengiriman</div>
+        <div class="courier-info">
+          <span style="font-size:1.5rem;">🛵</span>
+          <div>
+            <p style="font-size:0.75rem; font-weight:600;">Peternak Mitra A</p>
+            <p style="font-size:0.65rem; color:var(--text-muted);">Estimasi tiba: <br><span style="color:var(--success);">Hari ini, 14:00 WIB</span></p>
+          </div>
+        </div>
+        <button class="btn-outline">Lacak Pesanan ›</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-padding">
+    <div class="promo-banner">
+      <div class="promo-text">
+        <h4>Gabung Belanja Bersama</h4>
+        <p>Belanja bareng pelaku usaha lain.<br>Dapatkan harga lebih murah!</p>
+      </div>
+      <div style="background:#2e7d32; color:white; padding:4px 8px; border-radius:4px; font-size:0.75rem; font-weight:bold;">Hemat hingga 20%</div>
+    </div>
+  </section>
+
+  <section class="section-padding">
+    <div class="section-header">
+      <h4>Insight Bisnis</h4>
+      <a href="#">Lihat Semua ›</a>
+    </div>
+    <div class="insights-grid">
+      <div class="insight-card">
+        <p>Total Pengeluaran</p>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <h5>Rp2.350.000</h5>
+          <span class="trend">+ 8%</span>
+        </div>
+        <p style="font-size:0.6rem; margin-top:4px;">vs minggu lalu</p>
+      </div>
+      <div class="insight-card">
+        <p>Total Pembelian</p>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <h5>12 Transaksi</h5>
+          <span class="trend">+ 15%</span>
+        </div>
+        <p style="font-size:0.6rem; margin-top:4px;">vs minggu lalu</p>
+      </div>
+    </div>
+  </section>
+
+  <nav class="bottom-nav">
+    <div class="nav-item active">
+      <i>🏠</i>
+      <span>Beranda</span>
+    </div>
+    <div class="nav-item">
+      <i>📦</i>
+      <span>Stok</span>
+    </div>
+    <div class="nav-center">
+      <i style="font-size:1.5rem;">🛒</i>
+    </div>
+    <div class="nav-item">
+      <i>📋</i>
+      <span>Pesanan</span>
+    </div>
+    <div class="nav-item">
+      <i>👤</i>
+      <span>Akun</span>
+    </div>
+  </nav>
+
+</div>
+
 </body>
 </html>
